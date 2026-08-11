@@ -19,3 +19,11 @@ __pycache__/
 # SIN-GPT-Web Betrieb (Callbacks enthalten Tokens!)
 .sin-gpt-web/callbacks/
 .sin-gpt-web/*.lock
+
+# sin-gpt-web Live-DB (WAL) - nie committen; TASKPLAN.md ist der Snapshot
+.sin-gpt-web/taskplan.sqlite3
+.sin-gpt-web/taskplan.sqlite3-*
+.sin-gpt-web/chat-capabilities.json
+.sin-gpt-web/friction.jsonl
+.sin-gpt-web/handoff.md
+.sin-gpt-web/round-*.md

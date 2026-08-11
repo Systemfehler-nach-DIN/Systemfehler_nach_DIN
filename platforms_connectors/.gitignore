@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.bridge-test.log
+.bridge-test.pid
+.env
+.env.*
+!.env.example

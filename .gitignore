@@ -15,3 +15,7 @@
 website/public/
 __pycache__/
 *.pyc
+
+# SIN-GPT-Web Betrieb (Callbacks enthalten Tokens!)
+.sin-gpt-web/callbacks/
+.sin-gpt-web/*.lock

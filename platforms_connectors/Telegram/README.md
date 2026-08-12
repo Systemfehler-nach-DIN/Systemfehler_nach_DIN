@@ -1,6 +1,6 @@
 # Telegram-Connector
 
-Dieser Connector ist API-first, fail-closed und standardmäßig im `DRY_RUN`-Modus.
+Dieser Connector ist offiziell API-basiert; Buffer-first für verbundene Systemfehler-Kanäle, fail-closed und standardmäßig im `DRY_RUN`-Modus.
 
 ## Status
 

@@ -223,3 +223,11 @@ Beide nutzen die offene, vorgesehene Mastodon-API mit User-Token und Medienuploa
 ## Endentscheidung
 
 T-0003 kann ohne weitere Architekturentscheidung beginnen: geschlossene Plattformen verwenden Session/private-client + Playwright-Fallback; offene Netze und Webhooks verwenden ihre nativen offenen Schnittstellen. Die Bridge bleibt standardmaessig Draft-only und benoetigt fuer diesen Research-Task keinerlei echte Plattform-Credentials.
+
+
+## Aktuelle Routing-Entscheidung (2026-08-12)
+
+Buffer ist für die neun verbundenen SYSTEMFEHLER_nach_DIN-Kanäle der primäre
+Publishing-/Scheduling-Layer. Die frühere Entscheidung zugunsten der direkten
+YouTube-API bleibt als historische/Fallback-Architektur erhalten; Account 3
+veröffentlicht YouTube über Buffer Channel `6a7cf0c4b2d9d57743679762`.

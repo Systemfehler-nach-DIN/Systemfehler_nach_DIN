@@ -140,7 +140,7 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 | Mastodon | `mastodon.social/auth/sign_in` | App registrieren/Token | Mastodon-Login fehlt |
 | Telegram | `my.telegram.org/auth?to=apps` | API-ID/API-Hash erzeugen | Telegram-Login/Telefonbestätigung fehlt |
 | Discord | Developer Portal zeigt „Create Account / Log In“ | Application/Webhook/Bot | Discord-Login fehlt |
-| YouTube | Google Cloud-Projekt `Hermes Private`; YouTube Data API v3 **bereits aktiviert** | OAuth-Branding/Client/Consent und lokaler OAuth-Lauf | OAuth-Client fehlt; Secret darf nicht aus Browser extrahiert werden |
+| YouTube | Buffer Account 3 mit `Systemfehler_nach_DIN` verbunden | Buffer-Planung und -Publishing | kein Buffer-Blocker; direkte YouTube-OAuth-Verbindung ist nur Fallback |
 | Postiz | `localhost:4007` nicht erreichbar | Offiziellen Compose-Stack deployen | Stack läuft nicht; Runtime-Secrets/Volumes fehlen |
 
 ## Recovery checkpoint: aktuelle Meta-Welle

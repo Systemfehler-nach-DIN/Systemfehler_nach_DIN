@@ -12,7 +12,7 @@ Freigaben:
 - Reddit: `/prefs/apps` war durch Network Security blockiert.
 - LinkedIn, Pinterest, Mastodon, Telegram und Discord: jeweilige Developer-Portale fordern eine nicht vorhandene Anmeldung.
 - Bluesky: Im Bot-Profil war nur der öffentliche Feed sichtbar; Account/App-Passwort nicht bestätigt.
-- YouTube: Google Cloud-Projekt `Hermes Private` und YouTube Data API v3 sind vorhanden/aktiviert; ein OAuth-Client ist noch nicht eingerichtet. Secret-Download aus dem Browser wurde nicht vorgenommen.
+- YouTube: Buffer Account 3 ist mit `Systemfehler_nach_DIN` verbunden und verifiziert. Direkte YouTube-OAuth-/Data-API-Einrichtung bleibt nur als optionaler Fallback offen.
 - Postiz: lokaler Endpoint `localhost:4007` ist nicht erreichbar; offizieller Compose-Stack und Runtime-Secrets fehlen.
 
 Bis die Konten, App-Freigaben und Tokens autorisiert und über Infisical injiziert sind,
@@ -35,6 +35,6 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 - YouTube-OAuth: Desktop-Client in `Hermes Private` erstellt und OAuth technisch erfolgreich, aber Google/API liefert den falschen Kanal `ZOE Solar` (`UC8jo_fyVGSPKvRuS2ZWAvyA`). Ziel ist `Systemfehler_nach_DIN` (`UCBWRl7VXRdy0kcsoV7or7Uw`). Kein Upload; der lokale Token wird nicht verwendet. Erneute Autorisierung im korrekten Brand-/Google-Account erforderlich.
 
 - Buffer ist als alternativer Publishing-Layer verifiziert: drei Accounts/Organisationen, acht verbundene Kanäle, alle `isDisconnected=false`. API-Key-Namen, Organisationen und Kanal-IDs liegen in Infisical. Die Meta-Verifizierung bleibt für direkte Meta-API-Nutzung offen, ist für Buffer-verbundene Kanäle aber nicht der unmittelbare Publishing-Blocker. Buffer Free bleibt durch 3 Kanäle je Account, 10 geplante Posts je Kanal und 3.000 API-Anfragen/Monat begrenzt.
-- Buffer API deckt laut aktueller Doku YouTube, aber nicht TikTok ab; TikTok bleibt der separate SIN-Adapter. Ein Postiz→Buffer→YouTube/TikTok-Workflow ist noch nicht implementiert/verifiziert.
+- Buffer API deckt laut aktueller Doku YouTube, aber nicht TikTok ab; TikTok bleibt der separate SIN-Adapter. Ein Postiz→Buffer→YouTube/TikTok-Workflow ist noch nicht verifiziert.
 
 - Buffer-Umstellung: 9 Kanäle über drei Buffer-Accounts sind per CLI mit Infisical-Keys verifiziert (`isDisconnected=false`), inklusive YouTube Account 3. Buffer-Adapter und account-scoped routing sind implementiert und getestet. Offen bleibt ausschließlich der nicht gestartete/offiziell noch nicht verifizierte Postiz-Multi-Container-Stack als optionaler Planungs-Layer; direkte Posts wurden nicht gesendet.

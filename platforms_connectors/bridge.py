@@ -150,7 +150,10 @@ def _publish_youtube_api(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _publish_tiktok_browser(payload: dict[str, Any]) -> dict[str, Any]:
-    from platforms_connectors.TikTok.tiktok_social import TikTokError, publish_video
+    try:
+        from platforms_connectors.TikTok.tiktok_social import TikTokError, publish_video
+    except ModuleNotFoundError:  # direct execution from platforms_connectors/
+        from TikTok.tiktok_social import TikTokError, publish_video
     options = payload.get("tiktok") if isinstance(payload.get("tiktok"), dict) else {}
     video_path = options.get("video_path") or payload.get("media_url")
     if not video_path or str(video_path).startswith(("http://", "https://")):

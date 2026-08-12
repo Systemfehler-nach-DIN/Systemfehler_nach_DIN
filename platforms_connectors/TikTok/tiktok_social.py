@@ -52,7 +52,7 @@ def publish_video(
         "    raise RuntimeError('TikTok-Session ist nicht angemeldet')",
         f"upload_file('input[type=file]', {json.dumps(str(path))})",
         "time.sleep(5)",
-        "editor = js('document.querySelector(\"[contenteditable=true]\")')",
+        "editor = js('Boolean(document.querySelector(\"[contenteditable=true]\"))')",
         "if not editor:",
         "    close_tab(target)",
         "    raise RuntimeError('TikTok-Beschreibungsfeld nicht gefunden')",

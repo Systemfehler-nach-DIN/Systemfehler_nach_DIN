@@ -48,3 +48,12 @@ Buffer accepts a scheduled post: only after a confirmed `sent`/published state
 and a 48-hour grace period. Scheduled or errored media is retained. No Supabase
 runtime endpoint was guessed or mutated; OCI health/auth discovery remains an
 external infrastructure step.
+
+## Deployment-Gate
+
+Der lokale Staging-Adapter und die Migration sind implementiert, aber noch nicht
+auf der OCI-Supabase-Instanz angewendet. Vor der ersten echten Planung müssen
+Endpoint, Bucket, Service-Role-Zugriff, öffentliche Objekt-URLs und RLS auf der
+VM read-only verifiziert werden. Tailscale-SSH war bei der Discovery durch einen
+zusätzlichen Authentifizierungs-Gate blockiert; deshalb wurde nichts remote
+mutiert.

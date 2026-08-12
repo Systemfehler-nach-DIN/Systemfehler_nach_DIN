@@ -37,3 +37,14 @@ account/channel routing, Multi-Target-Dry-Run und YouTube-Metadaten). Postiz ist
 aktuell nicht erreichbar; sein offizieller Multi-Container-Stack und der direkte
 Postiz→Buffer→YouTube/TikTok-Orchestrierungsweg sind noch nicht verifiziert und
 bleiben offen.
+
+## Media lifecycle: TeraBox → Supabase → Buffer
+
+TeraBox-SIN is the durable archive. Supabase Storage bucket `social-staging`
+is temporary production storage for stable public HTTPS URLs consumed by Buffer.
+The migration is `supabase/migrations/001_social_staging.sql`; it tracks media,
+publish jobs, targets, hashes and cleanup timestamps. Media is not deleted when
+Buffer accepts a scheduled post: only after a confirmed `sent`/published state
+and a 48-hour grace period. Scheduled or errored media is retained. No Supabase
+runtime endpoint was guessed or mutated; OCI health/auth discovery remains an
+external infrastructure step.

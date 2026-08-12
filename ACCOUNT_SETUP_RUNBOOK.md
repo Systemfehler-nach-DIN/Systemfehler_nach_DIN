@@ -91,8 +91,8 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |
 |---|---|---|---|
-| Instagram | Creator-Konto eingerichtet; Facebook-Hauptlogin vorhanden | Meta-Developer-App/OAuth | Meta-Developer-Verifizierung per Mobilnummer/Kreditkarte fehlt |
-| Facebook | Hauptseite authentifiziert; Developer-Registrierung offen | Page/App/OAuth einrichten | Meta-Developer-Verifizierung per Mobilnummer/Kreditkarte fehlt |
+| Instagram | Creator-Konto, Business-Portfolio-Verknüpfung und Instagram API Use Case eingerichtet | Meta-Developer-Testerrolle → OAuth → Identity-Check | Meta blockiert Tester-Zuweisung: Developer Account/Tester-Policy; danach App Review |
+| Facebook | Professional-Mode-Profil verifiziert; keine Facebook Page vorhanden (ZoE gelöscht) | Page-Asset oder Professional-Mode-Fallback entscheiden; OpenSIN/Meta OAuth prüfen | Professional Mode ist kein Pages-API-Asset; keine falsche Page-ID verwenden |
 | Threads | Kein Developer-Zugriff geprüft | Meta-App mit Threads-Produkt | Meta-Login fehlt |
 | X | `@schu68231` authentifiziert; Developer-Onboarding erreichbar | Developer-Projekt und User OAuth | Developer Agreement/Policy muss bestätigt werden; Schreibzugang kann kostenpflichtig sein |
 | Reddit | `/prefs/apps` mit Network-Security-Block | OAuth-App anlegen | Reddit-Netzwerkblock/Login |
@@ -107,7 +107,7 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 
 ## Recovery checkpoint: aktuelle Meta-Welle
 
-1. **ZoE GmbH löschen:** Im SIN-Chrome-Tab `https://www.facebook.com/deactivate_delete_account/` ist für die verifizierte Seite `ZoE GmbH` (ID `100085541960065`) bereits „Seite löschen“ ausgewählt. Meta zeigt die finale Seite „Bestätige, dass dies deine Seite ist“ und wartet auf das Seitenpasswort. Nach manueller Eingabe durch den Kontoinhaber: `Weiter` bestätigen und anschließend live prüfen, dass die ZoE-Seite nicht mehr erreichbar ist und nicht mehr im Business-Portfolio auftaucht.
+1. **ZoE GmbH:** Laut Nutzer gelöscht; der alte Link zeigt inzwischen „Seite entfernt“. Nicht erneut löschen oder die ID als Ersatz verwenden.
 2. **SYSTEMFEHLER Professional Mode:** Profil-ID `100085502655496` und URL `https://www.facebook.com/Systemfehler.nach.DIN/` sind die kanonischen Werte. Der „Vorhandene Facebook-Seite hinzufügen“-Dialog findet sie nicht; nicht wiederholt suchen und niemals ZoE-ID als Ersatz verwenden. Professional Mode bleibt über das Facebook Professional Dashboard verwaltbar, ist aber kein Pages-API-Asset im Business-Portfolio.
 3. **Instagram-Tester:** In OpenSIN → Instagram API → API-Einrichtung mit Instagram-Login → `Konto hinzufügen` → `Weiter` fortsetzen. Der offizielle Instagram-Login öffnet einen Login-Tab. Die bestehende Instagram-Session `systemfehler_nach_din` ist sichtbar, aber der OAuth-Aufruf endet aktuell fail-closed mit `Entwickler-Rolle nicht ausreichend`. Der Login-/Tester-Flow benötigt daher noch eine gültige Instagram-Tester-/App-Rollen-Zuordnung; kein Passwort, Code oder Token wurde eingegeben/ausgelesen. Danach Konto `systemfehler_nach_din` und ID `17841440701410225` prüfen. Access Token nicht anzeigen/loggen; ausschließlich als `INSTAGRAM_ACCESS_TOKEN` über `sin-infisical` schreiben.
 4. **App Review:** Für Live-Zugriff die bereits konfigurierten Berechtigungen in OpenSIN einzeln mit Use-Case, Datenschutz-/Lösch-URL, Screenshots und Testanleitung einreichen. Erst nach Meta-Genehmigung und Identitätscheck Live-Gates öffnen.

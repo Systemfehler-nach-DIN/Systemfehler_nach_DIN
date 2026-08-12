@@ -36,6 +36,20 @@ Direkte Seiten:
 - `https://developers.facebook.com/apps/`
 - `https://developers.facebook.com/documentation/instagram-platform/instagram-api-with-instagram-login`
 
+### Meta/Facebook/Instagram (verifiziert 2026-08-12)
+
+- Meta-App **OpenSIN** im Business-Portfolio **Minime**: App-ID `996299283432639`, Business-ID `1786125979186446`.
+- Use Case **Instagram API** ist aktiviert; Instagram-App `OpenSIN-IG`, Instagram-App-ID `1603001711211651`.
+- Die erforderlichen Instagram-Berechtigungen wurden in der App-Konfiguration angelegt: `instagram_business_basic`, `instagram_business_manage_comments`, `instagram_business_manage_messages`. Für Live-Zugriff ist weiterhin App Review erforderlich.
+- Instagram-Konto `@systemfehler_nach_din` wurde dem Business-Portfolio hinzugefügt. Sichtbar verifizierte Konto-ID: `17841440701410225`; Eigentümer: Minime.
+- Use Case **Seiten verwalten (Pages API)** wurde in OpenSIN aktiviert.
+- Das im Facebook-Konto verwaltete Profil **ZoE GmbH** ist sichtbar verifiziert (Seiten-/Profil-ID `100085541960065`), konnte über den Business-Suite-Dialog jedoch noch nicht als Portfolio-Seite hinzugefügt werden; keine Anfrage wurde abgesendet.
+- Instagram-Tester-/Token-Flow öffnet den offiziellen Instagram-Login. Kein Token, OAuth-Code oder Passwort wurde ausgelesen.
+
+### Infisical-Metadaten
+
+Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisical`-Workflow in `My-OpenSIN-Secrets` / `dev` gespeichert: `META_APP_ID`, `META_APP_NAME`, `META_BUSINESS_ID`, `META_BUSINESS_PORTFOLIO_ID`, `META_BUSINESS_PORTFOLIO_NAME`, `INSTAGRAM_API_APP_ID`, `INSTAGRAM_ACCOUNT_USERNAME`, `INSTAGRAM_BUSINESS_ACCOUNT_ID`, `INSTAGRAM_USER_ID`, `FACEBOOK_PAGE_ID`, `FACEBOOK_PAGE_NAME`. Token-Schlüssel werden erst nach autorisiertem OAuth-Lauf injiziert; ihre Werte erscheinen weder im Chat noch in diesem Repository.
+
 ## Status und nächster Schritt je Plattform
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |

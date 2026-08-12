@@ -7,7 +7,7 @@ Creator-/Professional-Konto der Kategorie `Kunst` umgestellt.
 Für echte OAuth-/Live-Konfiguration fehlen noch externe Account-Anmeldungen oder
 Freigaben:
 
-- Meta/Facebook: Facebook-Hauptlogin ist im Bot-Profil vorhanden, aber Meta-Developer-Registrierung verlangt eine Mobilnummer oder Kreditkarte zur Kontobestätigung. Dadurch sind Instagram-Graph-, Facebook-Page- und Threads-App/OAuth-Einrichtung blockiert.
+- Meta/Facebook: OpenSIN ist im Business-Portfolio Minime angelegt; Instagram API und Pages API sind konfiguriert und das professionelle Instagram-Konto ist verknüpft. Offen bleiben der offizielle Instagram-Tester-/OAuth-Lauf (Bot-Profil öffnet aktuell den Login-Dialog), die App-Review für erweiterte Berechtigungen und die Portfolio-Verknüpfung der Facebook-Seite ZoE GmbH. Kein Token wurde extrahiert.
 - X: Account `@schu68231` ist im Bot-Profil angemeldet und das Developer-Onboarding ist erreichbar; das Absenden verlangt jedoch die Annahme des Developer Agreement/Policy und kann kostenpflichtigen Schreibzugang voraussetzen.
 - Reddit: `/prefs/apps` war durch Network Security blockiert.
 - LinkedIn, Pinterest, Mastodon, Telegram und Discord: jeweilige Developer-Portale fordern eine nicht vorhandene Anmeldung.

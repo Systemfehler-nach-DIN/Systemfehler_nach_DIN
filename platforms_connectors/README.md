@@ -23,14 +23,18 @@ Health: `GET /health`
 
 Publish/Dry-Run: `POST /publish` mit der Standard-Payload. Optional kann ein Wrapper-Objekt `{"payload": {...}, "platforms": ["x", "youtube"]}` gesendet werden.
 
+## Buffer-first Adaptergrenzen
+
+Für die neun verbundenen Systemfehler-Kanäle ist Buffer der primäre Publishing-/Scheduling-Weg. Direkte Adapter bleiben als offizielle Fallbacks/Account-Setup-Werkzeuge erhalten.
+
 ## Adaptergrenzen
 
 | Plattform | Backend/Wrapper | Credential-Quelle |
 |---|---|---|
 | TikTok | SIN-Browser-Use CLI 3.0 / TikTok Studio UI | SIN-Chrome `bot` |
-| YouTube | offizielle YouTube Data API v3 | OAuth-Token |
-| Instagram | offizielle Instagram Graph API | `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID` |
-| Facebook | offizielle Meta Graph API / Pages | `FACEBOOK_PAGE_ACCESS_TOKEN`, `FACEBOOK_PAGE_ID` |
+| YouTube | Buffer Account 3 / Channel `6a7cf0c4b2d9d57743679762` | Buffer account key from Infisical |
+| Instagram | Buffer Account 1 | `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID` |
+| Facebook | Buffer Account 2 | `FACEBOOK_PAGE_ACCESS_TOKEN`, `FACEBOOK_PAGE_ID` |
 | X | offizielle X API v2 | `X_ACCESS_TOKEN` |
 | Reddit | offizielle Reddit OAuth API | `REDDIT_ACCESS_TOKEN` |
 | LinkedIn | offizielle LinkedIn Posts API | `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_AUTHOR_URN` |
@@ -53,22 +57,22 @@ in `sin-tiktok-shop` und `sin-tiktok-ads`. Es gibt keinen öffentlichen Upload-
 API-Pfad für reguläre TikTok-Konten. Live-Publishing bleibt außerhalb der
 allgemeinen Bridge fail-closed und benötigt einen explizit geprüften UI-Lauf.
 
-### YouTube API
+### Buffer YouTube route
 
-Die Bridge nutzt für Uploads, Metadaten, Sichtbarkeit und Planung ausschließlich `YouTube/youtube_api.py` und die offizielle YouTube Data API v3. Browser/Cookies bleiben nur als Fallback für Community-Funktionen, die die API nicht anbietet. Standard ist `PRIVATE`; Live-Upload benötigt zusätzlich `PUBLISH_MODE=LIVE`, `ALLOW_REAL_POSTS=true` und die explizite Freigabe `YOUTUBE_API_LIVE_APPROVED=true`.
+Der verbundene Kanal `Systemfehler_nach_DIN` wird über Buffer Account 3 geplant
+und veröffentlicht (`Buffer channel 6a7cf0c4b2d9d57743679762`, YouTube-ID
+`UCBWRl7VXRdy0kcsoV7or7Uw`). Die direkten YouTube-API-/OAuth-Dateien bleiben
+als manuelle Fallbacks für Kontoverifikation, Kommentare und nicht von Buffer
+abgedeckte Studio-Funktionen. Für Buffer-Videos sind eine stabile öffentliche
+HTTPS-Video-URL sowie `metadata.youtube.title`, `categoryId` und `privacy` nötig.
 
-Einmalige Einrichtung mit einer Google-Cloud-OAuth-Clientdatei (Desktop-App):
+### Buffer account routing
 
-```bash
-python3 YouTube/youtube_api.py --authorize --client-secrets ~/.config/google/sin-google-apps-oauth-client.json
-python3 YouTube/youtube_api.py --channel --token ~/.config/sin-youtube/youtube-oauth-token.json
-```
-
-Die erzeugte Token-Datei bleibt lokal und erhält Modus `0600`. Für Kommentare und Moderation muss der Token zusätzlich den Scope `youtube.force-ssl` besitzen; nach Scope-Änderungen erneut `--authorize` ausführen. Unterstützt werden Kommentare lesen/schreiben/antworten/bearbeiten/löschen, Moderationsstatus, Video-Metadaten, Thumbnails und Playlist-Items. Cloud-Projekt- oder Credential-Erstellung erfolgt nicht automatisch.
-
-Community-Posts sind nicht Teil der öffentlichen Data API. `YouTube/youtube_community.py` nutzt standardmäßig SIN-Browser-Use (Browser Use CLI 3.0) über den eingeloggten SIN-Chrome-`bot`; der Legacy-Playwright-Weg bleibt mit `--backend playwright` explizit auswählbar. Live bleibt fail-closed und benötigt `PUBLISH_MODE=LIVE`, `ALLOW_REAL_POSTS=true` und `YOUTUBE_BROWSER_LIVE_APPROVED=true`; standardmäßig ist DRY_RUN.
-
-Die Python-Bridge selbst benutzt nur die Standardbibliothek und laeuft damit auf macOS/ARM64 und Linux/OCI. Die eigentlichen Community-Clients bleiben optionale Adapter-Abhaengigkeiten und werden erst fuer einen explizit freigegebenen Live-Publisher installiert/aktiviert.
+`platforms_connectors/Buffer/accounts.json` ist die nicht-geheime Registry.
+`buffer_targets` kann mehrere Targets mit `account`, `platform`, `channel_id`
+und `media_type` enthalten. Der Adapter wählt `BUFFER_API_KEY_ACCOUNT_1..3`
+(runtime aus Infisical) anhand des Accounts; `BUFFER_API_KEY` bleibt als
+kompatibler Einzelaccount-Fallback.
 
 ## Tests
 

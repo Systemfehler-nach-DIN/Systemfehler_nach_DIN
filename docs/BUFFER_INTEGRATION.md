@@ -1,7 +1,7 @@
 # Buffer-Integration
 
 Stand: 2026-08-12. Buffer ist der bevorzugte Publishing-Layer für die acht
-verifizierten Buffer-Kanäle. API-Keys bleiben in Infisical; zur Laufzeit wird
+verifizierten Buffer-Kanäle (9 Kanäle). API-Keys bleiben in Infisical; zur Laufzeit wird
 der gewünschte Account-Key als `BUFFER_API_KEY` injiziert.
 
 ## Abdeckung
@@ -10,7 +10,7 @@ der gewünschte Account-Key als `BUFFER_API_KEY` injiziert.
 |---|---|---|
 | 1 | `6a7cdff6ba121c15135353f4` | Instagram, Threads, LinkedIn |
 | 2 | `6a7ce320460832fbfcda7d98` | Facebook, Bluesky, Mastodon |
-| 3 | `6a7ce8391c7f43f54a9c0b59` | Pinterest, X/Twitter, YouTube (`UCBWRl7VXRdy0kcsoV7or7Uw`) |
+| 3 | `6a7ce8391c7f43f54a9c0b59` | Pinterest, X/Twitter, YouTube (`6a7cf0c4b2d9d57743679762`, `UCBWRl7VXRdy0kcsoV7or7Uw`) |
 
 Alle inventarisierten Channels meldeten `isDisconnected=false`.
 
@@ -32,6 +32,8 @@ Alle inventarisierten Channels meldeten `isDisconnected=false`.
 
 ## Offene Implementierung
 
-Der Projekt-Bridge-Adapter für Buffer muss noch implementiert und getestet
-werden. Postiz ist aktuell nicht erreichbar und der direkte
-Postiz→Buffer→YouTube/TikTok-Orchestrierungsweg ist noch nicht verifiziert.
+Der Projekt-Bridge-Adapter für Buffer ist implementiert und getestet (inklusive
+account/channel routing, Multi-Target-Dry-Run und YouTube-Metadaten). Postiz ist
+aktuell nicht erreichbar; sein offizieller Multi-Container-Stack und der direkte
+Postiz→Buffer→YouTube/TikTok-Orchestrierungsweg sind noch nicht verifiziert und
+bleiben offen.

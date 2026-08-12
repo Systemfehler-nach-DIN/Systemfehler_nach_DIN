@@ -38,3 +38,29 @@ class BufferPublishTests(unittest.TestCase):
         self.assertIn(
             "Bearer key", request.call_args.kwargs["headers"]["Authorization"]
         )
+
+    def test_account_three_youtube_registry_shape(self):
+        payload = {
+            "title": "Video", "excerpt": "E", "body": "B",
+            "media_url": "https://cdn.example/video.mp4",
+            "buffer_targets": [{"account": 3, "platform": "youtube",
+                "channel_id": "6a7cf0c4b2d9d57743679762", "media_type": "video"}],
+        }
+        result = publish(payload, dry_run=True)
+        target = result["targets"][0]
+        self.assertEqual(target["channelId"], "6a7cf0c4b2d9d57743679762")
+        self.assertEqual(target["assets"][0]["video"]["url"], payload["media_url"])
+        self.assertEqual(target["metadata"]["youtube"]["categoryId"], "22")
+
+    def test_multiple_buffer_targets_are_fanned_out(self):
+        payload = {**self.payload, "buffer_targets": [
+            {"account": 1, "platform": "instagram", "channel_id": "ig", "media_type": "image"},
+            {"account": 3, "platform": "youtube", "channel_id": "yt", "media_type": "video"},
+        ], "media_url": "https://cdn.example/video.mp4"}
+        result = publish(payload, dry_run=True)
+        self.assertEqual([x["channelId"] for x in result["targets"]], ["ig", "yt"])
+
+    def test_registry_default_contains_nine_channels(self):
+        from platforms_connectors.Buffer.router import all_channels
+        self.assertEqual(len(all_channels()), 9)
+        self.assertEqual(next(x for x in all_channels() if x["platform"] == "youtube")["account"], "3")

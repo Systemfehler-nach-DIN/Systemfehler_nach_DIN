@@ -86,8 +86,8 @@ ADAPTERS: dict[str, Adapter] = {
     ),
     "buffer": Adapter(
         "buffer",
-        "Buffer API (GraphQL)",
-        ("BUFFER_API_KEY",),
+        "Buffer API (GraphQL; account-routed)",
+        (),
     ),
     # Legacy forum draft remains visible but has no live adapter in this wave.
     "forums": Adapter(
@@ -130,9 +130,16 @@ def validate_payload(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("payload must be a JSON object")
     normalized = {field: payload.get(field, "") for field in REQUIRED_FIELDS}
-    # YouTube-only options are kept out of the common platform schema unless supplied.
-    if isinstance(payload.get("youtube"), dict):
-        normalized["youtube"] = dict(payload["youtube"])
+    if isinstance(payload.get("buffer_targets"), list):
+        normalized["buffer_targets"] = payload["buffer_targets"]
+    elif isinstance(payload.get("buffer"), dict):
+        normalized["buffer"] = payload["buffer"]
+    # Platform-specific routing metadata is preserved for Buffer and YouTube.
+    # Buffer channel/account selection is non-secret and must survive bridge
+    # normalization; credentials remain runtime-only environment values.
+    for key in ("buffer", "buffer_targets", "youtube", "tiktok"):
+        if isinstance(payload.get(key), (dict, list)):
+            normalized[key] = payload[key]
     missing = [
         field for field in ("title", "excerpt") if not str(normalized[field]).strip()
     ]
@@ -294,6 +301,11 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
                 missing_config = [
                     key for key in adapter.auth_env if not os.getenv(key, "").strip()
                 ]
+                if name == "buffer" and not any(
+                    os.getenv(f"BUFFER_API_KEY_ACCOUNT_{account}", "").strip()
+                    for account in ("1", "2", "3")
+                ) and not os.getenv("BUFFER_API_KEY", "").strip():
+                    missing_config = ["BUFFER_API_KEY_ACCOUNT_1..3 or BUFFER_API_KEY"]
                 if missing_config:
                     raise PermissionError(
                         f"LIVE publishing denied: missing runtime configuration for {name}: "

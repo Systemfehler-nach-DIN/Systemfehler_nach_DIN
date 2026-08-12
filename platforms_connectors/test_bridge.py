@@ -60,6 +60,12 @@ class BridgeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             bridge.publish(SAMPLE, ["not-a-platform"])
 
+    def test_buffer_target_metadata_survives_normalization(self):
+        payload = {**SAMPLE, "buffer_targets": [{"account": 3, "platform": "youtube", "channel_id": "yt", "media_type": "video"}]}
+        normalized = bridge.validate_payload(payload)
+        self.assertEqual(normalized["buffer_targets"][0]["channel_id"], "yt")
+
+
     def test_youtube_api_live_gate_routes_to_api(self):
         os.environ["PUBLISH_MODE"] = "LIVE"
         os.environ["ALLOW_REAL_POSTS"] = "true"

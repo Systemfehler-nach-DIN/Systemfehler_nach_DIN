@@ -2,16 +2,17 @@
 
 ## Ziel
 
-Alle Social-Connectoren verwenden einen gemeinsamen, API-first und fail-closed Vertrag.
+Alle Social-Connectoren verwenden einen gemeinsamen, fail-closed Vertrag. Buffer ist für verbundene Systemfehler-Kanäle der primäre Publishing-/Scheduling-Transport; direkte APIs bleiben offizielle Fallbacks.
 YouTube und TikTok bleiben kompatibel; neue Plattformen werden schrittweise aktiviert.
 
 ## Plattformen
 
 | Connector | Primärweg | UI-Fallback | Skill |
+| Buffer Fleet | Buffer GraphQL/MCP mit account-scoped Infisical-Key | direkte Plattform-API | sin-buffer / Plattformskill |
 |---|---|---|---|
-| Facebook | Meta Graph API / Pages | keiner standardmäßig | SIN-Facebook |
-| Instagram | Instagram Graph API | nur dokumentierte UI-Lücken | SIN-Instagram |
-| X | X API v2 + Media Upload | keiner standardmäßig | SIN-X |
+| Facebook | Buffer (Account 2) | Meta Graph API / Pages | SIN-Facebook |
+| Instagram | Buffer (Account 1) | Instagram Graph API | SIN-Instagram |
+| X | Buffer (Account 3) | X API v2 + Media Upload | SIN-X |
 | Reddit | OAuth API | keiner | SIN-Reddit |
 | LinkedIn | Posts API | keiner | SIN-LinkedIn |
 | Threads | Threads API | keiner | SIN-Threads |
@@ -44,3 +45,19 @@ injiziert.
 
 Implementierung der offiziellen API-Adapter in Wellen: Instagram/X/Reddit/LinkedIn,
 dann Threads/Pinterest/Bluesky/Mastodon, dann Telegram/Discord.
+
+## Buffer registry
+
+Account 1 (`6a7cdff6ba121c15135353f4`): Instagram, Threads, LinkedIn. Account 2
+(`6a7ce320460832fbfcda7d98`): Facebook, Bluesky, Mastodon. Account 3
+(`6a7ce8391c7f43f54a9c0b59`): Pinterest, X/Twitter, YouTube. YouTube uses
+Buffer channel `6a7cf0c4b2d9d57743679762` for channel
+`UCBWRl7VXRdy0kcsoV7or7Uw`.
+
+## Scheduler contract
+
+Buffer ist der Scheduler für die neun verbundenen Kanäle. `dueAt` wird als
+ISO-8601-Wert in `buffer_targets[].due_at` weitergereicht. Postiz bleibt ein
+optionaler Planungs-UI-Layer; sein offizieller Multi-Container-Stack ist lokal
+nicht gestartet/verifiziert und darf Buffer nicht mit eigenen Credentials
+überschreiben.

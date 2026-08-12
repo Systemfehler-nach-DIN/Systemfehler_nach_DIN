@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "goal_id": "social-platform-connectors-20260812",
+  "phase": "bootstrap",
+  "cycle": 0,
+  "plan_revision": 0,
+  "active_task_ids": [],
+  "completed_task_ids": [],
+  "blocked_task_ids": [],
+  "open_gaps": {
+    "critical": 0,
+    "major": 0,
+    "minor": 0,
+    "polish": 0
+  },
+  "verification": {
+    "status": "not-run",
+    "diff_digest": null,
+    "evidence_digest": null
+  },
+  "observer": {
+    "verdict": "not-run",
+    "diff_digest": null,
+    "verification_digest": null
+  },
+  "last_callback_sequence": {},
+  "updated_at": "2026-08-12T13:31:40.178199+00:00"
+}

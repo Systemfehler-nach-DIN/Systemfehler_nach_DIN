@@ -1,14 +1,23 @@
-# Postiz-Connector
+# Postiz-Integration
 
-Dieser Connector ist API-first, fail-closed und standardmäßig im `DRY_RUN`-Modus.
+Postiz ist ein **optionaler** self-hosted Scheduling-/UI-Layer. Die kanonische Bridge
+behält Payload-Validierung, Live-Gates, Secret-Authority und externe Verifikation.
 
-## Status
+## Betrieb
 
-Der Adapter wird in der nächsten Implementierungswelle gegen die offizielle Postiz-API verdrahtet. Bis dahin sind keine Live-Aktionen freigeschaltet.
+Der offizielle Compose-Stack enthält zusätzlich PostgreSQL, Redis und Temporal.
+Wir pinnen keinen unvollständigen Eigenbau: verwende den offiziellen Stack und pinne
+einen geprüften Commit vor dem produktiven Betrieb:
 
-## Sicherheitsgrenzen
+<https://github.com/gitroomhq/postiz-docker-compose>
 
-- Keine Tokens, Cookies oder Secrets im Repository.
-- Live-Publishing benötigt explizite Plattformfreigabe und bleibt standardmäßig deaktiviert.
-- Browser-Automation ist kein stiller Fallback für eine offizielle API.
-- Jede Veröffentlichung muss anhand der API-Antwort unabhängig verifiziert und idempotent behandelt werden.
+`docker-compose.example.yml` ist nur ein sidecar-Vertragsbeispiel und startet
+Postiz nicht allein. Secrets gehören in den bestehenden Secret-Workflow; niemals in
+`.env`, Git oder Logs. `DRY_RUN` bleibt Standard.
+
+## Grenzen
+
+- Postiz darf keine Credentials parallel zur kanonischen Secret-Authority verwalten.
+- Es darf keine ungeprüften Live-Aktionen auslösen.
+- Bei Ausfall bleibt die direkte API-Bridge verfügbar.
+- Browser-Automation ist kein stiller Fallback.

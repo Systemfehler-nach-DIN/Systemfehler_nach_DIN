@@ -9,6 +9,7 @@ Alle YouTube-spezifischen Adapter und Offline-Tests liegen in diesem Verzeichnis
   3.0 im authentifizierten SIN-Chrome-`bot`; Playwright nur explizit als Legacy-
   Backend.
 - `youtube_upload.py` — Upload-Hilfsadapter.
+- `youtube_api.py --delete-video` — nach Verifikation Testvideos entfernen.
 - `test_*.py` — netzwerkfreie Tests.
 
 Die gemeinsame Bridge (`../bridge.py`) hält die API als Primärpfad. Live-Aktionen

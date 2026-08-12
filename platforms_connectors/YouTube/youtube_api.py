@@ -304,6 +304,12 @@ class YouTubeApi:
                     sent += len(chunk)
         raise YouTubeApiError("Upload endete ohne Video-ID")
 
+    def delete_video(self, video_id: str) -> dict[str, Any]:
+        """Löscht ein eigenes Testvideo nach unabhängiger Verifikation."""
+        return self.request_json(
+            "DELETE", f"{API_ROOT}/videos?id={urllib.parse.quote(video_id)}"
+        )
+
     def video(self, video_id: str) -> dict[str, Any]:
         """Liest Metadaten und Sichtbarkeit eines Videos zur unabhängigen Prüfung."""
         data = self.request_json(
@@ -661,6 +667,7 @@ def main() -> int:
     parser.add_argument(
         "--inspect", metavar="VIDEO_ID", help="Video prüfen, ohne zu ändern"
     )
+    parser.add_argument("--delete-video", metavar="VIDEO_ID")
     parser.add_argument("--video")
     parser.add_argument("--search", metavar="QUERY")
     parser.add_argument("--search-type", choices=["video", "channel", "playlist"], default="video")
@@ -708,6 +715,9 @@ def main() -> int:
         return 0
     try:
         api = YouTubeApi(args.client_secrets, args.token)
+        if args.delete_video:
+            print(json.dumps(api.delete_video(args.delete_video), ensure_ascii=False))
+            return 0
         if args.inspect:
             item = api.video(args.inspect)
             print(

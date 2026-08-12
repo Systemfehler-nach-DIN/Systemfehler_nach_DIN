@@ -43,12 +43,20 @@ Direkte Seiten:
 - Die erforderlichen Instagram-Berechtigungen wurden in der App-Konfiguration angelegt: `instagram_business_basic`, `instagram_business_manage_comments`, `instagram_business_manage_messages`. Für Live-Zugriff ist weiterhin App Review erforderlich.
 - Instagram-Konto `@systemfehler_nach_din` wurde dem Business-Portfolio hinzugefügt. Sichtbar verifizierte Konto-ID: `17841440701410225`; Eigentümer: Minime.
 - Use Case **Seiten verwalten (Pages API)** wurde in OpenSIN aktiviert.
-- Das im Facebook-Konto verwaltete Profil **ZoE GmbH** ist sichtbar verifiziert (Seiten-/Profil-ID `100085541960065`), konnte über den Business-Suite-Dialog jedoch noch nicht als Portfolio-Seite hinzugefügt werden; keine Anfrage wurde abgesendet.
+- Das im Facebook-Konto verwaltete Profil **ZoE GmbH** ist sichtbar verifiziert (Seiten-ID `100085541960065`). Die Seite ist als alte Business-Präsenz identifiziert und zur Löschung vorbereitet; Meta verlangt im letzten Schritt die manuelle Passworteingabe. Die Löschung ist daher noch nicht bestätigt.
+- Das professionelle Facebook-Profil **Systemfehler Nach Din** ist sichtbar verifiziert unter `https://www.facebook.com/Systemfehler.nach.DIN/`; sichtbare Profil-ID `100085502655496`, Kategorie/Status: Professional Mode / Digital Creator.
+- Der Business-Suite-Dialog „Vorhandene Facebook-Seite hinzufügen“ findet die Professional-Mode-Profil-ID `100085502655496` nicht („Keine Facebook-Seiten gefunden“). Daraus folgt: Meta behandelt dieses Profil in diesem Dialog nicht als Facebook-Seite. Es darf nicht als Seite-ID eingetragen oder durch eine falsche ZoE-ID ersetzt werden.
 - Instagram-Tester-/Token-Flow öffnet den offiziellen Instagram-Login. Kein Token, OAuth-Code oder Passwort wurde ausgelesen.
 
 ### Infisical-Metadaten
 
 Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisical`-Workflow in `My-OpenSIN-Secrets` / `dev` gespeichert: `META_APP_ID`, `META_APP_NAME`, `META_BUSINESS_ID`, `META_BUSINESS_PORTFOLIO_ID`, `META_BUSINESS_PORTFOLIO_NAME`, `INSTAGRAM_API_APP_ID`, `INSTAGRAM_ACCOUNT_USERNAME`, `INSTAGRAM_BUSINESS_ACCOUNT_ID`, `INSTAGRAM_USER_ID`, `FACEBOOK_PAGE_ID`, `FACEBOOK_PAGE_NAME`. Token-Schlüssel werden erst nach autorisiertem OAuth-Lauf injiziert; ihre Werte erscheinen weder im Chat noch in diesem Repository.
+
+### Nutzerentscheidung für die nächste Meta-Welle (2026-08-12)
+
+- Der Nutzer verlangt, dass jeder neue Account-Setup-Schritt, jede sichtbare ID, jede UI-Abweichung, jeder externe Blocker und jeder Recovery-Schritt sofort in diesem Runbook und `EXTERNAL-BLOCKERS.md` festgehalten wird, damit spätere Accounts ohne erneute Discovery eingerichtet werden können.
+- Der Nutzer autorisiert die Entfernung/Löschung der **konkreten alten ZoE-GmbH-Facebook-Seite**, nicht eines persönlichen Facebook-Profils. Vor jeder destruktiven Aktion muss die Zielseite anhand Name und sichtbarer URL/ID nochmals eindeutig bestätigt werden.
+- Ziel für Meta Business Suite ist das professionelle Facebook-Profil bzw. die Facebook-Präsenz `Systemfehler.nach.DIN`; Meta kann professionelle Profile technisch anders behandeln als Facebook-Seiten. Es darf keine persönliche Identität oder ein falsches Business-Asset gelöscht werden.
 
 ## Status und nächster Schritt je Plattform
 

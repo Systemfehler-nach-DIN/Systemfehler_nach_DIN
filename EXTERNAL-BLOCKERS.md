@@ -19,3 +19,5 @@ Bis die Konten, App-Freigaben und Tokens autorisiert und über Infisical injizie
 bleiben alle Live-Gates geschlossen. Es wurden keine Plattform-Tokens, Cookies oder
 Passwörter extrahiert, keine Credentials geändert und keine Posts versendet.
 Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Recovery-Hinweise.
+
+- Die alte ZoE-GmbH-Facebook-Seite (ID `100085541960065`) ist zur dauerhaften Löschung ausgewählt; Meta verlangt dafür im letzten Bestätigungsschritt das Seitenpasswort. Die Eingabe muss manuell durch den Kontoinhaber erfolgen; die Löschung ist noch nicht abgeschlossen. Das professionelle Profil `Systemfehler.nach.DIN` (ID `100085502655496`) wird im Business-Suite-Dialog „Vorhandene Facebook-Seite hinzufügen“ nicht gefunden, weil Meta es dort nicht als Facebook-Seite behandelt.

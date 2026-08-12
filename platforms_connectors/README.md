@@ -27,7 +27,7 @@ Publish/Dry-Run: `POST /publish` mit der Standard-Payload. Optional kann ein Wra
 
 | Plattform | Backend/Wrapper | Credential-/Session-Quelle |
 |---|---|---|
-| TikTok | `wkaisertexas/tiktok-uploader` | `TIKTOK_SESSIONID` / `TIKTOK_COOKIE_PATH` |
+| TikTok | SIN-Browser-Use CLI 3.0 / TikTok Studio UI | `TIKTOK_PARTNER_EMAIL` / SIN-Chrome `bot` profile |
 | Instagram | `subzeroid/instagrapi` | `INSTAGRAM_*` / `INSTAGRAM_SESSION_PATH` |
 | Reddit | eigener Playwright-Webadapter | `REDDIT_STORAGE_STATE` |
 | X | `d60/twikit` | `X_*` / `X_COOKIE_PATH` |
@@ -37,6 +37,16 @@ Publish/Dry-Run: `POST /publish` mit der Standard-Payload. Optional kann ein Wra
 | Telegram | `Telethon` | `TELEGRAM_*` / `TELEGRAM_SESSION_PATH` |
 | Discord | stdlib Incoming Webhook | `DISCORD_WEBHOOK_URL` |
 | Foren | Discourse HTTP / Playwright fallback | `DISCOURSE_*` / `FORUM_STORAGE_STATE` |
+
+### TikTok Social
+
+Die kanonische TikTok-Integration liegt unter `TikTok/`. Organische Uploads,
+Kommentare, Analytics und Trend-Recherche laufen über TikTok Studio bzw.
+tiktok.com im authentifizierten SIN-Chrome-`bot`; für mehrschrittige Aktionen
+ist SIN-Browser-Use CLI 3.0 der Standard. TikTok Shop und Ads bleiben getrennt
+in `sin-tiktok-shop` und `sin-tiktok-ads`. Es gibt keinen öffentlichen Upload-
+API-Pfad für reguläre TikTok-Konten. Live-Publishing bleibt außerhalb der
+allgemeinen Bridge fail-closed und benötigt einen explizit geprüften UI-Lauf.
 
 ### YouTube API
 

@@ -32,9 +32,9 @@ class Adapter:
 ADAPTERS: dict[str, Adapter] = {
     "tiktok": Adapter(
         "tiktok",
-        "wkaisertexas/tiktok-uploader",
-        ("TIKTOK_SESSIONID",),
-        ("TIKTOK_COOKIE_PATH",),
+        "SIN-Browser-Use CLI 3.0 / TikTok Studio",
+        ("TIKTOK_PARTNER_EMAIL",),
+        ("TIKTOK_COOKIE_PATH", "SIN_CHROME_PROFILE"),
     ),
     "instagram": Adapter(
         "instagram",

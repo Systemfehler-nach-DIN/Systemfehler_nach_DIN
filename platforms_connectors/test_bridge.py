@@ -30,6 +30,11 @@ class BridgeTests(unittest.TestCase):
         )
         self.assertTrue(all(x["validated"] for x in result["results"]))
 
+    def test_tiktok_draft_uses_sin_browser_use_backend(self):
+        result = bridge.publish(SAMPLE, ["tiktok"])
+        self.assertEqual(result["results"][0]["backend"], "SIN-Browser-Use CLI 3.0 / TikTok Studio")
+        self.assertEqual(result["results"][0]["mode"], "DRAFT")
+
     def test_missing_required_field_rejected(self):
         with self.assertRaises(ValueError):
             bridge.publish({"title": "", "excerpt": "x"})

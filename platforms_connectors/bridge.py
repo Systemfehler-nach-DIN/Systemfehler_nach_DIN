@@ -365,6 +365,8 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length) or b"{}")
             if isinstance(body, dict) and "payload" in body:
                 payload = body["payload"]
+                if isinstance(payload, dict) and isinstance(body.get("buffer_targets"), list):
+                    payload = {**payload, "buffer_targets": body["buffer_targets"]}
                 platforms = body.get("platforms")
             else:
                 payload = body

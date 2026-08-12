@@ -246,7 +246,6 @@ Completion report: `.sin-gpt-web/reports/T-0009.md`
 
 ## Recent events
 
-- 2026-08-11T10:50:43+00:00 — `chatgpt-web` — `task_claimed` `T-0004`: claimed by chatgpt-web
 - 2026-08-11T10:53:02+00:00 — `chatgpt-web` — `task_completed` `T-0004`: Closed local E2E dry-run succeeded: authenticated Kestra webhook returned HTTP 200; execution 5IEsY7lc1gQHX1Xzbxrz33 finished SUCCESS on flow revision 7; task states update_website_feed=SUCCESS, deploy_if_configured=SUCCESS, social_if_configured=SUCCESS, distribute_social=SUCCESS. website/content/posts.json contained exactly one __T0004_E2E_DRY_RUN__ record after the webhook. Kestra HTTP task output from http://host.docker.internal:18765/publish returned code 200, mode DRY_RUN, and 10 validated DRAFT results for tiktok, instagram, reddit, x, youtube, mastodon, bluesky, telegram, discord, forums. Test post was then removed from posts.json via filesystem edit. No real posts, deploy, push, or credential disclosure occurred. Attempt to stop the temporary bridge test process was frontend-policy-blocked before Mac execution and recorded categorically; the bridge remains a local DRY_RUN-only process.
 - 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0005`: Social connector architecture and Postiz integration design
 - 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0006`: Implement official API connector wave: Instagram, X, Reddit, LinkedIn
@@ -266,3 +265,4 @@ Completion report: `.sin-gpt-web/reports/T-0009.md`
 - 2026-08-12T14:20:58+00:00 — `prime-agent` — `task_completed` `T-0009`: platforms_connectors/Postiz/publish.py; Postiz/docker-compose.example.yml; Postiz/README.md; optional official compose boundary; no-secret dry-run contract
 - 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_claimed` `T-0010`: claimed by local-agent
 - 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_completed` `T-0010`: HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms
+- 2026-08-12T14:29:17+00:00 — `prime-agent` — `verification` `T-0010`: Post-completion hardening: live fan-out now preflights approvals, runtime config, and dry-run payload validation for every selected target before any network request; 29 connector tests pass; commit 85c702e.

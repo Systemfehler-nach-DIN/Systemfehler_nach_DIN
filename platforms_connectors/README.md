@@ -25,18 +25,23 @@ Publish/Dry-Run: `POST /publish` mit der Standard-Payload. Optional kann ein Wra
 
 ## Adaptergrenzen
 
-| Plattform | Backend/Wrapper | Credential-/Session-Quelle |
+| Plattform | Backend/Wrapper | Credential-Quelle |
 |---|---|---|
-| TikTok | SIN-Browser-Use CLI 3.0 / TikTok Studio UI | `TIKTOK_PARTNER_EMAIL` / SIN-Chrome `bot` profile |
-| Instagram | `subzeroid/instagrapi` | `INSTAGRAM_*` / `INSTAGRAM_SESSION_PATH` |
-| Reddit | eigener Playwright-Webadapter | `REDDIT_STORAGE_STATE` |
-| X | `d60/twikit` | `X_*` / `X_COOKIE_PATH` |
-| YouTube | offizieller YouTube Data API v3-Adapter (OAuth 2.0, resumable upload) | `YOUTUBE_OAUTH_CLIENT_SECRETS`, `YOUTUBE_OAUTH_TOKEN`, `YOUTUBE_VIDEO_PATH` |
-| Mastodon | `Mastodon.py` / `toot` | `MASTODON_*` |
-| Bluesky | `MarshalX/atproto` | `BLUESKY_*` |
-| Telegram | `Telethon` | `TELEGRAM_*` / `TELEGRAM_SESSION_PATH` |
-| Discord | stdlib Incoming Webhook | `DISCORD_WEBHOOK_URL` |
-| Foren | Discourse HTTP / Playwright fallback | `DISCOURSE_*` / `FORUM_STORAGE_STATE` |
+| TikTok | SIN-Browser-Use CLI 3.0 / TikTok Studio UI | SIN-Chrome `bot` |
+| YouTube | offizielle YouTube Data API v3 | OAuth-Token |
+| Instagram | offizielle Instagram Graph API | `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID` |
+| Facebook | offizielle Meta Graph API / Pages | `FACEBOOK_PAGE_ACCESS_TOKEN`, `FACEBOOK_PAGE_ID` |
+| X | offizielle X API v2 | `X_ACCESS_TOKEN` |
+| Reddit | offizielle Reddit OAuth API | `REDDIT_ACCESS_TOKEN` |
+| LinkedIn | offizielle LinkedIn Posts API | `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_AUTHOR_URN` |
+| Threads | offizielle Threads API | `THREADS_ACCESS_TOKEN`, `THREADS_USER_ID` |
+| Pinterest | offizielle Pinterest API v5 | `PINTEREST_ACCESS_TOKEN`, `PINTEREST_BOARD_ID` |
+| Bluesky | offizielles AT Protocol | App-Passwort |
+| Mastodon | offizielle Mastodon REST API | Access Token |
+| Telegram | offizielle Telegram Bot API | Bot Token |
+| Discord | offizieller Incoming Webhook | Webhook URL |
+| Postiz | optionaler self-hosted API-Layer | Runtime-Token |
+
 
 ### TikTok Social
 
@@ -73,4 +78,4 @@ python3 -m unittest -v test_bridge.py
 python3 -m pytest -q YouTube
 ```
 
-Die Tests sind offline und pruefen alle zehn Plattformen, Pflichtfeldvalidierung, unbekannte Plattformen und den Default-Deny fuer LIVE.
+Die Tests sind offline und prüfen alle offiziellen Connectoren, gemockte Live-Pfade, Pflichtfeldvalidierung, unbekannte Plattformen und den Default-Deny für LIVE. Instagram Private API (`instagrapi`), Twikit, Playwright und Cookie-/Passwort-Backends sind keine Bridge-Fallbacks.

@@ -25,7 +25,9 @@ class Adapter:
             "mode": "DRAFT",
             "validated": True,
             "media": bool(payload.get("media_url")),
-            "credential_source": "env/session-path only",
+            "credential_source": "runtime environment/session path"
+            if self.session_env
+            else "runtime environment only",
         }
 
 
@@ -34,17 +36,7 @@ ADAPTERS: dict[str, Adapter] = {
         "tiktok",
         "SIN-Browser-Use CLI 3.0 / TikTok Studio",
         ("TIKTOK_PARTNER_EMAIL",),
-        ("TIKTOK_COOKIE_PATH", "SIN_CHROME_PROFILE"),
-    ),
-    "instagram": Adapter(
-        "instagram",
-        "subzeroid/instagrapi",
-        ("INSTAGRAM_USERNAME", "INSTAGRAM_PASSWORD"),
-        ("INSTAGRAM_SESSION_PATH",),
-    ),
-    "reddit": Adapter("reddit", "playwright-web", (), ("REDDIT_STORAGE_STATE",)),
-    "x": Adapter(
-        "x", "d60/twikit", ("X_USERNAME", "X_EMAIL", "X_PASSWORD"), ("X_COOKIE_PATH",)
+        ("SIN_CHROME_PROFILE",),
     ),
     "youtube": Adapter(
         "youtube",
@@ -52,25 +44,68 @@ ADAPTERS: dict[str, Adapter] = {
         ("YOUTUBE_OAUTH_TOKEN", "YOUTUBE_OAUTH_CLIENT_SECRETS"),
         ("YOUTUBE_VIDEO_PATH",),
     ),
-    "mastodon": Adapter(
-        "mastodon", "Mastodon.py/toot", ("MASTODON_ACCESS_TOKEN", "MASTODON_BASE_URL")
+    "instagram": Adapter(
+        "instagram",
+        "Instagram Graph API",
+        ("INSTAGRAM_ACCESS_TOKEN", "INSTAGRAM_USER_ID"),
+    ),
+    "facebook": Adapter(
+        "facebook",
+        "Meta Graph API / Pages",
+        ("FACEBOOK_PAGE_ACCESS_TOKEN", "FACEBOOK_PAGE_ID"),
+    ),
+    "threads": Adapter(
+        "threads", "Threads API", ("THREADS_ACCESS_TOKEN", "THREADS_USER_ID")
+    ),
+    "x": Adapter("x", "X API v2", ("X_ACCESS_TOKEN",)),
+    "reddit": Adapter(
+        "reddit", "Reddit OAuth API", ("REDDIT_ACCESS_TOKEN", "REDDIT_USER_AGENT")
+    ),
+    "linkedin": Adapter(
+        "linkedin",
+        "LinkedIn Posts API",
+        ("LINKEDIN_ACCESS_TOKEN", "LINKEDIN_AUTHOR_URN"),
+    ),
+    "pinterest": Adapter(
+        "pinterest",
+        "Pinterest API v5",
+        ("PINTEREST_ACCESS_TOKEN", "PINTEREST_BOARD_ID"),
     ),
     "bluesky": Adapter(
-        "bluesky", "MarshalX/atproto", ("BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD")
+        "bluesky", "Bluesky AT Protocol", ("BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD")
+    ),
+    "mastodon": Adapter(
+        "mastodon", "Mastodon REST API", ("MASTODON_ACCESS_TOKEN", "MASTODON_BASE_URL")
     ),
     "telegram": Adapter(
+        "telegram", "Telegram Bot API", ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID")
+    ),
+    "discord": Adapter("discord", "Discord Incoming Webhook", ("DISCORD_WEBHOOK_URL",)),
+    "postiz": Adapter(
+        "postiz",
+        "Postiz self-hosted API (optional)",
+        ("POSTIZ_API_TOKEN", "POSTIZ_API_URL"),
+    ),
+}
+
+# Only these modules may ever receive a live request. There is deliberately no
+# private-API, browser-session, cookie, or password fallback in this registry.
+OFFICIAL_MODULES = {
+    name: f"platforms_connectors.{name.title()}.publish"
+    for name in (
+        "instagram",
+        "facebook",
+        "threads",
+        "x",
+        "reddit",
+        "linkedin",
+        "pinterest",
+        "bluesky",
+        "mastodon",
         "telegram",
-        "Telethon",
-        ("TELEGRAM_API_ID", "TELEGRAM_API_HASH"),
-        ("TELEGRAM_SESSION_PATH",),
-    ),
-    "discord": Adapter("discord", "stdlib Incoming Webhook", ("DISCORD_WEBHOOK_URL",)),
-    "forums": Adapter(
-        "forums",
-        "Discourse HTTP API / Playwright fallback",
-        ("DISCOURSE_BASE_URL", "DISCOURSE_API_KEY", "DISCOURSE_API_USERNAME"),
-        ("FORUM_STORAGE_STATE",),
-    ),
+        "discord",
+        "postiz",
+    )
 }
 
 
@@ -157,12 +192,44 @@ def _publish_tiktok_browser(payload: dict[str, Any]) -> dict[str, Any]:
     options = payload.get("tiktok") if isinstance(payload.get("tiktok"), dict) else {}
     video_path = options.get("video_path") or payload.get("media_url")
     if not video_path or str(video_path).startswith(("http://", "https://")):
-        raise ValueError("TikTok benötigt eine lokale Videodatei (tiktok.video_path oder media_url)")
+        raise ValueError(
+            "TikTok benötigt eine lokale Videodatei (tiktok.video_path oder media_url)"
+        )
     try:
-        result = publish_video(str(video_path), str(options.get("description") or payload.get("body") or payload.get("excerpt") or payload["title"]), dry_run=False)
+        result = publish_video(
+            str(video_path),
+            str(
+                options.get("description")
+                or payload.get("body")
+                or payload.get("excerpt")
+                or payload["title"]
+            ),
+            dry_run=False,
+        )
     except TikTokError as exc:
         raise RuntimeError(str(exc)) from exc
-    return {"platform": "tiktok", "backend": "SIN-Browser-Use CLI 3.0 / TikTok Studio", **result}
+    return {
+        "platform": "tiktok",
+        "backend": "SIN-Browser-Use CLI 3.0 / TikTok Studio",
+        **result,
+    }
+
+
+def _publish_official(platform: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Dispatch only to an explicitly implemented official API module."""
+    import importlib
+
+    module_path = OFFICIAL_MODULES.get(platform)
+    if not module_path:
+        raise PermissionError(
+            f"LIVE publishing denied: no official adapter for {platform}"
+        )
+    if os.getenv(f"{platform.upper()}_API_LIVE_APPROVED", "false").lower() != "true":
+        raise PermissionError(
+            f"LIVE publishing denied: set {platform.upper()}_API_LIVE_APPROVED=true after external approval"
+        )
+    module = importlib.import_module(module_path)
+    return module.publish(payload, dry_run=False)
 
 
 def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
@@ -172,10 +239,16 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
     if unknown:
         raise ValueError("unknown platforms: " + ", ".join(unknown))
     if live_allowed():
-        # Only the reviewed, official YouTube API path may publish. All other
-        # adapters remain fail-closed until they receive their own implementation.
-        if selected == ["tiktok"] and os.getenv("TIKTOK_BROWSER_LIVE_APPROVED", "false").lower() == "true":
-            return {"ok": True, "mode": "LIVE", "payload": normalized, "results": [_publish_tiktok_browser(normalized)]}
+        if (
+            selected == ["tiktok"]
+            and os.getenv("TIKTOK_BROWSER_LIVE_APPROVED", "false").lower() == "true"
+        ):
+            return {
+                "ok": True,
+                "mode": "LIVE",
+                "payload": normalized,
+                "results": [_publish_tiktok_browser(normalized)],
+            }
         if (
             selected == ["youtube"]
             and os.getenv("YOUTUBE_API_LIVE_APPROVED", "false").lower() == "true"
@@ -185,6 +258,15 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
                 "mode": "LIVE",
                 "payload": normalized,
                 "results": [_publish_youtube_api(normalized)],
+            }
+        # Multi-platform live publishing is allowed only when every selected
+        # target has an explicit approval and an official module.
+        if all(name in OFFICIAL_MODULES for name in selected):
+            return {
+                "ok": True,
+                "mode": "LIVE",
+                "payload": normalized,
+                "results": [_publish_official(name, normalized) for name in selected],
             }
         raise PermissionError(
             "LIVE publishing denied: adapter-specific live approval is not installed"

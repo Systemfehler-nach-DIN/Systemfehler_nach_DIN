@@ -1,3 +1,15 @@
+# Social Publishing Decisions — T-0010 (supersedes earlier research)
+
+Stand: 2026-08-12. Die Implementierung verwendet für produktives Publishing ausschließlich offizielle APIs bzw. offizielle Webhooks/Bot APIs. `instagrapi`, Twikit, Playwright und private Cookie-/Passwort-Backends sind **keine** Bridge-Fallbacks. Alle neuen Connectoren bleiben DRY_RUN, bis je Plattform OAuth, Berechtigungen und Live-Gate explizit geprüft sind.
+
+- Instagram: Instagram Graph API; `instagrapi` höchstens isolierter Research-Adapter, nicht Produktionspfad.
+- Facebook/Threads: Meta-/Threads-Graph APIs.
+- X/Reddit/LinkedIn/Pinterest: jeweilige offizielle APIs.
+- Bluesky/Mastodon/Telegram/Discord: offizielles AT Protocol, REST API bzw. Bot/Webhook API.
+- Postiz: optionaler self-hosted Scheduling-/UI-Layer; ersetzt weder die kanonische Bridge noch Secret-Authority und bleibt bei Ausfall entbehrlich.
+
+Die früheren T-0001/T-0003-Empfehlungen weiter unten sind historische Recherche und durch diese Entscheidung überstimmt.
+
 # Social Publishing Decisions — T-0001
 
 Stand: 2026-08-11. Research only: keine Credentials erzeugt, keine echten Posts versendet.

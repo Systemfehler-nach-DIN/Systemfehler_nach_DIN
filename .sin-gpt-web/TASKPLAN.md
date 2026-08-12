@@ -16,7 +16,7 @@ SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors 
 - Backlog: 0
 - In progress: 0
 - Blocked: 0
-- Done: 4
+- Done: 10
 - Cancelled: 0
 
 ## Tasks
@@ -24,9 +24,15 @@ SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors 
 | ID | Priority | Kind | Status | Owner | Title | Dependencies |
 |---|---|---|---|---|---|---|
 | T-0001 | critical | research | done | chatgpt-web | GitHub-Recherche: beste nicht-offizielle Wege zum Posten auf TikTok, Instagram, Reddit, X, YouTube (+ Mastodon/Bluesky/Telegram/Discord/Foren) | — |
+| T-0005 | critical | plan | done | local-agent | Social connector architecture and Postiz integration design | — |
+| T-0010 | critical | test | done | local-agent | Bridge and Kestra end-to-end connector verification | T-0006, T-0007, T-0008, T-0009 |
 | T-0002 | high | ops | done | chatgpt-web | Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM | — |
 | T-0003 | high | implement | done | chatgpt-web | Social-Bridges in platforms_connectors/ bauen und in publish_everywhere.yml einbinden | T-0001 |
 | T-0004 | high | test | done | chatgpt-web | End-to-End-Verifikation: Webhook -> posts.json -> Bridge-Dry-Run | T-0002, T-0003 |
+| T-0006 | high | implement | done | local-agent | Implement official API connector wave: Instagram, X, Reddit, LinkedIn | T-0005 |
+| T-0007 | high | implement | done | local-agent | Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon | T-0005 |
+| T-0008 | high | implement | done | local-agent | Implement robust channel connector wave: Telegram and Discord | T-0005 |
+| T-0009 | high | implement | done | local-agent | Integrate Postiz self-hosted scheduling/API adapter | T-0005 |
 
 ## Task details
 
@@ -50,6 +56,51 @@ Allowed paths:
 Evidence: DECISIONS.md written and re-read; all 10 platform headings verified by grep; no credential-like patterns matched by grep; GitHub/web research compared community/session/browser and fallback paths with licenses, maintenance, auth, media, risk and portability; no posts sent.
 
 Completion report: `.sin-gpt-web/reports/T-0001.md`
+
+### T-0005 — Social connector architecture and Postiz integration design
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `plan`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-12T14:19:27+00:00
+
+Define common connector contract, per-platform ownership, credential boundaries, bridge/Kestra integration, Postiz optional self-hosted adapter, and dependency-aware implementation waves. Inspect existing YouTube/TikTok connectors and wow-my-zsh social-platform skill layout. Produce durable architecture/docs and task breakdown without secrets.
+
+Acceptance:
+- Architecture document names every requested platform, official API/browser fallback, dry-run/live gates, verification/idempotency, Postiz boundary, and exact next implementation tasks.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `website`
+- `.sin-goal`
+
+Evidence: platforms_connectors/SOCIAL_CONNECTOR_ARCHITECTURE.md; platforms_connectors/base.py; platforms_connectors/bridge.py; website/kestra/publish_everywhere.yml; 27 pytest tests; ruff check passed; dry-run bridge returned 14 platform results
+
+Completion report: `.sin-gpt-web/reports/T-0005.md`
+
+### T-0010 — Bridge and Kestra end-to-end connector verification
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `test`
+- Priority: `critical`
+- Dependencies: T-0006, T-0007, T-0008, T-0009
+- Updated: 2026-08-12T14:23:07+00:00
+
+Register all connectors in bridge and publish_everywhere workflow, add deterministic payload mapping, per-platform results, retries/idempotency, offline tests and safe dry-run E2E. Depends on connector waves and Postiz integration.
+
+Allowed paths:
+- `platforms_connectors`
+- `.github`
+- `website`
+- `docs`
+
+Evidence: HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms
+
+Completion report: `.sin-gpt-web/reports/T-0010.md`
 
 ### T-0002 — Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM
 
@@ -116,21 +167,102 @@ Evidence: Closed local E2E dry-run succeeded: authenticated Kestra webhook retur
 
 Completion report: `.sin-gpt-web/reports/T-0004.md`
 
+### T-0006 — Implement official API connector wave: Instagram, X, Reddit, LinkedIn
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: T-0005
+- Updated: 2026-08-12T14:20:57+00:00
+
+Implement fail-closed connectors and SIN skills/docs for Instagram Graph API, X API v2, Reddit OAuth API, and LinkedIn Posts API, with offline tests, dry-run, live gates, idempotency, and independent verification. Depends on architecture wave.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+
+Evidence: platforms_connectors/Instagram/publish.py; X/publish.py; Reddit/publish.py; LinkedIn/publish.py; mocked live tests; DRY_RUN tests; 29 pytest tests; ruff clean
+
+Completion report: `.sin-gpt-web/reports/T-0006.md`
+
+### T-0007 — Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: T-0005
+- Updated: 2026-08-12T14:20:57+00:00
+
+Implement official/API-first connectors and SIN skills/docs for Threads, Pinterest, Bluesky AT Protocol, and Mastodon. Add tests and bridge registration. Depends on architecture wave.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+
+Evidence: platforms_connectors/Threads/publish.py; Pinterest/publish.py; Bluesky/publish.py; Mastodon/publish.py; mocked live tests; DRY_RUN tests; ruff clean
+
+Completion report: `.sin-gpt-web/reports/T-0007.md`
+
+### T-0008 — Implement robust channel connector wave: Telegram and Discord
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: T-0005
+- Updated: 2026-08-12T14:20:57+00:00
+
+Implement Telegram Bot API and Discord Webhook/Bot connectors, SIN skills/docs, tests, dry-run/live gates and bridge registration. Depends on architecture wave.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+
+Evidence: platforms_connectors/Telegram/publish.py; Discord/publish.py; Facebook/publish.py; mocked live tests; DRY_RUN tests; ruff clean
+
+Completion report: `.sin-gpt-web/reports/T-0008.md`
+
+### T-0009 — Integrate Postiz self-hosted scheduling/API adapter
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: T-0005
+- Updated: 2026-08-12T14:20:58+00:00
+
+Evaluate and integrate Postiz as optional self-hosted scheduler/API layer without replacing canonical connectors or secret authority. Add Docker/OrbStack portability docs, adapter contract, health checks and dry-run tests. Depends on architecture wave.
+
+Allowed paths:
+- `platforms_connectors`
+- `docker-compose.yml`
+- `docs`
+
+Evidence: platforms_connectors/Postiz/publish.py; Postiz/docker-compose.example.yml; Postiz/README.md; optional official compose boundary; no-secret dry-run contract
+
+Completion report: `.sin-gpt-web/reports/T-0009.md`
+
 ## Recent events
 
-- 2026-08-11T00:47:26+00:00 — `local-agent` — `plan_initialized`: SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors (TikTok, Instagram, Reddit, X, YouTube, optional Mastodon/Bluesky/Telegram/Discord/Foren) in platforms_connectors/ bauen, in die Kestra-Pipeline publish_everywhere.yml einbinden und Kestra produktiv auf OrbStack (Mac) betreiben, portabel fuer Docker auf der OCI-VM.
-- 2026-08-11T00:47:38+00:00 — `local-agent` — `task_added` `T-0001`: GitHub-Recherche: beste nicht-offizielle Wege zum Posten auf TikTok, Instagram, Reddit, X, YouTube (+ Mastodon/Bluesky/Telegram/Discord/Foren)
-- 2026-08-11T00:47:39+00:00 — `local-agent` — `task_added` `T-0002`: Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM
-- 2026-08-11T00:47:53+00:00 — `local-agent` — `task_added` `T-0003`: Social-Bridges in platforms_connectors/ bauen und in publish_everywhere.yml einbinden
-- 2026-08-11T00:47:53+00:00 — `local-agent` — `task_added` `T-0004`: End-to-End-Verifikation: Webhook -> posts.json -> Bridge-Dry-Run
-- 2026-08-11T00:47:57+00:00 — `local-agent` — `task_updated` `T-0003`: task fields updated
-- 2026-08-11T00:48:45+00:00 — `local-agent` — `task_updated` `T-0004`: task fields updated
-- 2026-08-11T00:52:40+00:00 — `chatgpt-web` — `task_claimed` `T-0001`: claimed by chatgpt-web
-- 2026-08-11T00:53:08+00:00 — `local-agent` — `delegation_sent` `T-0001`: Round 1 an ChatGPT Web delegiert (T-0001, Research) via delegate_chatgpt.py; Chat https://chatgpt.com/c/6a7a723e-8fc0-83eb-8b4c-fe93d52a85c5, Connector @Mac-M1, Callback gptwcb_7754de99a9de422e89b8a090cf31e65e offen bis 2026-08-12T00:51Z
-- 2026-08-11T00:56:27+00:00 — `chatgpt-web` — `task_completed` `T-0001`: DECISIONS.md written and re-read; all 10 platform headings verified by grep; no credential-like patterns matched by grep; GitHub/web research compared community/session/browser and fallback paths with licenses, maintenance, auth, media, risk and portability; no posts sent.
-- 2026-08-11T09:29:45+00:00 — `chatgpt-web` — `task_claimed` `T-0002`: claimed by chatgpt-web
-- 2026-08-11T10:47:59+00:00 — `chatgpt-web` — `task_completed` `T-0002`: OrbStack compose stack started on 127.0.0.1:18081 with postgres healthy and Kestra v1.3.30 running; foreign native Kestra jar on 18080 observed and left untouched; publish_everywhere flow imported via authenticated API HTTP 200; webhook POST returned HTTP 200, wrote exactly one __T0002_KESTRA_WEBHOOK_TEST__ record to website/content/posts.json, verified match count=1, then removed it leaving 6 original posts; .env remained local/ignored with 0600; README documents OCI Docker portability, ports, volumes, secret encoding, and foreign jar process; no real social posts, deploy, push, or foreign-container changes.
-- 2026-08-11T10:48:06+00:00 — `chatgpt-web` — `task_claimed` `T-0003`: claimed by chatgpt-web
-- 2026-08-11T10:50:36+00:00 — `chatgpt-web` — `task_completed` `T-0003`: Implemented stdlib-first platforms_connectors/bridge.py with unified title/excerpt/body/media_url/url/cta payload and adapters for TikTok=tiktok-uploader, Instagram=instagrapi, Reddit=Playwright, X=twikit, YouTube=youtube-studio, Mastodon=Mastodon.py/toot, Bluesky=atproto, Telegram=Telethon, Discord=stdlib webhook, forums=Discourse/Playwright. DRY_RUN is default and LIVE is fail-closed even when global live flags are set. Offline unittest suite passed 4/4. HTTP bridge health returned all 10 platforms and POST /publish returned DRY_RUN with 10 validated DRAFT results. publish_everywhere webhook input now maps social_bridge_url and was re-imported HTTP 200. No credentials logged or committed and no real posts sent.
 - 2026-08-11T10:50:43+00:00 — `chatgpt-web` — `task_claimed` `T-0004`: claimed by chatgpt-web
 - 2026-08-11T10:53:02+00:00 — `chatgpt-web` — `task_completed` `T-0004`: Closed local E2E dry-run succeeded: authenticated Kestra webhook returned HTTP 200; execution 5IEsY7lc1gQHX1Xzbxrz33 finished SUCCESS on flow revision 7; task states update_website_feed=SUCCESS, deploy_if_configured=SUCCESS, social_if_configured=SUCCESS, distribute_social=SUCCESS. website/content/posts.json contained exactly one __T0004_E2E_DRY_RUN__ record after the webhook. Kestra HTTP task output from http://host.docker.internal:18765/publish returned code 200, mode DRY_RUN, and 10 validated DRAFT results for tiktok, instagram, reddit, x, youtube, mastodon, bluesky, telegram, discord, forums. Test post was then removed from posts.json via filesystem edit. No real posts, deploy, push, or credential disclosure occurred. Attempt to stop the temporary bridge test process was frontend-policy-blocked before Mac execution and recorded categorically; the bridge remains a local DRY_RUN-only process.
+- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0005`: Social connector architecture and Postiz integration design
+- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0006`: Implement official API connector wave: Instagram, X, Reddit, LinkedIn
+- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0007`: Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon
+- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0008`: Implement robust channel connector wave: Telegram and Discord
+- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0009`: Integrate Postiz self-hosted scheduling/API adapter
+- 2026-08-12T13:32:07+00:00 — `prime-agent` — `task_added` `T-0010`: Bridge and Kestra end-to-end connector verification
+- 2026-08-12T14:11:34+00:00 — `prime-agent` — `task_claimed` `T-0005`: claimed by local-agent
+- 2026-08-12T14:19:27+00:00 — `prime-agent` — `task_completed` `T-0005`: platforms_connectors/SOCIAL_CONNECTOR_ARCHITECTURE.md; platforms_connectors/base.py; platforms_connectors/bridge.py; website/kestra/publish_everywhere.yml; 27 pytest tests; ruff check passed; dry-run bridge returned 14 platform results
+- 2026-08-12T14:20:54+00:00 — `prime-agent` — `task_claimed` `T-0006`: claimed by local-agent
+- 2026-08-12T14:20:54+00:00 — `prime-agent` — `task_claimed` `T-0007`: claimed by local-agent
+- 2026-08-12T14:20:56+00:00 — `prime-agent` — `task_claimed` `T-0008`: claimed by local-agent
+- 2026-08-12T14:20:56+00:00 — `prime-agent` — `task_claimed` `T-0009`: claimed by local-agent
+- 2026-08-12T14:20:57+00:00 — `prime-agent` — `task_completed` `T-0006`: platforms_connectors/Instagram/publish.py; X/publish.py; Reddit/publish.py; LinkedIn/publish.py; mocked live tests; DRY_RUN tests; 29 pytest tests; ruff clean
+- 2026-08-12T14:20:57+00:00 — `prime-agent` — `task_completed` `T-0007`: platforms_connectors/Threads/publish.py; Pinterest/publish.py; Bluesky/publish.py; Mastodon/publish.py; mocked live tests; DRY_RUN tests; ruff clean
+- 2026-08-12T14:20:57+00:00 — `prime-agent` — `task_completed` `T-0008`: platforms_connectors/Telegram/publish.py; Discord/publish.py; Facebook/publish.py; mocked live tests; DRY_RUN tests; ruff clean
+- 2026-08-12T14:20:58+00:00 — `prime-agent` — `task_completed` `T-0009`: platforms_connectors/Postiz/publish.py; Postiz/docker-compose.example.yml; Postiz/README.md; optional official compose boundary; no-secret dry-run contract
+- 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_claimed` `T-0010`: claimed by local-agent
+- 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_completed` `T-0010`: HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "goal_id": "social-platform-connectors-20260812",
+  "status": "active",
+  "repository_root": "/Users/jeremy/Workspaces/Workspace-Jeremy/Mein Social Channel/Systemfehler_nach_DIN",
+  "user_outcome": "Baue und verifiziere produktionsreife, fail-closed Social-Platform-Connectoren unter platforms_connectors/ für Instagram, X, Reddit, LinkedIn, Threads, Pinterest, Bluesky, Mastodon, Telegram und Discord; ergänze passende wow-my-zsh SIN-Skills unter connectors/social-platforms/, dokumentiere und integriere Postiz als optionalen self-hosted Scheduling-/API-Layer; verbinde die Bridge/Kestra-Pipeline ohne Geheimnisse und beweise alles mit Tests und Dry-Run-E2E.",
+  "definition_of_done": [],
+  "functional_requirements": [],
+  "non_functional_requirements": [],
+  "quality_thresholds": {},
+  "explicit_non_goals": [],
+  "inferred_required_work": [],
+  "constraints": [],
+  "hard_external_blockers": [],
+  "completion_gates": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7",
+    "G8",
+    "G9",
+    "G10"
+  ],
+  "created_at": "2026-08-12T13:31:40.177288+00:00",
+  "updated_at": "2026-08-12T13:31:40.177288+00:00"
+}

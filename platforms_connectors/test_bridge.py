@@ -17,9 +17,24 @@ SAMPLE = {
 
 class BridgeTests(unittest.TestCase):
     def setUp(self):
-        os.environ.pop("PUBLISH_MODE", None)
-        os.environ.pop("ALLOW_REAL_POSTS", None)
-        os.environ.pop("YOUTUBE_API_LIVE_APPROVED", None)
+        for name in (
+            "PUBLISH_MODE",
+            "ALLOW_REAL_POSTS",
+            "YOUTUBE_API_LIVE_APPROVED",
+            "TIKTOK_BROWSER_LIVE_APPROVED",
+        ):
+            os.environ.pop(name, None)
+        self.addCleanup(self._clear_runtime_gates)
+
+    @staticmethod
+    def _clear_runtime_gates():
+        for name in (
+            "PUBLISH_MODE",
+            "ALLOW_REAL_POSTS",
+            "YOUTUBE_API_LIVE_APPROVED",
+            "TIKTOK_BROWSER_LIVE_APPROVED",
+        ):
+            os.environ.pop(name, None)
 
     def test_all_decision_adapters_dry_run(self):
         result = bridge.publish(SAMPLE)
@@ -32,7 +47,9 @@ class BridgeTests(unittest.TestCase):
 
     def test_tiktok_draft_uses_sin_browser_use_backend(self):
         result = bridge.publish(SAMPLE, ["tiktok"])
-        self.assertEqual(result["results"][0]["backend"], "SIN-Browser-Use CLI 3.0 / TikTok Studio")
+        self.assertEqual(
+            result["results"][0]["backend"], "SIN-Browser-Use CLI 3.0 / TikTok Studio"
+        )
         self.assertEqual(result["results"][0]["mode"], "DRAFT")
 
     def test_missing_required_field_rejected(self):
@@ -59,9 +76,24 @@ class BridgeTests(unittest.TestCase):
         os.environ["PUBLISH_MODE"] = "LIVE"
         os.environ["ALLOW_REAL_POSTS"] = "true"
         os.environ["TIKTOK_BROWSER_LIVE_APPROVED"] = "true"
-        with patch.object(bridge, "_publish_tiktok_browser", return_value={"video_id": "t"}) as publisher:
+        with patch.object(
+            bridge, "_publish_tiktok_browser", return_value={"video_id": "t"}
+        ) as publisher:
             result = bridge.publish(SAMPLE, ["tiktok"])
         publisher.assert_called_once()
+        self.assertEqual(result["mode"], "LIVE")
+
+    def test_official_live_requires_per_platform_approval(self):
+        os.environ["PUBLISH_MODE"] = "LIVE"
+        os.environ["ALLOW_REAL_POSTS"] = "true"
+        os.environ["INSTAGRAM_API_LIVE_APPROVED"] = "true"
+        with patch.object(
+            bridge,
+            "_publish_official",
+            return_value={"platform": "instagram", "published": True},
+        ) as publisher:
+            result = bridge.publish(SAMPLE, ["instagram"])
+        publisher.assert_called_once_with("instagram", result["payload"])
         self.assertEqual(result["mode"], "LIVE")
 
     def test_live_is_fail_closed_even_when_enabled(self):

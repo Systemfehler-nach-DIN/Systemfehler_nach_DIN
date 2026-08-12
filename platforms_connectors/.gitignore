@@ -5,3 +5,9 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# OAuth/cookie material must never enter Git
+*-oauth-token.json
+client_secret*.json
+cookies*.json
+cookies*.txt

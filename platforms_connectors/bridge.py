@@ -30,31 +30,123 @@ class Adapter:
 
 
 ADAPTERS: dict[str, Adapter] = {
-    "tiktok": Adapter("tiktok", "wkaisertexas/tiktok-uploader", ("TIKTOK_SESSIONID",), ("TIKTOK_COOKIE_PATH",)),
-    "instagram": Adapter("instagram", "subzeroid/instagrapi", ("INSTAGRAM_USERNAME", "INSTAGRAM_PASSWORD"), ("INSTAGRAM_SESSION_PATH",)),
+    "tiktok": Adapter(
+        "tiktok",
+        "wkaisertexas/tiktok-uploader",
+        ("TIKTOK_SESSIONID",),
+        ("TIKTOK_COOKIE_PATH",),
+    ),
+    "instagram": Adapter(
+        "instagram",
+        "subzeroid/instagrapi",
+        ("INSTAGRAM_USERNAME", "INSTAGRAM_PASSWORD"),
+        ("INSTAGRAM_SESSION_PATH",),
+    ),
     "reddit": Adapter("reddit", "playwright-web", (), ("REDDIT_STORAGE_STATE",)),
-    "x": Adapter("x", "d60/twikit", ("X_USERNAME", "X_EMAIL", "X_PASSWORD"), ("X_COOKIE_PATH",)),
-    "youtube": Adapter("youtube", "adasq/youtube-studio", (), ("YOUTUBE_COOKIE_PATH",)),
-    "mastodon": Adapter("mastodon", "Mastodon.py/toot", ("MASTODON_ACCESS_TOKEN", "MASTODON_BASE_URL")),
-    "bluesky": Adapter("bluesky", "MarshalX/atproto", ("BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD")),
-    "telegram": Adapter("telegram", "Telethon", ("TELEGRAM_API_ID", "TELEGRAM_API_HASH"), ("TELEGRAM_SESSION_PATH",)),
+    "x": Adapter(
+        "x", "d60/twikit", ("X_USERNAME", "X_EMAIL", "X_PASSWORD"), ("X_COOKIE_PATH",)
+    ),
+    "youtube": Adapter(
+        "youtube",
+        "YouTube Data API v3 (OAuth 2.0)",
+        ("YOUTUBE_OAUTH_TOKEN", "YOUTUBE_OAUTH_CLIENT_SECRETS"),
+        ("YOUTUBE_VIDEO_PATH",),
+    ),
+    "mastodon": Adapter(
+        "mastodon", "Mastodon.py/toot", ("MASTODON_ACCESS_TOKEN", "MASTODON_BASE_URL")
+    ),
+    "bluesky": Adapter(
+        "bluesky", "MarshalX/atproto", ("BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD")
+    ),
+    "telegram": Adapter(
+        "telegram",
+        "Telethon",
+        ("TELEGRAM_API_ID", "TELEGRAM_API_HASH"),
+        ("TELEGRAM_SESSION_PATH",),
+    ),
     "discord": Adapter("discord", "stdlib Incoming Webhook", ("DISCORD_WEBHOOK_URL",)),
-    "forums": Adapter("forums", "Discourse HTTP API / Playwright fallback", ("DISCOURSE_BASE_URL", "DISCOURSE_API_KEY", "DISCOURSE_API_USERNAME"), ("FORUM_STORAGE_STATE",)),
+    "forums": Adapter(
+        "forums",
+        "Discourse HTTP API / Playwright fallback",
+        ("DISCOURSE_BASE_URL", "DISCOURSE_API_KEY", "DISCOURSE_API_USERNAME"),
+        ("FORUM_STORAGE_STATE",),
+    ),
 }
 
 
 def live_allowed() -> bool:
-    return os.getenv("PUBLISH_MODE", "DRY_RUN").upper() == "LIVE" and os.getenv("ALLOW_REAL_POSTS", "false").lower() == "true"
+    return (
+        os.getenv("PUBLISH_MODE", "DRY_RUN").upper() == "LIVE"
+        and os.getenv("ALLOW_REAL_POSTS", "false").lower() == "true"
+    )
 
 
 def validate_payload(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("payload must be a JSON object")
     normalized = {field: payload.get(field, "") for field in REQUIRED_FIELDS}
-    missing = [field for field in ("title", "excerpt") if not str(normalized[field]).strip()]
+    # YouTube-only options are kept out of the common platform schema unless supplied.
+    if isinstance(payload.get("youtube"), dict):
+        normalized["youtube"] = dict(payload["youtube"])
+    missing = [
+        field for field in ("title", "excerpt") if not str(normalized[field]).strip()
+    ]
     if missing:
         raise ValueError("missing required fields: " + ", ".join(missing))
     return normalized
+
+
+def _publish_youtube_api(payload: dict[str, Any]) -> dict[str, Any]:
+    """Live-Upload über die offizielle API; Browser bleibt nur Fallback.
+
+    Diese Funktion wird ausschließlich mit YOUTUBE_API_LIVE_APPROVED=true
+    aktiviert. Der Zielkanal wird vor dem Upload verifiziert.
+    """
+    try:
+        from platforms_connectors.YouTube.youtube_api import YouTubeApi, YouTubeApiError
+    except ModuleNotFoundError:  # direct execution from platforms_connectors/
+        from YouTube.youtube_api import YouTubeApi, YouTubeApiError
+
+    options = payload.get("youtube") if isinstance(payload.get("youtube"), dict) else {}
+    video_path = (
+        options.get("video_path")
+        or os.getenv("YOUTUBE_VIDEO_PATH")
+        or payload.get("media_url")
+    )
+    if not video_path or str(video_path).startswith(("http://", "https://")):
+        raise ValueError(
+            "YouTube API benötigt eine lokale Videodatei (youtube.video_path oder YOUTUBE_VIDEO_PATH)"
+        )
+    privacy = str(
+        options.get("privacy") or os.getenv("YOUTUBE_PRIVACY", "private")
+    ).lower()
+    try:
+        api = YouTubeApi()
+        channel = api.channel()
+        expected = os.getenv("YOUTUBE_CHANNEL_ID", "").strip()
+        if expected and channel.get("id") != expected:
+            raise YouTubeApiError(
+                "OAuth-Konto ist nicht für den konfigurierten Zielkanal autorisiert"
+            )
+        result = api.upload(
+            str(video_path),
+            str(payload["title"]),
+            str(payload.get("body") or payload.get("excerpt") or ""),
+            privacy=privacy,
+            category_id=str(options.get("category_id", "22")),
+            publish_at=options.get("publish_at"),
+            made_for_kids=bool(options.get("made_for_kids", False)),
+        )
+    except YouTubeApiError as exc:
+        raise RuntimeError(str(exc)) from exc
+    return {
+        "platform": "youtube",
+        "backend": "YouTube Data API v3",
+        "mode": "LIVE",
+        "validated": True,
+        "video_id": result.get("id"),
+        "privacy": privacy,
+    }
 
 
 def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
@@ -64,10 +156,21 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
     if unknown:
         raise ValueError("unknown platforms: " + ", ".join(unknown))
     if live_allowed():
-        # Intentionally fail closed: enabling LIVE globally is not enough. Each adapter
-        # must later receive an explicitly reviewed live implementation before subprocess/
-        # network publishing is permitted.
-        raise PermissionError("LIVE publishing denied: adapter-specific live approval is not installed")
+        # Only the reviewed, official YouTube API path may publish. All other
+        # adapters remain fail-closed until they receive their own implementation.
+        if (
+            selected == ["youtube"]
+            and os.getenv("YOUTUBE_API_LIVE_APPROVED", "false").lower() == "true"
+        ):
+            return {
+                "ok": True,
+                "mode": "LIVE",
+                "payload": normalized,
+                "results": [_publish_youtube_api(normalized)],
+            }
+        raise PermissionError(
+            "LIVE publishing denied: adapter-specific live approval is not installed"
+        )
     return {
         "ok": True,
         "mode": "DRY_RUN",
@@ -89,7 +192,14 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         if self.path == "/health":
-            self._json(200, {"ok": True, "mode": "DRY_RUN" if not live_allowed() else "LIVE_LOCKED", "platforms": list(ADAPTERS)})
+            self._json(
+                200,
+                {
+                    "ok": True,
+                    "mode": "DRY_RUN" if not live_allowed() else "LIVE_LOCKED",
+                    "platforms": list(ADAPTERS),
+                },
+            )
         else:
             self._json(404, {"ok": False, "error": "not found"})
 
@@ -119,13 +229,27 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="SYSTEMFEHLER_nach_DIN social publishing bridge")
+    parser = argparse.ArgumentParser(
+        description="SYSTEMFEHLER_nach_DIN social publishing bridge"
+    )
     parser.add_argument("--host", default=os.getenv("SOCIAL_BRIDGE_HOST", "127.0.0.1"))
-    parser.add_argument("--port", type=int, default=int(os.getenv("SOCIAL_BRIDGE_PORT", "18765")))
-    parser.add_argument("--dry-run", action="store_true", help="validate a sample payload from stdin and exit")
+    parser.add_argument(
+        "--port", type=int, default=int(os.getenv("SOCIAL_BRIDGE_PORT", "18765"))
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="validate a sample payload from stdin and exit",
+    )
     args = parser.parse_args()
     if args.dry_run:
-        print(json.dumps(publish(json.load(__import__("sys").stdin)), ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                publish(json.load(__import__("sys").stdin)),
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     print(f"social bridge listening on {args.host}:{args.port} mode=DRY_RUN")

@@ -27,3 +27,8 @@ __pycache__/
 .sin-gpt-web/friction.jsonl
 .sin-gpt-web/handoff.md
 .sin-gpt-web/round-*.md
+# Lokale Analyse-Artefakte
+.sin/
+graphify-out/
+.ruff_cache/
+.pytest_cache/

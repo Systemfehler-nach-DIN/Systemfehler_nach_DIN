@@ -2,11 +2,21 @@
 
 Stand: 2026-08-11. Research only: keine Credentials erzeugt, keine echten Posts versendet.
 
+## YouTube-Identität und Chrome-Profil
+
+Für YouTube-Browserarbeit wird standardmäßig das eingeloggte SIN-Chrome-
+Profil `bot` mit der Identity-Lock-Identität
+`zukunftsorientierte.energie@gmail.com` / `Systemfehler_nach_DIN`
+wiederverwendet. Dadurch bleibt die Google-Anmeldung erhalten. Agenten öffnen
+für ihre Arbeit ein neues Fenster oder neue Tabs **innerhalb dieses Profils**;
+bestehende Operator-Tabs werden nicht geschlossen oder verändert. Ein anderes
+Chrome-Profil ist nur nach ausdrücklichem Benutzerbefehl zulässig.
+
 ## Architekturentscheidung
 
 Die spaetere `social_bridge_url` wird als lokaler Python-HTTP-Service mit einheitlicher Payload (`title`, `excerpt`, `body`, `media_url`, `url`, `cta`) gebaut. Standard ist immer `DRY_RUN`/`DRAFT`. Secrets und Session-Dateien kommen ausschliesslich ueber Environment bzw. externe Secret-Injection; niemals in Git, YAML, Markdown oder Logs.
 
-Fuer geschlossene Plattformen gilt: **Community-/Session-Weg zuerst, Playwright als kontrollierbarer Fallback, offizielle API nur als Fallback.** Fuer offene Protokolle oder explizit fuer Automation gedachte Webhooks/Bot-Schnittstellen wird der native offene Weg bevorzugt, weil Browser-Imitation dort keinen Vorteil bringt.
+Fuer geschlossene Plattformen gilt: **offizielle API zuerst; fuer Browser-Luecken SIN-Browser-Use (Browser Use CLI 3.0) im authentifizierten SIN-Chrome-Bot als schneller Session-Weg; Playwright nur als expliziter Legacy-Fallback.** Fuer offene Protokolle oder explizit fuer Automation gedachte Webhooks/Bot-Schnittstellen wird der native offene Weg bevorzugt, weil Browser-Imitation dort keinen Vorteil bringt.
 
 ## Entscheidungsmatrix
 
@@ -104,22 +114,17 @@ Gepruefte, aber verworfene Zusatzalternative: `Owen3H/twittxr` (MIT) ist cookie/
 
 ## YouTube
 
-**Primaer: `adasq/youtube-studio`** — https://github.com/adasq/youtube-studio
+**Primaer: offizielle YouTube Data API v3** — OAuth 2.0 und resumable upload.
 
-- MIT (GitHub-Lizenzangabe verifiziert).
-- Inoffizielle YouTube-Studio-Endpunkte mit Google/YouTube-Webcookies und Session-Token.
-- Video-Upload, Metadaten und Privacy ohne `videos.insert`-Quota-Kosten.
-- Node.js, portabel auf macOS/Linux.
-- Risiko: private Studio-Endpunkte und kurzlebige Session-Werte koennen sich aendern.
+- Stabiler, dokumentierter Upload für Video, Metadaten, Sichtbarkeit, Planung, Kommentare, Moderation, Thumbnails und Playlist-Operationen.
+- OAuth-Token statt langlebiger Browser-Cookies; Kanal wird vor Live-Upload verifiziert.
+- `YouTube/youtube_api.py` ist stdlib-only und bleibt damit auf macOS und Linux/OCI portabel.
+- Standard `PRIVATE`; Live ist zusätzlich über `YOUTUBE_API_LIVE_APPROVED=true` fail-closed geschützt.
 
-**Alternative: eigener Playwright-YouTube-Studio-Adapter** — Apache-2.0.
+**Browser-Fallback:** `YouTube/youtube_community.py` bleibt ausschließlich für Funktionen, die die Data API nicht anbietet (insbesondere Community-Posts und bestimmte Studio-Aktionen). Sein Standard-Backend ist SIN-Browser-Use CLI 3.0 im SIN-Chrome-Bot; Playwright ist nur ein expliziter Legacy-Fallback. Er ist nicht der Upload- oder Kommentar-Primärpfad.
 
-- Bestehende Browser-Session; mehrstufiger Studio-Webupload.
-- Keine reverse-engineerten Request-Schemas im eigenen Adapter, aber UI-/2FA-Fragilitaet.
+**T-0003:** API-Adapter als primärer YouTube-Publisher integrieren; OAuth-Client- und Token-Dateien nur über lokale Pfade konsumieren, nie Inhalte loggen. Keine automatische Google-Cloud-Projekt- oder Credential-Erstellung.
 
-**Offizieller Fallback:** YouTube Data API v3 / `google-api-python-client` bzw. `porjo/youtubeuploader`.
-
-**T-0003:** `youtube-studio` hinter Adaptergrenze; bei lokaler Inkompatibilitaet automatisch auf Playwright-Implementierung wechseln. Vorhandenen `YOUTUBE_COOKIE_PATH` nur als Pfad konsumieren, niemals Cookie-Inhalt loggen.
 
 ## Mastodon
 

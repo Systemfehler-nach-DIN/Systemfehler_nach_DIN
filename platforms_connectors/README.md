@@ -31,12 +31,27 @@ Publish/Dry-Run: `POST /publish` mit der Standard-Payload. Optional kann ein Wra
 | Instagram | `subzeroid/instagrapi` | `INSTAGRAM_*` / `INSTAGRAM_SESSION_PATH` |
 | Reddit | eigener Playwright-Webadapter | `REDDIT_STORAGE_STATE` |
 | X | `d60/twikit` | `X_*` / `X_COOKIE_PATH` |
-| YouTube | `adasq/youtube-studio` | `YOUTUBE_COOKIE_PATH` (lokal z. B. `~/.config/sin-youtube/cookies.json`) |
+| YouTube | offizieller YouTube Data API v3-Adapter (OAuth 2.0, resumable upload) | `YOUTUBE_OAUTH_CLIENT_SECRETS`, `YOUTUBE_OAUTH_TOKEN`, `YOUTUBE_VIDEO_PATH` |
 | Mastodon | `Mastodon.py` / `toot` | `MASTODON_*` |
 | Bluesky | `MarshalX/atproto` | `BLUESKY_*` |
 | Telegram | `Telethon` | `TELEGRAM_*` / `TELEGRAM_SESSION_PATH` |
 | Discord | stdlib Incoming Webhook | `DISCORD_WEBHOOK_URL` |
 | Foren | Discourse HTTP / Playwright fallback | `DISCOURSE_*` / `FORUM_STORAGE_STATE` |
+
+### YouTube API
+
+Die Bridge nutzt für Uploads, Metadaten, Sichtbarkeit und Planung ausschließlich `YouTube/youtube_api.py` und die offizielle YouTube Data API v3. Browser/Cookies bleiben nur als Fallback für Community-Funktionen, die die API nicht anbietet. Standard ist `PRIVATE`; Live-Upload benötigt zusätzlich `PUBLISH_MODE=LIVE`, `ALLOW_REAL_POSTS=true` und die explizite Freigabe `YOUTUBE_API_LIVE_APPROVED=true`.
+
+Einmalige Einrichtung mit einer Google-Cloud-OAuth-Clientdatei (Desktop-App):
+
+```bash
+python3 YouTube/youtube_api.py --authorize --client-secrets ~/.config/google/sin-google-apps-oauth-client.json
+python3 YouTube/youtube_api.py --channel --token ~/.config/sin-youtube/youtube-oauth-token.json
+```
+
+Die erzeugte Token-Datei bleibt lokal und erhält Modus `0600`. Für Kommentare und Moderation muss der Token zusätzlich den Scope `youtube.force-ssl` besitzen; nach Scope-Änderungen erneut `--authorize` ausführen. Unterstützt werden Kommentare lesen/schreiben/antworten/bearbeiten/löschen, Moderationsstatus, Video-Metadaten, Thumbnails und Playlist-Items. Cloud-Projekt- oder Credential-Erstellung erfolgt nicht automatisch.
+
+Community-Posts sind nicht Teil der öffentlichen Data API. `YouTube/youtube_community.py` nutzt standardmäßig SIN-Browser-Use (Browser Use CLI 3.0) über den eingeloggten SIN-Chrome-`bot`; der Legacy-Playwright-Weg bleibt mit `--backend playwright` explizit auswählbar. Live bleibt fail-closed und benötigt `PUBLISH_MODE=LIVE`, `ALLOW_REAL_POSTS=true` und `YOUTUBE_BROWSER_LIVE_APPROVED=true`; standardmäßig ist DRY_RUN.
 
 Die Python-Bridge selbst benutzt nur die Standardbibliothek und laeuft damit auf macOS/ARM64 und Linux/OCI. Die eigentlichen Community-Clients bleiben optionale Adapter-Abhaengigkeiten und werden erst fuer einen explizit freigegebenen Live-Publisher installiert/aktiviert.
 
@@ -45,6 +60,7 @@ Die Python-Bridge selbst benutzt nur die Standardbibliothek und laeuft damit auf
 ```bash
 cd platforms_connectors
 python3 -m unittest -v test_bridge.py
+python3 -m pytest -q YouTube
 ```
 
 Die Tests sind offline und pruefen alle zehn Plattformen, Pflichtfeldvalidierung, unbekannte Plattformen und den Default-Deny fuer LIVE.

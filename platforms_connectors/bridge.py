@@ -74,9 +74,7 @@ ADAPTERS: dict[str, Adapter] = {
     "bluesky": Adapter(
         "bluesky", "Bluesky AT Protocol", ("BLUESKY_HANDLE", "BLUESKY_APP_PASSWORD")
     ),
-    "mastodon": Adapter(
-        "mastodon", "Mastodon REST API", ("MASTODON_ACCESS_TOKEN", "MASTODON_BASE_URL")
-    ),
+    "mastodon": Adapter("mastodon", "Mastodon REST API", ("MASTODON_ACCESS_TOKEN",)),
     "telegram": Adapter(
         "telegram", "Telegram Bot API", ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID")
     ),
@@ -84,7 +82,7 @@ ADAPTERS: dict[str, Adapter] = {
     "postiz": Adapter(
         "postiz",
         "Postiz self-hosted API (optional)",
-        ("POSTIZ_API_TOKEN", "POSTIZ_API_URL"),
+        ("POSTIZ_API_TOKEN",),
     ),
 }
 
@@ -259,14 +257,45 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
                 "payload": normalized,
                 "results": [_publish_youtube_api(normalized)],
             }
-        # Multi-platform live publishing is allowed only when every selected
-        # target has an explicit approval and an official module.
+        # Multi-platform live publishing is fail-closed before *any* network
+        # request: approvals, runtime configuration and payload validation for
+        # every target are checked first, preventing partial fan-out.
         if all(name in OFFICIAL_MODULES for name in selected):
+            import importlib
+
+            missing_approvals = [
+                name
+                for name in selected
+                if os.getenv(f"{name.upper()}_API_LIVE_APPROVED", "false").lower()
+                != "true"
+            ]
+            if missing_approvals:
+                raise PermissionError(
+                    "LIVE publishing denied: missing explicit approval for "
+                    + ", ".join(missing_approvals)
+                )
+            modules = {
+                name: importlib.import_module(OFFICIAL_MODULES[name])
+                for name in selected
+            }
+            for name, adapter in ((name, ADAPTERS[name]) for name in selected):
+                missing_config = [
+                    key for key in adapter.auth_env if not os.getenv(key, "").strip()
+                ]
+                if missing_config:
+                    raise PermissionError(
+                        f"LIVE publishing denied: missing runtime configuration for {name}: "
+                        + ", ".join(missing_config)
+                    )
+                modules[name].publish(normalized, dry_run=True)
             return {
                 "ok": True,
                 "mode": "LIVE",
                 "payload": normalized,
-                "results": [_publish_official(name, normalized) for name in selected],
+                "results": [
+                    modules[name].publish(normalized, dry_run=False)
+                    for name in selected
+                ],
             }
         raise PermissionError(
             "LIVE publishing denied: adapter-specific live approval is not installed"

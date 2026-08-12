@@ -87,13 +87,15 @@ class BridgeTests(unittest.TestCase):
         os.environ["PUBLISH_MODE"] = "LIVE"
         os.environ["ALLOW_REAL_POSTS"] = "true"
         os.environ["INSTAGRAM_API_LIVE_APPROVED"] = "true"
-        with patch.object(
-            bridge,
-            "_publish_official",
+        os.environ["INSTAGRAM_ACCESS_TOKEN"] = "test-token"
+        os.environ["INSTAGRAM_USER_ID"] = "test-user"
+        with patch(
+            "platforms_connectors.Instagram.publish.publish",
             return_value={"platform": "instagram", "published": True},
         ) as publisher:
             result = bridge.publish(SAMPLE, ["instagram"])
-        publisher.assert_called_once_with("instagram", result["payload"])
+        self.assertEqual(publisher.call_count, 2)
+        self.assertEqual(publisher.call_args_list[-1].kwargs, {"dry_run": False})
         self.assertEqual(result["mode"], "LIVE")
 
     def test_live_is_fail_closed_even_when_enabled(self):

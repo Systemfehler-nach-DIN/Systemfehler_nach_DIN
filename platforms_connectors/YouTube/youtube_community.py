@@ -96,6 +96,19 @@ class CommunityBrowser:
             return str(candidate)
         raise YouTubeBrowserError("SIN-Browser-Use-Wrapper nicht gefunden")
 
+    @staticmethod
+    def _identity_preflight() -> None:
+        configured = os.getenv("SIN_BROWSER_USE_BIN")
+        command = Path(configured).expanduser() if configured else Path.home() / ".local" / "bin" / "sin-browser-use"
+        if not command.exists():
+            raise YouTubeBrowserError(f"SIN-Browser-Use nicht gefunden: {command}")
+        preflight = command.parent.parent / "scripts" / "identity_preflight.py"
+        if not preflight.exists():
+            return
+        result = subprocess.run(["python3", str(preflight)], capture_output=True, text=True, timeout=30)
+        if result.returncode:
+            raise YouTubeBrowserError("SIN-Chrome-Identity-Preflight fehlgeschlagen")
+
     def _create_post_browser_use(self, text: str) -> dict[str, Any]:
         """Run the live fallback through the persistent Browser Use CLI worker."""
         url = f"https://www.youtube.com/channel/{self.channel_id}/community"
@@ -151,6 +164,7 @@ class CommunityBrowser:
                 "text_length": len(text),
             }
         if self.backend == "browser-use":
+            self._identity_preflight()
             if (
                 os.getenv("PUBLISH_MODE", "DRY_RUN").upper() != "LIVE"
                 or os.getenv("ALLOW_REAL_POSTS", "false").lower() != "true"

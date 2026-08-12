@@ -43,10 +43,16 @@ Direkte Seiten:
 - Die erforderlichen Instagram-Berechtigungen wurden in der App-Konfiguration angelegt: `instagram_business_basic`, `instagram_business_manage_comments`, `instagram_business_manage_messages`. Für Live-Zugriff ist weiterhin App Review erforderlich.
 - Instagram-Konto `@systemfehler_nach_din` wurde dem Business-Portfolio hinzugefügt. Sichtbar verifizierte Konto-ID: `17841440701410225`; Eigentümer: Minime.
 - Use Case **Seiten verwalten (Pages API)** wurde in OpenSIN aktiviert.
-- Das im Facebook-Konto verwaltete Profil **ZoE GmbH** ist sichtbar verifiziert (Seiten-ID `100085541960065`). Die Seite ist als alte Business-Präsenz identifiziert und zur Löschung vorbereitet; Meta verlangt im letzten Schritt die manuelle Passworteingabe. Die Löschung ist daher noch nicht bestätigt.
+- Das im Facebook-Konto verwaltete Profil **ZoE GmbH** (Seiten-ID `100085541960065`) wurde laut Nutzer am 2026-08-12 gelöscht. Der zuvor verwendete Facebook-Link liefert nun „Entweder funktioniert der von dir angeklickte Link nicht oder die Seite wurde entfernt“; dies ist als Löschbestätigung dokumentiert, nicht als neuer Login-Blocker.
 - Das professionelle Facebook-Profil **Systemfehler Nach Din** ist sichtbar verifiziert unter `https://www.facebook.com/Systemfehler.nach.DIN/`; sichtbare Profil-ID `100085502655496`, Kategorie/Status: Professional Mode / Digital Creator.
 - Der Business-Suite-Dialog „Vorhandene Facebook-Seite hinzufügen“ findet die Professional-Mode-Profil-ID `100085502655496` nicht („Keine Facebook-Seiten gefunden“). Daraus folgt: Meta behandelt dieses Profil in diesem Dialog nicht als Facebook-Seite. Es darf nicht als Seite-ID eingetragen oder durch eine falsche ZoE-ID ersetzt werden.
 - Instagram-Tester-/Token-Flow öffnet den offiziellen Instagram-Login. Kein Token, OAuth-Code oder Passwort wurde ausgelesen.
+
+### Meta Violations-&-Appeals-Prüfung (2026-08-12)
+
+- Der vom Nutzer genannte Pfad `https://developers.facebook.com/apps/2283580245716951/violations_and_appeals/` wurde im authentifizierten SIN-Chrome geöffnet. Meta zeigt „Seite nicht gefunden“ und fordert zur Suche nach der App-ID auf. Die App ist im aktuellen App-Inventar nicht vorhanden; dort ist nur OpenSIN (`996299283432639`) sichtbar.
+- `https://developers.facebook.com/required-actions/` wurde anschließend geöffnet und zeigt aktuell **„Aktuell gibt es keine erforderlichen Maßnahmen.“**
+- Ergebnis: Keine zugängliche Violation/Appeal-Aufgabe für OpenSIN und kein bearbeitbarer Appeal für App-ID `2283580245716951` gefunden. Die genannte ID und dieser Prüfstatus wurden als nicht-geheime Metadaten in Infisical gespeichert.
 
 ### Infisical-Metadaten
 

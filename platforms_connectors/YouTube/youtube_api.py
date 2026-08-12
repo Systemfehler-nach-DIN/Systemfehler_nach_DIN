@@ -315,6 +315,91 @@ class YouTubeApi:
             raise YouTubeApiError("Video-ID nicht gefunden oder nicht zugreifbar")
         return items[0]
 
+    def search(
+        self,
+        query: str,
+        *,
+        resource_type: str = "video",
+        channel_id: str | None = None,
+        max_results: int = 25,
+        page_token: str | None = None,
+    ) -> dict[str, Any]:
+        """Sucht Videos, Kanäle oder Playlists über die offizielle API."""
+        if resource_type not in {"video", "channel", "playlist"}:
+            raise YouTubeApiError("resource_type muss video, channel oder playlist sein")
+        params: dict[str, Any] = {
+            "part": "snippet",
+            "q": query,
+            "type": resource_type,
+            "maxResults": min(max(1, max_results), 50),
+        }
+        if channel_id:
+            params["channelId"] = channel_id
+        if page_token:
+            params["pageToken"] = page_token
+        return self.request_json("GET", f"{API_ROOT}/search?{urllib.parse.urlencode(params)}")
+
+    def list_playlists(
+        self, *, mine: bool = True, channel_id: str | None = None,
+        max_results: int = 50, page_token: str | None = None
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {
+            "part": "snippet,status,contentDetails",
+            "maxResults": min(max(1, max_results), 50),
+        }
+        if mine:
+            params["mine"] = "true"
+        elif channel_id:
+            params["channelId"] = channel_id
+        else:
+            raise YouTubeApiError("list_playlists benötigt mine oder channel_id")
+        if page_token:
+            params["pageToken"] = page_token
+        return self.request_json("GET", f"{API_ROOT}/playlists?{urllib.parse.urlencode(params)}")
+
+    def create_playlist(
+        self, title: str, description: str = "", privacy: str = "private"
+    ) -> dict[str, Any]:
+        if privacy not in {"private", "unlisted", "public"}:
+            raise YouTubeApiError("privacy muss private, unlisted oder public sein")
+        body = {
+            "snippet": {"title": title, "description": description},
+            "status": {"privacyStatus": privacy},
+        }
+        return self.request_json("POST", f"{API_ROOT}/playlists?part=snippet,status", body)
+
+    def update_playlist(
+        self, playlist_id: str, *, title: str | None = None,
+        description: str | None = None, privacy: str | None = None
+    ) -> dict[str, Any]:
+        current = self.request_json(
+            "GET", f"{API_ROOT}/playlists?part=snippet,status&id={urllib.parse.quote(playlist_id)}"
+        )
+        items = current.get("items", [])
+        if not items:
+            raise YouTubeApiError("Playlist-ID nicht gefunden oder nicht zugreifbar")
+        item = items[0]
+        snippet = dict(item.get("snippet", {}))
+        snippet = {key: snippet.get(key, "") for key in ("title", "description")}
+        status = {"privacyStatus": item.get("status", {}).get("privacyStatus", "private")}
+        if title is not None:
+            snippet["title"] = title
+        if description is not None:
+            snippet["description"] = description
+        if privacy is not None:
+            if privacy not in {"private", "unlisted", "public"}:
+                raise YouTubeApiError("privacy muss private, unlisted oder public sein")
+            status["privacyStatus"] = privacy
+        return self.request_json(
+            "PUT", f"{API_ROOT}/playlists?part=snippet,status",
+            {"id": playlist_id, "snippet": snippet, "status": status},
+        )
+
+    def delete_playlist(self, playlist_id: str) -> dict[str, Any]:
+        return self.request_json(
+            "DELETE", f"{API_ROOT}/playlists?id={urllib.parse.quote(playlist_id)}"
+        )
+
     def list_comment_threads(
         self, video_id: str, max_results: int = 100, page_token: str | None = None
     ) -> dict[str, Any]:
@@ -577,6 +662,10 @@ def main() -> int:
         "--inspect", metavar="VIDEO_ID", help="Video prüfen, ohne zu ändern"
     )
     parser.add_argument("--video")
+    parser.add_argument("--search", metavar="QUERY")
+    parser.add_argument("--search-type", choices=["video", "channel", "playlist"], default="video")
+    parser.add_argument("--search-channel")
+    parser.add_argument("--max-results", type=int, default=25)
     parser.add_argument("--title")
     parser.add_argument("--description")
     parser.add_argument("--list-comments", metavar="VIDEO_ID")
@@ -598,7 +687,12 @@ def main() -> int:
     parser.add_argument("--thumbnail-video", metavar="VIDEO_ID")
     parser.add_argument("--thumbnail")
     parser.add_argument("--playlist-id", metavar="PLAYLIST_ID")
+    parser.add_argument("--playlists", action="store_true", help="eigene Playlists auflisten")
     parser.add_argument("--playlist-list", metavar="PLAYLIST_ID")
+    parser.add_argument("--playlist-create", action="store_true")
+    parser.add_argument("--playlist-update", metavar="PLAYLIST_ID")
+    parser.add_argument("--playlist-delete", metavar="PLAYLIST_ID")
+    parser.add_argument("--playlist-description", default="")
     parser.add_argument("--playlist-add-video", metavar="VIDEO_ID")
     parser.add_argument("--playlist-remove-item", metavar="PLAYLIST_ITEM_ID")
     parser.add_argument(
@@ -635,6 +729,27 @@ def main() -> int:
                     ensure_ascii=False,
                 )
             )
+            return 0
+        if args.search:
+            print(json.dumps(api.search(args.search, resource_type=args.search_type,
+                channel_id=args.search_channel, max_results=args.max_results), ensure_ascii=False))
+            return 0
+        if args.playlists:
+            print(json.dumps(api.list_playlists(max_results=args.max_results), ensure_ascii=False))
+            return 0
+        if args.playlist_create:
+            if not args.title:
+                parser.error("--playlist-create benötigt --title")
+            print(json.dumps(api.create_playlist(args.title, args.playlist_description,
+                args.privacy or "private"), ensure_ascii=False))
+            return 0
+        if args.playlist_update:
+            print(json.dumps(api.update_playlist(args.playlist_update, title=args.title,
+                description=args.playlist_description if args.playlist_description else None,
+                privacy=args.privacy), ensure_ascii=False))
+            return 0
+        if args.playlist_delete:
+            print(json.dumps(api.delete_playlist(args.playlist_delete), ensure_ascii=False))
             return 0
         if args.list_comments:
             print(

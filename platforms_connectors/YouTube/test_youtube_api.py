@@ -69,6 +69,32 @@ class YouTubeApiTests(unittest.TestCase):
             self.assertIn("comments?part=snippet", urls[1])
             self.assertIn("setModerationStatus", urls[-1])
 
+    def test_search_and_playlist_lifecycle_use_official_resources(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            client = root / "client.json"
+            token = root / "token.json"
+            client.write_text(json.dumps({"installed": {"client_id": "id", "client_secret": "secret"}}))
+            token.write_text(json.dumps({"access_token": "access", "expires_at": 4102444800}))
+            api = youtube_api.YouTubeApi(str(client), str(token))
+            requests = []
+
+            def fake_request(req, timeout=60):
+                requests.append(req)
+                if req.method == "GET" and "playlists?part" in req.full_url:
+                    return 200, {}, b'{"items":[{"id":"pl","snippet":{"title":"Old","description":""},"status":{"privacyStatus":"private"}}]}'
+                return 200, {}, b'{"items":[]}'
+
+            with patch.object(youtube_api, "_request", side_effect=fake_request):
+                api.search("sin", resource_type="video")
+                api.list_playlists()
+                api.update_playlist("pl", title="New")
+                api.delete_playlist("pl")
+            self.assertIn("/search?", requests[0].full_url)
+            self.assertIn("/playlists?part=snippet%2Cstatus%2CcontentDetails", requests[1].full_url)
+            self.assertEqual(requests[2].method, "GET")
+            self.assertEqual(requests[-1].method, "DELETE")
+
     def test_upload_uses_resumable_protocol(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)

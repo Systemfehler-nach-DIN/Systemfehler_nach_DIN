@@ -3,7 +3,8 @@
 Alle YouTube-spezifischen Adapter und Offline-Tests liegen in diesem Verzeichnis.
 
 - `youtube_api.py` — offizieller YouTube Data API v3-Adapter (OAuth, Uploads,
-  Metadaten, Kommentare, Moderation, Thumbnails, Playlists).
+  Metadaten, Suche, Kommentare, Moderation, Thumbnails und vollständige
+  Playlist-Verwaltung).
 - `youtube_community.py` — Community-/Studio-Fallback über SIN-Browser-Use CLI
   3.0 im authentifizierten SIN-Chrome-`bot`; Playwright nur explizit als Legacy-
   Backend.

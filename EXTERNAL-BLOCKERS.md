@@ -25,3 +25,5 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 - Meta App-ID `2283580245716951`: Der direkte `violations_and_appeals`-Link liefert „Seite nicht gefunden“; im App-Inventar ist nur OpenSIN sichtbar und `required-actions` meldet aktuell keine erforderlichen Maßnahmen. Es gibt deshalb derzeit keinen zugänglichen Appeal-Workflow für diese ID.
 
 - Instagram OAuth-Testflow: Die sichtbare Session `systemfehler_nach_din` erreicht den offiziellen OAuth-Endpunkt, wird aber mit `Entwickler-Rolle nicht ausreichend` abgewiesen. Eine gültige Instagram-Tester-/App-Rollen-Zuordnung fehlt noch; keine Credentials oder OAuth-Codes wurden verarbeitet.
+
+- Instagram-Tester-Zuordnung: OpenSIN → App-Rollen → Instagram-Tester → OpenSIN → `systemfehler_nach_din` wurde versucht; Meta blockiert mit „A Facebook Developer Account is required to be added to an app. Test users can't be added.“ OAuth endet zusätzlich mit „Entwickler-Rolle nicht ausreichend“.

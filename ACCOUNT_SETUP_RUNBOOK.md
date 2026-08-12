@@ -73,6 +73,12 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 - Der Nutzer autorisiert die Entfernung/Löschung der **konkreten alten ZoE-GmbH-Facebook-Seite**, nicht eines persönlichen Facebook-Profils. Vor jeder destruktiven Aktion muss die Zielseite anhand Name und sichtbarer URL/ID nochmals eindeutig bestätigt werden.
 - Ziel für Meta Business Suite ist das professionelle Facebook-Profil bzw. die Facebook-Präsenz `Systemfehler.nach.DIN`; Meta kann professionelle Profile technisch anders behandeln als Facebook-Seiten. Es darf keine persönliche Identität oder ein falsches Business-Asset gelöscht werden.
 
+### Meta-Instagram-Tester-Welle „Lets go“ (2026-08-12)
+
+- Instagram API Setup `OpenSIN-IG` → `Konto hinzufügen` → offizieller Instagram-OAuth wurde erneut geöffnet. Die authentifizierte Profil-Session `systemfehler_nach_din` ist nicht automatisch als Tester berechtigt; der Flow endet mit `Entwickler-Rolle nicht ausreichend`.
+- In OpenSIN → App-Rollen → Tester → Personen hinzufügen → zusätzliche Rolle `Instagram-Tester` → App `OpenSIN` wurde der Benutzername `systemfehler_nach_din` eingegeben. Meta antwortete sichtbar: `A Facebook Developer Account is required to be added to an app. Test users can't be added.` Es wurde nichts hinzugefügt und kein OAuth-Code/Token verarbeitet.
+- Ergebnis: Der direkte Tester-Flow ist durch Meta-Account-Rollen/Developer-Account-Policy blockiert. Der nächste zulässige Weg ist, den bereits angemeldeten Facebook-Nutzer als bestätigten Meta Developer Account zu registrieren/verifizieren oder Meta Business Suite/App-Rollen so zu aktualisieren, dass dieser Business-Nutzer als Developer/Instagram-Tester zulässig ist. SMS/Kreditkarte/Agreement/2FA bleiben manuelle externe Gates.
+
 ## Status und nächster Schritt je Plattform
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |

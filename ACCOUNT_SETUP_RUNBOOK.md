@@ -87,6 +87,14 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 - Im OpenSIN-Dashboard ist nun sichtbar: `Rollen` mit 1 Administrator, `Testnutzer` mit 1 ungelesenen Benachrichtigung sowie Anforderungen/Use Cases. Das beweist Developer-Dashboard-Zugriff, aber noch nicht die Instagram-Tester-Berechtigung.
 - Die Instagram-Tester-Zuordnung bleibt wegen Meta-Fehler `A Facebook Developer Account is required ... Test users can't be added` / `Entwickler-Rolle nicht ausreichend` offen.
 
+### Meta-Unternehmensverifizierung (2026-08-12)
+
+- OpenSIN → Verifizierung zeigt Business-Portfolio **Minime**, ID `1786125979186446`, Status **Nicht verifiziert**, „Berechtigt zur Verifizierung“.
+- Offizieller Business-Suite-Sicherheitsbereich: `https://business.facebook.com/latest/settings/security_center/?business_id=1786125979186446`. Use Case ist „App verlangt Zugriff auf Berechtigungen für Meta for Developers“.
+- `Verifizierung starten` öffnet den Flow „Deine Identität nachweisen“ und verlangt den Upload eines Ausweisfotos (mindestens 1500×1000 Pixel), danach `Senden`. Es wurde kein Ausweis hochgeladen und nichts abgesendet.
+- Das ist ein externer Identitätsnachweis mit dauerhaftem Sicherheits-/Datenschutzrisiko und bleibt bis zur ausdrücklichen Freigabe bzw. manuellen Durchführung durch den Kontoinhaber blockiert. Keine Umgehung, kein Dokumenten-Upload und keine erfundenen Unternehmensdaten.
+- Vor dem nächsten Schritt müssen außerdem die offiziellen Unternehmensdaten (Telefonnummer, Website, ggf. Registerdaten) im Business-Verifizierungsflow korrekt eingegeben und mit dem privaten Life Record abgeglichen werden.
+
 ## Status und nächster Schritt je Plattform
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |

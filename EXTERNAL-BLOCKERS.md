@@ -29,3 +29,5 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 - Instagram-Tester-Zuordnung: OpenSIN → App-Rollen → Instagram-Tester → OpenSIN → `systemfehler_nach_din` wurde versucht; Meta blockiert mit „A Facebook Developer Account is required to be added to an app. Test users can't be added.“ OAuth endet zusätzlich mit „Entwickler-Rolle nicht ausreichend“.
 
 - Meta Developer-Registrierung: Offizielle Dokumentation und `/async/registration` geprüft. OpenSIN-Dashboard-/App-Erstellungszugriff ist vorhanden; der Endpunkt leitet zurück ins Developer Center. Eine neue App wurde nicht erstellt. Der verbleibende Blocker ist die Instagram-Tester-Rollenpolicy, nicht der allgemeine Dashboard-Zugriff.
+
+- Meta-Unternehmensverifizierung: Minime (`1786125979186446`) ist zur Verifizierung berechtigt, aber nicht verifiziert. Der Flow verlangt „Deine Identität nachweisen“ mit Ausweisfoto (mindestens 1500×1000) und anschließender Übermittlung. Kein Dokument wurde hochgeladen oder gesendet; dieser Identitätsnachweis ist der aktuelle externe Gate für erweiterten Meta-API-Zugriff.

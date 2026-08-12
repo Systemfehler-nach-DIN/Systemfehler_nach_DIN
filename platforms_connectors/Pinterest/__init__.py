@@ -1,0 +1,1 @@
+"""Pinterest social connector package."""

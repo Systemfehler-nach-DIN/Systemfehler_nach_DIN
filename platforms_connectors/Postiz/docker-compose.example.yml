@@ -1,0 +1,10 @@
+# Optionales lokales Postiz-Deployment; keine echten Secrets eintragen.
+services:
+  postiz:
+    image: ghcr.io/gitroomhq/postiz-app:latest
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: ${POSTIZ_DATABASE_URL:?set in runtime secret store}
+      REDIS_URL: ${POSTIZ_REDIS_URL:?set in runtime secret store}
+    restart: unless-stopped

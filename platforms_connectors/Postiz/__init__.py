@@ -1,0 +1,1 @@
+"""Postiz social connector package."""

@@ -111,6 +111,18 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 - Der Token liegt lokal mit Dateirechten `0600` unter `~/.config/sin-youtube/accounts/systemfehler-nach-din-oauth-token.json`, wird wegen Identitätsabweichung nicht verwendet und nicht in Logs/Chat ausgegeben. Nicht löschen oder rotieren, bevor die Zuordnung geklärt ist.
 - Nächster sicherer Schritt: OAuth im richtigen Google-/Brand-Account erneut autorisieren und die Kanal-ID vor jeder weiteren Nutzung exakt gegen `UCBWRl7VXRdy0kcsoV7or7Uw` prüfen.
 
+### Buffer-Übernahme und Kanalinventar (2026-08-12)
+
+- Offizielle Buffer CLI-Doku geprüft: `https://developers.buffer.com/guides/cli.html`. CLI `@bufferapp/cli` Version `1.2.0` installiert; API-Key wird ausschließlich zur Laufzeit aus Infisical als `BUFFER_API_KEY` injiziert.
+- Offizielle MCP-Doku geprüft: `https://developers.buffer.com/guides/integrations/mcp.html`. MCP-Endpunkt ist `https://mcp.buffer.com/mcp`; Authentifizierung erfolgt über `Authorization: Bearer <API-Key>`. Kein Token wird in Repo oder Chat abgelegt.
+- Buffer-Account 1 / Organisation `6a7cdff6ba121c15135353f4`: Instagram `systemfehler_nach_din`, Threads `systemfehler_nach_din`, LinkedIn `Systemfehler nach DIN`; alle `isDisconnected=false`.
+- Buffer-Account 2 / Organisation `6a7ce320460832fbfcda7d98`: Facebook `Systemfehler.nach.DIN`, Bluesky `Systemfehler_nach_DIN`, Mastodon `systemfehler_nach_DIN`; alle `isDisconnected=false`. Facebook-Seiten-ID laut Buffer: `1235484672983555` (neue Seite, nicht das frühere ZoE-Asset).
+- Buffer-Account 3 / Organisation `6a7ce8391c7f43f54a9c0b59`: Pinterest `Systemfehler_nach_DIN`, X/Twitter `Fehler_nach_DIN`; beide `isDisconnected=false`.
+- Die drei API-Schlüssel und Organisations-/Kanal-Metadaten liegen in Infisical unter `BUFFER_*`.
+- Buffer-Free laut offizieller Pricing-Seite: bis zu 3 Kanäle je Account, 10 geplante Posts je Kanal (auffüllbar), 100 Ideen, 1 Nutzer, 1 API-Key und 3.000 API-Anfragen/Monat. Drei Free-Accounts decken damit die 8 verifizierten Buffer-Kanäle ab, aber nicht unbegrenzt.
+- Buffer API-Doku listet aktuell Posts für Instagram, Threads, LinkedIn, X, Facebook, Mastodon, YouTube, Pinterest und Bluesky. TikTok ist im Buffer-Produkt/Preismodell gelistet, aber nicht in der aktuellen API-Liste und in keinem der drei Inventare vorhanden. TikTok bleibt daher beim eigenen SIN-Browser-/Studio-Adapter.
+- Medien müssen für Buffer über eine stabile, öffentlich erreichbare HTTPS-URL bereitgestellt werden; private Google-Drive-/TeraBox-Links und ablaufende signierte URLs sind für geplante Posts ungeeignet.
+
 ## Status und nächster Schritt je Plattform
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |

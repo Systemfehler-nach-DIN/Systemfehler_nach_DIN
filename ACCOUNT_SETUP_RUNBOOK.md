@@ -103,6 +103,14 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 - Das ist ein externer Identitätsnachweis mit dauerhaftem Sicherheits-/Datenschutzrisiko und bleibt bis zur ausdrücklichen Freigabe bzw. manuellen Durchführung durch den Kontoinhaber blockiert. Keine Umgehung, kein Dokumenten-Upload und keine erfundenen Unternehmensdaten.
 - Vor dem nächsten Schritt müssen außerdem die offiziellen Unternehmensdaten (Telefonnummer, Website, ggf. Registerdaten) im Business-Verifizierungsflow korrekt eingegeben und mit dem privaten Life Record abgeglichen werden.
 
+### YouTube-OAuth-Identitätsprüfung (2026-08-12)
+
+- Im Google-Cloud-Projekt **Hermes Private** wurde ein Desktop-OAuth-Client für den YouTube-Connector erstellt. Nicht-geheime Client-ID und Projektstatus liegen in Infisical.
+- OAuth wurde erfolgreich autorisiert, aber der ausgewählte Kanal ist **nicht** der Zielkanal: API `channels.list?mine=true` liefert `ZOE Solar`, Kanal-ID `UC8jo_fyVGSPKvRuS2ZWAvyA`.
+- Zielkanal des Projekts bleibt `Systemfehler_nach_DIN`, bekannte Browser-Kanal-ID `UCBWRl7VXRdy0kcsoV7or7Uw`. Es wurde kein Upload und keine schreibende YouTube-Aktion ausgeführt.
+- Der Token liegt lokal mit Dateirechten `0600` unter `~/.config/sin-youtube/accounts/systemfehler-nach-din-oauth-token.json`, wird wegen Identitätsabweichung nicht verwendet und nicht in Logs/Chat ausgegeben. Nicht löschen oder rotieren, bevor die Zuordnung geklärt ist.
+- Nächster sicherer Schritt: OAuth im richtigen Google-/Brand-Account erneut autorisieren und die Kanal-ID vor jeder weiteren Nutzung exakt gegen `UCBWRl7VXRdy0kcsoV7or7Uw` prüfen.
+
 ## Status und nächster Schritt je Plattform
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |

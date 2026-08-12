@@ -7,8 +7,8 @@ Creator-/Professional-Konto der Kategorie `Kunst` umgestellt.
 Für echte OAuth-/Live-Konfiguration fehlen noch externe Account-Anmeldungen oder
 Freigaben:
 
-- Meta/Facebook: Meta-Developer-Login fehlt; dadurch sind Instagram-Graph-, Facebook-Page- und Threads-App/OAuth-Einrichtung blockiert.
-- X: Developer-Portal leitet auf X-Login um; Developer-Schreibzugang kann kostenpflichtig sein.
+- Meta/Facebook: Facebook-Hauptlogin ist im Bot-Profil vorhanden, aber Meta-Developer-Registrierung verlangt eine Mobilnummer oder Kreditkarte zur Kontobestätigung. Dadurch sind Instagram-Graph-, Facebook-Page- und Threads-App/OAuth-Einrichtung blockiert.
+- X: Account `@schu68231` ist im Bot-Profil angemeldet und das Developer-Onboarding ist erreichbar; das Absenden verlangt jedoch die Annahme des Developer Agreement/Policy und kann kostenpflichtigen Schreibzugang voraussetzen.
 - Reddit: `/prefs/apps` war durch Network Security blockiert.
 - LinkedIn, Pinterest, Mastodon, Telegram und Discord: jeweilige Developer-Portale fordern eine nicht vorhandene Anmeldung.
 - Bluesky: Im Bot-Profil war nur der öffentliche Feed sichtbar; Account/App-Passwort nicht bestätigt.

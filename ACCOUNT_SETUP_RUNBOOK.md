@@ -13,6 +13,13 @@ SIN-Chrome `bot`. Es enthält keine Tokens, Passwörter, Cookies oder OAuth-Code
 
 ## Verifiziert eingerichtet
 
+### Browser-Login-Fakten
+
+- Facebook-Hauptseite war im SIN-Chrome-`bot`-Profil bereits authentifiziert; ein direkter Aufruf von `facebook.com/login` landete auf `facebook.com/home.php`.
+- X war im Profil als `@schu68231` authentifiziert; `console.x.com/onboarding` ist erreichbar.
+- Google Cloud war als `zukunftsorientierte.energie@gmail.com` authentifiziert.
+- Diese Fakten wurden nur über sichtbare Seiten/URLs verifiziert; Passwörter und gespeicherte Secrets wurden nicht ausgelesen.
+
 ### Instagram
 
 - Account: `systemfehler_nach_din` / Anzeigename `Systemfehler_nach_DIN`.
@@ -20,7 +27,8 @@ SIN-Chrome `bot`. Es enthält keine Tokens, Passwörter, Cookies oder OAuth-Code
 - Kategorie: **Kunst**.
 - Nach der Umstellung zeigt das Profil Insights-/Werbeverwaltungs-Hinweis und `KI-Creator`.
 - Die Meta-Umstellung stellt das Profil öffentlich; das war eine von Instagram verlangte Bestätigung.
-- Nächster API-Schritt: Meta for Developers anmelden, App mit Instagram/Threads-Anwendungsfall erstellen, Instagram Login/API-Produkte und Berechtigungen beantragen. Dafür fehlt im Bot-Profil eine Facebook/Meta-Developer-Anmeldung.
+- Nächster API-Schritt: Meta for Developers anmelden, App mit Instagram/Threads-Anwendungsfall erstellen, Instagram Login/API-Produkte und Berechtigungen beantragen.
+- Meta for Developers leitet beim erstmaligen `Los geht’s` auf einen Registrierungsdialog um und verlangt eine Mobilnummer zur Kontobestätigung oder alternativ eine Kreditkarte. Dieser externe Verifizierungsschritt wurde nicht automatisiert.
 
 Direkte Seiten:
 
@@ -32,10 +40,10 @@ Direkte Seiten:
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |
 |---|---|---|---|
-| Instagram | Creator-Konto eingerichtet | Meta-App/OAuth | Facebook-Developer-Login fehlt |
-| Facebook | Nicht angemeldet | Page/App/OAuth einrichten | Facebook-Login fehlt |
+| Instagram | Creator-Konto eingerichtet; Facebook-Hauptlogin vorhanden | Meta-Developer-App/OAuth | Meta-Developer-Verifizierung per Mobilnummer/Kreditkarte fehlt |
+| Facebook | Hauptseite authentifiziert; Developer-Registrierung offen | Page/App/OAuth einrichten | Meta-Developer-Verifizierung per Mobilnummer/Kreditkarte fehlt |
 | Threads | Kein Developer-Zugriff geprüft | Meta-App mit Threads-Produkt | Meta-Login fehlt |
-| X | Auf Developer-Portal zu X-Login umgeleitet | Developer-Projekt und User OAuth | X-Login fehlt; Schreibzugang kann kostenpflichtig sein |
+| X | `@schu68231` authentifiziert; Developer-Onboarding erreichbar | Developer-Projekt und User OAuth | Developer Agreement/Policy muss bestätigt werden; Schreibzugang kann kostenpflichtig sein |
 | Reddit | `/prefs/apps` mit Network-Security-Block | OAuth-App anlegen | Reddit-Netzwerkblock/Login |
 | LinkedIn | Developer-Portal fordert Login | App und `w_member_social`/`w_organization_social` | LinkedIn-Login fehlt |
 | Pinterest | `account-setup` zeigt „Anmelden/Registrieren“ | Developer-Konto/App/OAuth | Pinterest-Login fehlt |

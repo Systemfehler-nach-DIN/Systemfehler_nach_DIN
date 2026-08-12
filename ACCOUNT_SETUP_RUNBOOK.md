@@ -79,6 +79,14 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 - In OpenSIN → App-Rollen → Tester → Personen hinzufügen → zusätzliche Rolle `Instagram-Tester` → App `OpenSIN` wurde der Benutzername `systemfehler_nach_din` eingegeben. Meta antwortete sichtbar: `A Facebook Developer Account is required to be added to an app. Test users can't be added.` Es wurde nichts hinzugefügt und kein OAuth-Code/Token verarbeitet.
 - Ergebnis: Der direkte Tester-Flow ist durch Meta-Account-Rollen/Developer-Account-Policy blockiert. Der nächste zulässige Weg ist, den bereits angemeldeten Facebook-Nutzer als bestätigten Meta Developer Account zu registrieren/verifizieren oder Meta Business Suite/App-Rollen so zu aktualisieren, dass dieser Business-Nutzer als Developer/Instagram-Tester zulässig ist. SMS/Kreditkarte/Agreement/2FA bleiben manuelle externe Gates.
 
+### Meta-Developer-Registrierungsprüfung (2026-08-12)
+
+- Offizielle Meta-Dokumentation geprüft: `https://developers.facebook.com/documentation/development/register`. Meta beschreibt den Registrierungsweg über `https://developers.facebook.com/async/registration`: Nutzungsbedingungen akzeptieren, Telefonnummer/E-Mail verifizieren und berufliche Tätigkeit auswählen.
+- Der direkte Registrierungs-Endpunkt leitete im aktuellen authentifizierten Profil zum Developer Center zurück; OpenSIN ist bereits im App-Inventar sichtbar und der Dashboard-Zugriff funktioniert. Eine neue Registrierung wurde deshalb nicht erzwungen und keine zweite App erstellt.
+- Ein kontrollierter App-Erstellungs-Test zeigte, dass der bestehende Nutzer Apps erstellen und das Business-Portfolio **Minime** auswählen kann. Eine Test-App wurde nicht fertiggestellt/angelegt; der Vorgang wurde vor Abschluss verlassen.
+- Im OpenSIN-Dashboard ist nun sichtbar: `Rollen` mit 1 Administrator, `Testnutzer` mit 1 ungelesenen Benachrichtigung sowie Anforderungen/Use Cases. Das beweist Developer-Dashboard-Zugriff, aber noch nicht die Instagram-Tester-Berechtigung.
+- Die Instagram-Tester-Zuordnung bleibt wegen Meta-Fehler `A Facebook Developer Account is required ... Test users can't be added` / `Entwickler-Rolle nicht ausreichend` offen.
+
 ## Status und nächster Schritt je Plattform
 
 | Plattform | Browser-Status | Nächster autorisierter Schritt | Blocker |

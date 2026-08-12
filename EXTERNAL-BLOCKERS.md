@@ -27,3 +27,5 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 - Instagram OAuth-Testflow: Die sichtbare Session `systemfehler_nach_din` erreicht den offiziellen OAuth-Endpunkt, wird aber mit `Entwickler-Rolle nicht ausreichend` abgewiesen. Eine gültige Instagram-Tester-/App-Rollen-Zuordnung fehlt noch; keine Credentials oder OAuth-Codes wurden verarbeitet.
 
 - Instagram-Tester-Zuordnung: OpenSIN → App-Rollen → Instagram-Tester → OpenSIN → `systemfehler_nach_din` wurde versucht; Meta blockiert mit „A Facebook Developer Account is required to be added to an app. Test users can't be added.“ OAuth endet zusätzlich mit „Entwickler-Rolle nicht ausreichend“.
+
+- Meta Developer-Registrierung: Offizielle Dokumentation und `/async/registration` geprüft. OpenSIN-Dashboard-/App-Erstellungszugriff ist vorhanden; der Endpunkt leitet zurück ins Developer Center. Eine neue App wurde nicht erstellt. Der verbleibende Blocker ist die Instagram-Tester-Rollenpolicy, nicht der allgemeine Dashboard-Zugriff.

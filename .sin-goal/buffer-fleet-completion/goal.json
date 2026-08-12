@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "goal_id": "buffer-fleet-completion",
+  "status": "active",
+  "repository_root": "/Users/jeremy/Workspaces/Workspace-Jeremy/Mein Social Channel/Systemfehler_nach_DIN",
+  "user_outcome": "Buffer-zentrierte Social-Publishing-Architektur vollständig implementieren, wow-my-zsh-Skills und Connectoren synchronisieren, YouTube über Buffer nutzen, Postiz-Planung anbinden, alle Dokumente aktualisieren und mit reproduzierbaren Tests verifizieren.",
+  "definition_of_done": [
+    "Buffer-Adapter nutzt drei account-scoped Infisical-Keys sicher und deckt die verifizierten Kanäle ab.",
+    "wow-my-zsh/connectors/social-platforms/buffer enthält die Buffer-Connectoren/Account-Metadaten ohne Secretwerte.",
+    "Alle relevanten Social-Skills, Runbooks und Docs sind widerspruchsfrei aktualisiert.",
+    "Postiz/Kestra-Planung ist implementiert oder der exakte externe Blocker ist dokumentiert.",
+    "Tests, Dry-Runs, Security- und unabhängige Review-Prüfungen liefern Evidenz."
+  ],
+  "functional_requirements": [],
+  "non_functional_requirements": [],
+  "quality_thresholds": {},
+  "explicit_non_goals": [],
+  "inferred_required_work": [],
+  "constraints": [
+    "Keine Tokens/Cookies/Passwörter in Chat, Git, Logs oder Dokumentation.",
+    "Keine Live-Posts, Credential-Rotation oder kostenpflichtige Aktivierung ohne ausdrückliche Freigabe."
+  ],
+  "hard_external_blockers": [],
+  "completion_gates": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7",
+    "G8",
+    "G9",
+    "G10"
+  ],
+  "created_at": "2026-08-12T22:21:23.600398+00:00",
+  "updated_at": "2026-08-12T22:21:23.600398+00:00"
+}

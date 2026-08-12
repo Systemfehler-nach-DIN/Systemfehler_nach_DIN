@@ -13,7 +13,7 @@ SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors 
 
 ## Status
 
-- Backlog: 0
+- Backlog: 6
 - In progress: 0
 - Blocked: 0
 - Done: 10
@@ -26,6 +26,10 @@ SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors 
 | T-0001 | critical | research | done | chatgpt-web | GitHub-Recherche: beste nicht-offizielle Wege zum Posten auf TikTok, Instagram, Reddit, X, YouTube (+ Mastodon/Bluesky/Telegram/Discord/Foren) | — |
 | T-0005 | critical | plan | done | local-agent | Social connector architecture and Postiz integration design | — |
 | T-0010 | critical | test | done | local-agent | Bridge and Kestra end-to-end connector verification | T-0006, T-0007, T-0008, T-0009 |
+| T-0011 | critical | implement | backlog | chatgpt-web | Meta app inventory and security settings | — |
+| T-0012 | critical | implement | backlog | chatgpt-web | Configure Instagram API and permissions | — |
+| T-0015 | critical | implement | backlog | chatgpt-web | Meta token acquisition and Infisical storage | — |
+| T-0016 | critical | implement | backlog | chatgpt-web | Meta dry-run and identity verification | — |
 | T-0002 | high | ops | done | chatgpt-web | Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM | — |
 | T-0003 | high | implement | done | chatgpt-web | Social-Bridges in platforms_connectors/ bauen und in publish_everywhere.yml einbinden | T-0001 |
 | T-0004 | high | test | done | chatgpt-web | End-to-End-Verifikation: Webhook -> posts.json -> Bridge-Dry-Run | T-0002, T-0003 |
@@ -33,6 +37,8 @@ SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors 
 | T-0007 | high | implement | done | local-agent | Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon | T-0005 |
 | T-0008 | high | implement | done | local-agent | Implement robust channel connector wave: Telegram and Discord | T-0005 |
 | T-0009 | high | implement | done | local-agent | Integrate Postiz self-hosted scheduling/API adapter | T-0005 |
+| T-0013 | high | implement | backlog | chatgpt-web | Configure Facebook Pages API | — |
+| T-0014 | high | implement | backlog | chatgpt-web | Configure Threads API | — |
 
 ## Task details
 
@@ -101,6 +107,70 @@ Allowed paths:
 Evidence: HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms
 
 Completion report: `.sin-gpt-web/reports/T-0010.md`
+
+### T-0011 — Meta app inventory and security settings
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-12T15:57:20+00:00
+
+Document app ID, business ID, products, redirect URIs, test mode, roles, and security settings without exposing secrets.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+### T-0012 — Configure Instagram API and permissions
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-12T15:57:20+00:00
+
+Finish Instagram Login/API setup, connect systemfehler_nach_din Creator account, verify permissions and account ID.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+### T-0015 — Meta token acquisition and Infisical storage
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-12T15:57:21+00:00
+
+Acquire approved OAuth tokens without logging/extracting secrets and store sorted runtime values in Infisical canonical names.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+### T-0016 — Meta dry-run and identity verification
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-12T15:57:21+00:00
+
+Run account/API checks, bridge dry-run and mocked verification; do not publish live content.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
 
 ### T-0002 — Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM
 
@@ -244,14 +314,40 @@ Evidence: platforms_connectors/Postiz/publish.py; Postiz/docker-compose.example.
 
 Completion report: `.sin-gpt-web/reports/T-0009.md`
 
+### T-0013 — Configure Facebook Pages API
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: none
+- Updated: 2026-08-12T15:57:21+00:00
+
+Connect target Facebook Page, verify Page ID and publishing permissions, record non-secret metadata.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+### T-0014 — Configure Threads API
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: none
+- Updated: 2026-08-12T15:57:21+00:00
+
+Finish Threads product setup and connect account if available; verify permissions and IDs.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
 ## Recent events
 
-- 2026-08-11T10:53:02+00:00 — `chatgpt-web` — `task_completed` `T-0004`: Closed local E2E dry-run succeeded: authenticated Kestra webhook returned HTTP 200; execution 5IEsY7lc1gQHX1Xzbxrz33 finished SUCCESS on flow revision 7; task states update_website_feed=SUCCESS, deploy_if_configured=SUCCESS, social_if_configured=SUCCESS, distribute_social=SUCCESS. website/content/posts.json contained exactly one __T0004_E2E_DRY_RUN__ record after the webhook. Kestra HTTP task output from http://host.docker.internal:18765/publish returned code 200, mode DRY_RUN, and 10 validated DRAFT results for tiktok, instagram, reddit, x, youtube, mastodon, bluesky, telegram, discord, forums. Test post was then removed from posts.json via filesystem edit. No real posts, deploy, push, or credential disclosure occurred. Attempt to stop the temporary bridge test process was frontend-policy-blocked before Mac execution and recorded categorically; the bridge remains a local DRY_RUN-only process.
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0005`: Social connector architecture and Postiz integration design
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0006`: Implement official API connector wave: Instagram, X, Reddit, LinkedIn
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0007`: Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0008`: Implement robust channel connector wave: Telegram and Discord
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0009`: Integrate Postiz self-hosted scheduling/API adapter
 - 2026-08-12T13:32:07+00:00 — `prime-agent` — `task_added` `T-0010`: Bridge and Kestra end-to-end connector verification
 - 2026-08-12T14:11:34+00:00 — `prime-agent` — `task_claimed` `T-0005`: claimed by local-agent
 - 2026-08-12T14:19:27+00:00 — `prime-agent` — `task_completed` `T-0005`: platforms_connectors/SOCIAL_CONNECTOR_ARCHITECTURE.md; platforms_connectors/base.py; platforms_connectors/bridge.py; website/kestra/publish_everywhere.yml; 27 pytest tests; ruff check passed; dry-run bridge returned 14 platform results
@@ -266,3 +362,9 @@ Completion report: `.sin-gpt-web/reports/T-0009.md`
 - 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_claimed` `T-0010`: claimed by local-agent
 - 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_completed` `T-0010`: HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms
 - 2026-08-12T14:29:17+00:00 — `prime-agent` — `verification` `T-0010`: Post-completion hardening: live fan-out now preflights approvals, runtime config, and dry-run payload validation for every selected target before any network request; 29 connector tests pass; commit 85c702e.
+- 2026-08-12T15:57:20+00:00 — `prime-agent` — `task_added` `T-0011`: Meta app inventory and security settings
+- 2026-08-12T15:57:20+00:00 — `prime-agent` — `task_added` `T-0012`: Configure Instagram API and permissions
+- 2026-08-12T15:57:21+00:00 — `prime-agent` — `task_added` `T-0013`: Configure Facebook Pages API
+- 2026-08-12T15:57:21+00:00 — `prime-agent` — `task_added` `T-0014`: Configure Threads API
+- 2026-08-12T15:57:21+00:00 — `prime-agent` — `task_added` `T-0015`: Meta token acquisition and Infisical storage
+- 2026-08-12T15:57:21+00:00 — `prime-agent` — `task_added` `T-0016`: Meta dry-run and identity verification

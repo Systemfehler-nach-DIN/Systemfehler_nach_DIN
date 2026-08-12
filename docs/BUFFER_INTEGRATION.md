@@ -52,7 +52,9 @@ external infrastructure step.
 ## Deployment-Gate
 
 Der lokale Staging-Adapter und die Migration sind implementiert, aber noch nicht
-auf der OCI-Supabase-Instanz angewendet. Vor der ersten echten Planung müssen
+auf der OCI-Supabase-Instanz angewendet. Ein authentifizierter REST-Read gegen
+`https://supabase.delqhi.com` bestätigte HTTP 404/PGRST205 für `media_assets`;
+damit ist die Tabelle aktuell nicht vorhanden. Vor der ersten echten Planung müssen
 Endpoint, Bucket, Service-Role-Zugriff, öffentliche Objekt-URLs und RLS auf der
 VM read-only verifiziert werden. Tailscale-SSH war bei der Discovery durch einen
 zusätzlichen Authentifizierungs-Gate blockiert; deshalb wurde nichts remote

@@ -3,6 +3,15 @@
 Stand: 2026-08-12. Dieses Dokument enthält verifizierte UI-/Account-Erkenntnisse aus
 SIN-Chrome `bot`. Es enthält keine Tokens, Passwörter, Cookies oder OAuth-Codes.
 
+## Wiederverwendbare Signup-Skills
+
+Für jeden weiteren oder neu anzulegenden Account zuerst den zentralen Skill
+`sin-social-account-setup` und anschließend `sin-<plattform>-signup` verwenden.
+Die Plattform-Wrapper existieren für Instagram, Facebook, X, Reddit, LinkedIn,
+Threads, Pinterest, Bluesky, Mastodon, Telegram, Discord, YouTube, TikTok und
+Postiz. Übersicht und verbindlicher Datenfluss: `ACCOUNT_SIGNUP_SKILLS.md`.
+Publishing-Skills (`sin-<plattform>`) und Signup-Skills sind getrennt.
+
 ## Sicherheitsregeln
 
 - Browser Use verwendet ausschließlich das authentifizierte SIN-Chrome-`bot`-Profil.

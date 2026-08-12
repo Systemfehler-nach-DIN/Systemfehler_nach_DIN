@@ -60,7 +60,19 @@ class BufferPublishTests(unittest.TestCase):
         result = publish(payload, dry_run=True)
         self.assertEqual([x["channelId"] for x in result["targets"]], ["ig", "yt"])
 
-    def test_registry_default_contains_nine_channels(self):
+    def test_registry_contains_nine_channels_and_youtube_account_three(self):
         from platforms_connectors.Buffer.router import all_channels
-        self.assertEqual(len(all_channels()), 9)
-        self.assertEqual(next(x for x in all_channels() if x["platform"] == "youtube")["account"], "3")
+        channels = all_channels()
+        self.assertEqual(len(channels), 9)
+        youtube = next(x for x in channels if x["platform"] == "youtube")
+        self.assertEqual(youtube["account"], "3")
+        self.assertEqual(youtube["id"], "6a7cf0c4b2d9d57743679762")
+
+    @patch("platforms_connectors.Buffer.publish.request_json")
+    def test_account_three_key_is_selected_without_logging_value(self, request):
+        request.return_value = {"data": {"createPost": {"__typename": "PostActionSuccess", "post": {"id": "yt-1"}}}}
+        payload = {"title": "Video", "excerpt": "E", "body": "B", "media_url": "https://cdn.example/video.mp4", "buffer_targets": [{"account": 3, "platform": "youtube", "channel_id": "yt", "media_type": "video"}]}
+        with patch.dict("os.environ", {"BUFFER_API_KEY_ACCOUNT_3": "account-three-key"}, clear=False):
+            result = publish(payload, dry_run=False)
+        self.assertEqual(result["external_id"], "yt-1")
+        self.assertEqual(request.call_args.kwargs["headers"]["Authorization"], "Bearer account-three-key")

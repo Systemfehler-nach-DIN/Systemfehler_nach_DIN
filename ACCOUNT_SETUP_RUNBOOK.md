@@ -76,6 +76,13 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 | YouTube | Google Cloud-Projekt `Hermes Private`; YouTube Data API v3 **bereits aktiviert** | OAuth-Branding/Client/Consent und lokaler OAuth-Lauf | OAuth-Client fehlt; Secret darf nicht aus Browser extrahiert werden |
 | Postiz | `localhost:4007` nicht erreichbar | Offiziellen Compose-Stack deployen | Stack läuft nicht; Runtime-Secrets/Volumes fehlen |
 
+## Recovery checkpoint: aktuelle Meta-Welle
+
+1. **ZoE GmbH löschen:** Im SIN-Chrome-Tab `https://www.facebook.com/deactivate_delete_account/` ist für die verifizierte Seite `ZoE GmbH` (ID `100085541960065`) bereits „Seite löschen“ ausgewählt. Meta zeigt die finale Seite „Bestätige, dass dies deine Seite ist“ und wartet auf das Seitenpasswort. Nach manueller Eingabe durch den Kontoinhaber: `Weiter` bestätigen und anschließend live prüfen, dass die ZoE-Seite nicht mehr erreichbar ist und nicht mehr im Business-Portfolio auftaucht.
+2. **SYSTEMFEHLER Professional Mode:** Profil-ID `100085502655496` und URL `https://www.facebook.com/Systemfehler.nach.DIN/` sind die kanonischen Werte. Der „Vorhandene Facebook-Seite hinzufügen“-Dialog findet sie nicht; nicht wiederholt suchen und niemals ZoE-ID als Ersatz verwenden. Professional Mode bleibt über das Facebook Professional Dashboard verwaltbar, ist aber kein Pages-API-Asset im Business-Portfolio.
+3. **Instagram-Tester:** In OpenSIN → Instagram API → API-Einrichtung mit Instagram-Login → `Konto hinzufügen` → `Weiter` fortsetzen. Der offizielle Instagram-Login öffnet derzeit einen Login-Tab; dort muss der Kontoinhaber den Login/2FA selbst abschließen. Danach Konto `systemfehler_nach_din` und ID `17841440701410225` prüfen. Access Token nicht anzeigen/loggen; ausschließlich als `INSTAGRAM_ACCESS_TOKEN` über `sin-infisical` schreiben.
+4. **App Review:** Für Live-Zugriff die bereits konfigurierten Berechtigungen in OpenSIN einzeln mit Use-Case, Datenschutz-/Lösch-URL, Screenshots und Testanleitung einreichen. Erst nach Meta-Genehmigung und Identitätscheck Live-Gates öffnen.
+
 ## Wiederholbarer OAuth-/Secret-Workflow
 
 1. Plattform-App nur im offiziellen Developer-Portal anlegen.

@@ -12,7 +12,7 @@ Alle YouTube-spezifischen Adapter und Offline-Tests liegen in diesem Verzeichnis
 - `youtube_api.py --delete-video` — nach Verifikation Testvideos entfernen.
 - `test_*.py` — netzwerkfreie Tests.
 
-Die gemeinsame Bridge (`../bridge.py`) hält die API als Primärpfad. Live-Aktionen
+Buffer ist für den verbundenen Systemfehler_nach_DIN-Kanal der Primärpfad. Die direkte YouTube-API bleibt als manueller/Legacy-Fallback dokumentiert. Die gemeinsame Bridge (`../bridge.py`) hält beide Pfade fail-closed. Live-Aktionen
 bleiben fail-closed und erfordern die jeweiligen `PUBLISH_MODE`,
 `ALLOW_REAL_POSTS` sowie YouTube-spezifischen Freigaben.
 

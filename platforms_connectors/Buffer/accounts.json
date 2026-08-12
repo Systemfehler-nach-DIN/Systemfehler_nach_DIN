@@ -1,0 +1,13 @@
+{
+  "schema": "sin-buffer-accounts/v1",
+  "secret_authority": "Infisical",
+  "mcp_endpoint": "https://mcp.buffer.com/mcp",
+  "accounts": [
+    {"account":"1","organization_id":"6a7cdff6ba121c15135353f4","infisical_key":"BUFFER_API_KEY_ACCOUNT_1","channels":[
+      {"id":"6a7ce04cb2d9d5774366cc0b","platform":"instagram","service_id":"17841440701410225"},{"id":"6a7ce10ab2d9d5774366ddf1","platform":"threads","service_id":"28408249405445455"},{"id":"6a7ce143b2d9d5774366e356","platform":"linkedin","service_id":"li-cJSm8pJ"}]},
+    {"account":"2","organization_id":"6a7ce320460832fbfcda7d98","infisical_key":"BUFFER_API_KEY_ACCOUNT_2","channels":[
+      {"id":"6a7ce408b2d9d57743670ec3","platform":"facebook","service_id":"1235484672983555"},{"id":"6a7ce5aab2d9d5774367168e","platform":"bluesky","service_id":"did:plc:pzdr45s6ar25lij3xieryxfo"},{"id":"6a7ce7beb2d9d57743671ef4","platform":"mastodon","service_id":"117084676320951704@mastodon.social"}]},
+    {"account":"3","organization_id":"6a7ce8391c7f43f54a9c0b59","infisical_key":"BUFFER_API_KEY_ACCOUNT_3","channels":[
+      {"id":"6a7ce9a2b2d9d577436725f1","platform":"pinterest","service_id":"Systemfehler_nach_DIN"},{"id":"6a7cec3cb2d9d57743672edc","platform":"x","service_id":"2030314923637792768"},{"id":"6a7cf0c4b2d9d57743679762","platform":"youtube","service_id":"UCBWRl7VXRdy0kcsoV7or7Uw"}]}
+  ]
+}

@@ -23,3 +23,5 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 - Die alte ZoE-GmbH-Facebook-Seite (ID `100085541960065`) wurde laut Nutzer gelöscht; der frühere Link zeigt nun den Meta-Hinweis, dass der Link nicht funktioniert oder die Seite entfernt wurde. Das professionelle Profil `Systemfehler.nach.DIN` (ID `100085502655496`) wird im Business-Suite-Dialog „Vorhandene Facebook-Seite hinzufügen“ nicht gefunden, weil Meta es dort nicht als Facebook-Seite behandelt.
 
 - Meta App-ID `2283580245716951`: Der direkte `violations_and_appeals`-Link liefert „Seite nicht gefunden“; im App-Inventar ist nur OpenSIN sichtbar und `required-actions` meldet aktuell keine erforderlichen Maßnahmen. Es gibt deshalb derzeit keinen zugänglichen Appeal-Workflow für diese ID.
+
+- Instagram OAuth-Testflow: Die sichtbare Session `systemfehler_nach_din` erreicht den offiziellen OAuth-Endpunkt, wird aber mit `Entwickler-Rolle nicht ausreichend` abgewiesen. Eine gültige Instagram-Tester-/App-Rollen-Zuordnung fehlt noch; keine Credentials oder OAuth-Codes wurden verarbeitet.

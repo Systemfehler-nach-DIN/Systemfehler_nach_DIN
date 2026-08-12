@@ -84,6 +84,12 @@ ADAPTERS: dict[str, Adapter] = {
         "Postiz self-hosted API (optional)",
         ("POSTIZ_API_TOKEN",),
     ),
+    # Legacy forum draft remains visible but has no live adapter in this wave.
+    "forums": Adapter(
+        "forums",
+        "Discourse HTTP API (draft-only until separately reviewed)",
+        ("DISCOURSE_BASE_URL", "DISCOURSE_API_KEY", "DISCOURSE_API_USERNAME"),
+    ),
 }
 
 # Only these modules may ever receive a live request. There is deliberately no

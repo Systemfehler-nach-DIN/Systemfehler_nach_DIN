@@ -36,3 +36,5 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 
 - Buffer ist als alternativer Publishing-Layer verifiziert: drei Accounts/Organisationen, acht verbundene Kanäle, alle `isDisconnected=false`. API-Key-Namen, Organisationen und Kanal-IDs liegen in Infisical. Die Meta-Verifizierung bleibt für direkte Meta-API-Nutzung offen, ist für Buffer-verbundene Kanäle aber nicht der unmittelbare Publishing-Blocker. Buffer Free bleibt durch 3 Kanäle je Account, 10 geplante Posts je Kanal und 3.000 API-Anfragen/Monat begrenzt.
 - Buffer API deckt laut aktueller Doku YouTube, aber nicht TikTok ab; TikTok bleibt der separate SIN-Adapter. Ein Postiz→Buffer→YouTube/TikTok-Workflow ist noch nicht implementiert/verifiziert.
+
+- Buffer-Umstellung: 9 Kanäle über drei Buffer-Accounts sind per CLI mit Infisical-Keys verifiziert (`isDisconnected=false`), inklusive YouTube Account 3. Buffer-Adapter und account-scoped routing sind implementiert und getestet. Offen bleibt ausschließlich der nicht gestartete/offiziell noch nicht verifizierte Postiz-Multi-Container-Stack als optionaler Planungs-Layer; direkte Posts wurden nicht gesendet.

@@ -301,10 +301,14 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
                 missing_config = [
                     key for key in adapter.auth_env if not os.getenv(key, "").strip()
                 ]
-                if name == "buffer" and not any(
-                    os.getenv(f"BUFFER_API_KEY_ACCOUNT_{account}", "").strip()
-                    for account in ("1", "2", "3")
-                ) and not os.getenv("BUFFER_API_KEY", "").strip():
+                if (
+                    name == "buffer"
+                    and not any(
+                        os.getenv(f"BUFFER_API_KEY_ACCOUNT_{account}", "").strip()
+                        for account in ("1", "2", "3")
+                    )
+                    and not os.getenv("BUFFER_API_KEY", "").strip()
+                ):
                     missing_config = ["BUFFER_API_KEY_ACCOUNT_1..3 or BUFFER_API_KEY"]
                 if missing_config:
                     raise PermissionError(
@@ -365,7 +369,9 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length) or b"{}")
             if isinstance(body, dict) and "payload" in body:
                 payload = body["payload"]
-                if isinstance(payload, dict) and isinstance(body.get("buffer_targets"), list):
+                if isinstance(payload, dict) and isinstance(
+                    body.get("buffer_targets"), list
+                ):
                     payload = {**payload, "buffer_targets": body["buffer_targets"]}
                 platforms = body.get("platforms")
             else:

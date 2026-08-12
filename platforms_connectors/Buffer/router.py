@@ -1,11 +1,14 @@
 """Non-secret Buffer channel routing registry for SYSTEMFEHLER_nach_DIN."""
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
 from typing import Any
 
-_REGISTRY = json.loads((Path(__file__).with_name("accounts.json")).read_text(encoding="utf-8"))
+_REGISTRY = json.loads(
+    (Path(__file__).with_name("accounts.json")).read_text(encoding="utf-8")
+)
 
 
 def channel_for(platform: str, account: str | int | None = None) -> dict[str, Any]:
@@ -26,14 +29,21 @@ def channel_for(platform: str, account: str | int | None = None) -> dict[str, An
     raise KeyError(f"no Buffer channel registered for {platform}{suffix}")
 
 
-def channels_for(platform: str, account: str | int | None = None) -> list[dict[str, Any]]:
+def channels_for(
+    platform: str, account: str | int | None = None
+) -> list[dict[str, Any]]:
     """Return all matching channels; account-scoped registry currently has one each."""
     return [channel_for(platform, account)]
 
 
 def all_channels() -> list[dict[str, Any]]:
     return [
-        {**channel, "account": owner["account"], "organization_id": owner["organization_id"], "infisical_key": owner["infisical_key"]}
+        {
+            **channel,
+            "account": owner["account"],
+            "organization_id": owner["organization_id"],
+            "infisical_key": owner["infisical_key"],
+        }
         for owner in _REGISTRY["accounts"]
         for channel in owner["channels"]
     ]

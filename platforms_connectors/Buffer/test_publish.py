@@ -41,10 +41,18 @@ class BufferPublishTests(unittest.TestCase):
 
     def test_account_three_youtube_registry_shape(self):
         payload = {
-            "title": "Video", "excerpt": "E", "body": "B",
+            "title": "Video",
+            "excerpt": "E",
+            "body": "B",
             "media_url": "https://cdn.example/video.mp4",
-            "buffer_targets": [{"account": 3, "platform": "youtube",
-                "channel_id": "6a7cf0c4b2d9d57743679762", "media_type": "video"}],
+            "buffer_targets": [
+                {
+                    "account": 3,
+                    "platform": "youtube",
+                    "channel_id": "6a7cf0c4b2d9d57743679762",
+                    "media_type": "video",
+                }
+            ],
         }
         result = publish(payload, dry_run=True)
         target = result["targets"][0]
@@ -53,15 +61,30 @@ class BufferPublishTests(unittest.TestCase):
         self.assertEqual(target["metadata"]["youtube"]["categoryId"], "22")
 
     def test_multiple_buffer_targets_are_fanned_out(self):
-        payload = {**self.payload, "buffer_targets": [
-            {"account": 1, "platform": "instagram", "channel_id": "ig", "media_type": "image"},
-            {"account": 3, "platform": "youtube", "channel_id": "yt", "media_type": "video"},
-        ], "media_url": "https://cdn.example/video.mp4"}
+        payload = {
+            **self.payload,
+            "buffer_targets": [
+                {
+                    "account": 1,
+                    "platform": "instagram",
+                    "channel_id": "ig",
+                    "media_type": "image",
+                },
+                {
+                    "account": 3,
+                    "platform": "youtube",
+                    "channel_id": "yt",
+                    "media_type": "video",
+                },
+            ],
+            "media_url": "https://cdn.example/video.mp4",
+        }
         result = publish(payload, dry_run=True)
         self.assertEqual([x["channelId"] for x in result["targets"]], ["ig", "yt"])
 
     def test_registry_contains_nine_channels_and_youtube_account_three(self):
         from platforms_connectors.Buffer.router import all_channels
+
         channels = all_channels()
         self.assertEqual(len(channels), 9)
         youtube = next(x for x in channels if x["platform"] == "youtube")
@@ -70,9 +93,34 @@ class BufferPublishTests(unittest.TestCase):
 
     @patch("platforms_connectors.Buffer.publish.request_json")
     def test_account_three_key_is_selected_without_logging_value(self, request):
-        request.return_value = {"data": {"createPost": {"__typename": "PostActionSuccess", "post": {"id": "yt-1"}}}}
-        payload = {"title": "Video", "excerpt": "E", "body": "B", "media_url": "https://cdn.example/video.mp4", "buffer_targets": [{"account": 3, "platform": "youtube", "channel_id": "yt", "media_type": "video"}]}
-        with patch.dict("os.environ", {"BUFFER_API_KEY_ACCOUNT_3": "account-three-key"}, clear=False):
+        request.return_value = {
+            "data": {
+                "createPost": {
+                    "__typename": "PostActionSuccess",
+                    "post": {"id": "yt-1"},
+                }
+            }
+        }
+        payload = {
+            "title": "Video",
+            "excerpt": "E",
+            "body": "B",
+            "media_url": "https://cdn.example/video.mp4",
+            "buffer_targets": [
+                {
+                    "account": 3,
+                    "platform": "youtube",
+                    "channel_id": "yt",
+                    "media_type": "video",
+                }
+            ],
+        }
+        with patch.dict(
+            "os.environ", {"BUFFER_API_KEY_ACCOUNT_3": "account-three-key"}, clear=False
+        ):
             result = publish(payload, dry_run=False)
         self.assertEqual(result["external_id"], "yt-1")
-        self.assertEqual(request.call_args.kwargs["headers"]["Authorization"], "Bearer account-three-key")
+        self.assertEqual(
+            request.call_args.kwargs["headers"]["Authorization"],
+            "Bearer account-three-key",
+        )

@@ -149,6 +149,19 @@ def _publish_youtube_api(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _publish_tiktok_browser(payload: dict[str, Any]) -> dict[str, Any]:
+    from platforms_connectors.TikTok.tiktok_social import TikTokError, publish_video
+    options = payload.get("tiktok") if isinstance(payload.get("tiktok"), dict) else {}
+    video_path = options.get("video_path") or payload.get("media_url")
+    if not video_path or str(video_path).startswith(("http://", "https://")):
+        raise ValueError("TikTok benötigt eine lokale Videodatei (tiktok.video_path oder media_url)")
+    try:
+        result = publish_video(str(video_path), str(options.get("description") or payload.get("body") or payload.get("excerpt") or payload["title"]), dry_run=False)
+    except TikTokError as exc:
+        raise RuntimeError(str(exc)) from exc
+    return {"platform": "tiktok", "backend": "SIN-Browser-Use CLI 3.0 / TikTok Studio", **result}
+
+
 def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
     normalized = validate_payload(payload)
     selected = platforms or list(ADAPTERS)
@@ -158,6 +171,8 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
     if live_allowed():
         # Only the reviewed, official YouTube API path may publish. All other
         # adapters remain fail-closed until they receive their own implementation.
+        if selected == ["tiktok"] and os.getenv("TIKTOK_BROWSER_LIVE_APPROVED", "false").lower() == "true":
+            return {"ok": True, "mode": "LIVE", "payload": normalized, "results": [_publish_tiktok_browser(normalized)]}
         if (
             selected == ["youtube"]
             and os.getenv("YOUTUBE_API_LIVE_APPROVED", "false").lower() == "true"

@@ -73,3 +73,10 @@ for the full runbook and CDP troubleshooting.
   `/upload` → `tiktokstudio/upload`).
 - TikTok Studio erreichbar, Upload-Seite lädt.
 - Account-Handle: `@systemfehler_nach_din`.
+
+## Automatisierter Publisher
+
+`tiktok_social.py` kapselt den fail-closed Live-Publisher über SIN-Browser-Use.
+Dry-run ist Standard. Live benötigt `PUBLISH_MODE=LIVE`,
+`ALLOW_REAL_POSTS=true` und `TIKTOK_BROWSER_LIVE_APPROVED=true`; nach dem
+Publish wird die TikTok-Studio-Content-Seite als UI-Evidence verifiziert.

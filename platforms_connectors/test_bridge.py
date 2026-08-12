@@ -55,6 +55,15 @@ class BridgeTests(unittest.TestCase):
         self.assertEqual(result["mode"], "LIVE")
         self.assertEqual(result["results"][0]["video_id"], "v")
 
+    def test_tiktok_live_is_gated_to_browser_publisher(self):
+        os.environ["PUBLISH_MODE"] = "LIVE"
+        os.environ["ALLOW_REAL_POSTS"] = "true"
+        os.environ["TIKTOK_BROWSER_LIVE_APPROVED"] = "true"
+        with patch.object(bridge, "_publish_tiktok_browser", return_value={"video_id": "t"}) as publisher:
+            result = bridge.publish(SAMPLE, ["tiktok"])
+        publisher.assert_called_once()
+        self.assertEqual(result["mode"], "LIVE")
+
     def test_live_is_fail_closed_even_when_enabled(self):
         os.environ["PUBLISH_MODE"] = "LIVE"
         os.environ["ALLOW_REAL_POSTS"] = "true"

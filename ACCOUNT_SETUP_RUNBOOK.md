@@ -87,6 +87,14 @@ Folgende nicht-geheime IDs/Bezeichner wurden über den bestehenden `sin-infisica
 - Im OpenSIN-Dashboard ist nun sichtbar: `Rollen` mit 1 Administrator, `Testnutzer` mit 1 ungelesenen Benachrichtigung sowie Anforderungen/Use Cases. Das beweist Developer-Dashboard-Zugriff, aber noch nicht die Instagram-Tester-Berechtigung.
 - Die Instagram-Tester-Zuordnung bleibt wegen Meta-Fehler `A Facebook Developer Account is required ... Test users can't be added` / `Entwickler-Rolle nicht ausreichend` offen.
 
+### Meta-Unternehmensverifizierung eingereicht (2026-08-12, 22:50)
+
+- Screenshot: `/var/folders/4k/w1vg2tbj7718gc0mj308m95m0000gn/T/TemporaryItems/NSIRD_screencaptureui_mLYIkB/Bildschirmfoto 2026-08-12 um 22.50.16.png`
+- Business-Portfolio: **Minime**. Use Case: „App verlangt Zugriff auf Berechtigungen für Meta for Developers“.
+- Meta-Status: **Wird überprüft**. Hinweis: Die Prüfung der eingereichten Informationen dauert normalerweise etwa **2 Werktage**; Meta aktualisiert den Status nach Abschluss.
+- Damit ist der bisherige Identitäts-/Unternehmensverifizierungs-Gate eingereicht, aber noch nicht erfolgreich abgeschlossen. Keine Behauptung eines positiven Ergebnisses.
+- Bis zur Entscheidung bleiben Tester-Zuweisung, OAuth mit erweiterten Berechtigungen und Live-/App-Review-Gates geschlossen.
+
 ### Meta-Unternehmensverifizierung (2026-08-12)
 
 - OpenSIN → Verifizierung zeigt Business-Portfolio **Minime**, ID `1786125979186446`, Status **Nicht verifiziert**, „Berechtigt zur Verifizierung“.

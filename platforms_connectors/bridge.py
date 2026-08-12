@@ -84,6 +84,11 @@ ADAPTERS: dict[str, Adapter] = {
         "Postiz self-hosted API (optional)",
         ("POSTIZ_API_TOKEN",),
     ),
+    "buffer": Adapter(
+        "buffer",
+        "Buffer API (GraphQL)",
+        ("BUFFER_API_KEY",),
+    ),
     # Legacy forum draft remains visible but has no live adapter in this wave.
     "forums": Adapter(
         "forums",
@@ -109,6 +114,7 @@ OFFICIAL_MODULES = {
         "telegram",
         "discord",
         "postiz",
+        "buffer",
     )
 }
 

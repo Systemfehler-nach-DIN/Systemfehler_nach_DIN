@@ -59,3 +59,18 @@ Endpoint, Bucket, Service-Role-Zugriff, öffentliche Objekt-URLs und RLS auf der
 VM read-only verifiziert werden. Tailscale-SSH war bei der Discovery durch einen
 zusätzlichen Authentifizierungs-Gate blockiert; deshalb wurde nichts remote
 mutiert.
+
+## OCI-Supabase deployment completed
+
+Am 2026-08-13 wurde der live entdeckte OCI-Host `sin-supabase` über den
+verifizierten OCI-Public-IP-Pfad `92.5.60.87` und Benutzer `ubuntu` erreicht.
+Die bestehende Compose-Installation unter `/opt/sin-supabase` war aktiv und
+healthy. Die Migration `supabase/migrations/001_social_staging.sql` wurde per
+SSH-stdin mit `psql --single-transaction` in `supabase-db` angewendet. Danach
+wurde PostgREST per `NOTIFY pgrst, 'reload schema'` aktualisiert.
+
+Read-only verifiziert: `public.media_assets`, `public.publish_jobs` und
+`public.publish_targets` existieren; Storage-Bucket `social-staging` ist
+`public=true`; der authentifizierte REST-Read gegen
+`https://supabase.delqhi.com/rest/v1/media_assets` liefert HTTP 200 mit leerem
+Bestand. Keine Medien wurden hochgeladen und keine Live-Posts versendet.

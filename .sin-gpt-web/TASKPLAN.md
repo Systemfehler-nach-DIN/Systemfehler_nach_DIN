@@ -5,7 +5,7 @@
 
 ## Goal
 
-SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors (TikTok, Instagram, Reddit, X, YouTube, optional Mastodon/Bluesky/Telegram/Discord/Foren) in platforms_connectors/ bauen, in die Kestra-Pipeline publish_everywhere.yml einbinden und Kestra produktiv auf OrbStack (Mac) betreiben, portabel fuer Docker auf der OCI-VM.
+SYSTEMFEHLER_nach_DIN Buffer-first Social-Publishing vollständig verifizieren: Buffer ist der verbindliche und einzige Publisher/Scheduler für die neun verbundenen Kanäle; TeraBox speichert dauerhaft, Supabase staged Medien temporär, Kestra orchestriert. Postiz und direkte Plattform-Adapter sind nicht aktiv und dürfen keinen parallelen Scheduler/Publisher bilden.
 
 ## Definition of done
 
@@ -13,39 +13,50 @@ SYSTEMFEHLER_nach_DIN Social-Publishing komplett: fehlende Plattform-Connectors 
 
 ## Status
 
-- Backlog: 0
+- Backlog: 5
 - In progress: 0
 - Blocked: 0
 - Done: 10
-- Cancelled: 0
+- Cancelled: 6
 
 ## Tasks
 
 | ID | Priority | Kind | Status | Owner | Title | Dependencies |
 |---|---|---|---|---|---|---|
-| T-0001 | critical | research | done | chatgpt-web | GitHub-Recherche: beste nicht-offizielle Wege zum Posten auf TikTok, Instagram, Reddit, X, YouTube (+ Mastodon/Bluesky/Telegram/Discord/Foren) | — |
-| T-0005 | critical | plan | done | local-agent | Social connector architecture and Postiz integration design | — |
+| T-0001 | critical | research | done | chatgpt-web | Historical research superseded by Buffer-first routing | — |
+| T-0005 | critical | plan | done | local-agent | Buffer-first social connector architecture and boundaries | — |
 | T-0010 | critical | test | done | local-agent | Bridge and Kestra end-to-end connector verification | T-0006, T-0007, T-0008, T-0009 |
+| T-0011 | critical | implement | cancelled | chatgpt-web | Meta app inventory and security settings | — |
+| T-0012 | critical | implement | cancelled | chatgpt-web | Configure Instagram API and permissions | — |
+| T-0015 | critical | implement | cancelled | chatgpt-web | Meta token acquisition and Infisical storage | — |
+| T-0016 | critical | implement | cancelled | chatgpt-web | Meta dry-run and identity verification | — |
+| T-0017 | critical | implement | backlog | chatgpt-web | Automate TeraBox-SIN to Supabase media staging | — |
+| T-0018 | critical | implement | backlog | chatgpt-web | Complete Kestra-to-Buffer scheduling and reconciliation flow | — |
+| T-0019 | critical | implement | backlog | chatgpt-web | Configure OCI runtime through Infisical and verify health | — |
+| T-0020 | critical | implement | backlog | chatgpt-web | Execute complete TeraBox-to-Buffer dry-run E2E | — |
+| T-0021 | critical | implement | backlog | chatgpt-web | Audit Buffer-first connected-channel readiness and optional platform blockers | — |
 | T-0002 | high | ops | done | chatgpt-web | Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM | — |
 | T-0003 | high | implement | done | chatgpt-web | Social-Bridges in platforms_connectors/ bauen und in publish_everywhere.yml einbinden | T-0001 |
 | T-0004 | high | test | done | chatgpt-web | End-to-End-Verifikation: Webhook -> posts.json -> Bridge-Dry-Run | T-0002, T-0003 |
-| T-0006 | high | implement | done | local-agent | Implement official API connector wave: Instagram, X, Reddit, LinkedIn | T-0005 |
-| T-0007 | high | implement | done | local-agent | Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon | T-0005 |
-| T-0008 | high | implement | done | local-agent | Implement robust channel connector wave: Telegram and Discord | T-0005 |
-| T-0009 | high | implement | done | local-agent | Integrate Postiz self-hosted scheduling/API adapter | T-0005 |
+| T-0006 | high | implement | done | local-agent | Implement official adapters as noncanonical offline/fallback modules | T-0005 |
+| T-0007 | high | implement | done | local-agent | Implement open-protocol modules as noncanonical offline/fallback modules | T-0005 |
+| T-0008 | high | implement | done | local-agent | Implement channel modules as noncanonical offline/fallback modules | T-0005 |
+| T-0009 | high | implement | done | local-agent | Document optional Postiz adapter without activating a scheduler | T-0005 |
+| T-0013 | high | implement | cancelled | chatgpt-web | Configure Facebook Pages API | — |
+| T-0014 | high | implement | cancelled | chatgpt-web | Configure Threads API | — |
 
 ## Task details
 
-### T-0001 — GitHub-Recherche: beste nicht-offizielle Wege zum Posten auf TikTok, Instagram, Reddit, X, YouTube (+ Mastodon/Bluesky/Telegram/Discord/Foren)
+### T-0001 — Historical research superseded by Buffer-first routing
 
 - Status: `done`
 - Owner: `chatgpt-web`
 - Kind: `research`
 - Priority: `critical`
 - Dependencies: none
-- Updated: 2026-08-11T00:56:27+00:00
+- Updated: 2026-08-13T14:47:36+00:00
 
-ChatGPT recherchiert auf GitHub nach Projekten/CLIs, die Social-Posting ueber bessere Wege als die offiziellen APIs ermoeglichen (Cookies/Session-basiert, OpenGraph, Browser-Automation, Community-CLI). Bewertung je Kandidat: Lizenz, Wartungsstatus, Auth-Ansatz, Anti-Bot-Erkennungsrisiko, Medien-Upload-Faehigkeit (Video/Bild/Text), Aufwand. Ergebnis: Entscheidungsdokument platforms_connectors/DECISIONS.md mit klarer Architektur- und Tool-Wahl je Plattform inkl. Begruendung. OFFIZIELLE APIs sind nur Fallback, nicht Standard. Keine echten API-Keys/Credentials anlegen ohne Freigabe; keine echten Posts versenden.
+Historical research record only. Buffer is now the binding and sole publisher/scheduler for the nine connected SYSTEMFEHLER_nach_DIN channels. The research remains preserved for provenance; its direct API, cookie/session and browser alternatives are not active publishing instructions.
 
 Acceptance:
 - platforms_connectors/DECISIONS.md existiert mit je Plattform: gewaehlter Ansatz/Repo, Begruendung, Lizenz, Alternativen + Risiken; Entscheidung ist implementierbar (Repo lauffaehig auf macOS/ARM und portabel auf Linux/OCI).
@@ -57,16 +68,16 @@ Evidence: DECISIONS.md written and re-read; all 10 platform headings verified by
 
 Completion report: `.sin-gpt-web/reports/T-0001.md`
 
-### T-0005 — Social connector architecture and Postiz integration design
+### T-0005 — Buffer-first social connector architecture and boundaries
 
 - Status: `done`
 - Owner: `local-agent`
 - Kind: `plan`
 - Priority: `critical`
 - Dependencies: none
-- Updated: 2026-08-12T14:19:27+00:00
+- Updated: 2026-08-13T14:47:36+00:00
 
-Define common connector contract, per-platform ownership, credential boundaries, bridge/Kestra integration, Postiz optional self-hosted adapter, and dependency-aware implementation waves. Inspect existing YouTube/TikTok connectors and wow-my-zsh social-platform skill layout. Produce durable architecture/docs and task breakdown without secrets.
+Define and verify the Buffer-first contract, account routing, Infisical boundaries, Kestra integration, Supabase staging, and explicit non-goals. Buffer is the only publisher/scheduler for connected channels; Postiz and direct platform adapters are not parallel schedulers or publishers.
 
 Acceptance:
 - Architecture document names every requested platform, official API/browser fallback, dry-run/live gates, verification/idempotency, Postiz boundary, and exact next implementation tasks.
@@ -101,6 +112,188 @@ Allowed paths:
 Evidence: HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms
 
 Completion report: `.sin-gpt-web/reports/T-0010.md`
+
+### T-0011 — Meta app inventory and security settings
+
+- Status: `cancelled`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:10+00:00
+
+Document app ID, business ID, products, redirect URIs, test mode, roles, and security settings without exposing secrets.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+Blocked: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+
+### T-0012 — Configure Instagram API and permissions
+
+- Status: `cancelled`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:10+00:00
+
+Finish Instagram Login/API setup, connect systemfehler_nach_din Creator account, verify permissions and account ID.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+Blocked: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+
+### T-0015 — Meta token acquisition and Infisical storage
+
+- Status: `cancelled`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:11+00:00
+
+Acquire approved OAuth tokens without logging/extracting secrets and store sorted runtime values in Infisical canonical names.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+Blocked: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+
+### T-0016 — Meta dry-run and identity verification
+
+- Status: `cancelled`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:11+00:00
+
+Run account/API checks, bridge dry-run and mocked verification; do not publish live content.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+Blocked: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+
+### T-0017 — Automate TeraBox-SIN to Supabase media staging
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:11+00:00
+
+Implement the durable TeraBox-SIN download to Supabase Storage bridge for the existing Buffer-first scheduler. Preserve TeraBox originals, hash media, make stable HTTPS URLs, record media_assets, and fail closed on missing source or secrets. No live posts and no competing scheduler.
+
+Acceptance:
+- A mocked/integration-safe test proves TeraBox download to Supabase staging, SHA-256 metadata, idempotency, no source deletion, and no secret logging.
+
+Allowed paths:
+- `platforms_connectors`
+- `website/kestra`
+- `supabase`
+- `docs`
+- `scripts`
+- `EXTERNAL-BLOCKERS.md`
+
+### T-0018 — Complete Kestra-to-Buffer scheduling and reconciliation flow
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:04:34+00:00
+
+Extend the existing Kestra workflow and Buffer adapter—not a new scheduler—to stage media, create publish_jobs and publish_targets, schedule through Buffer, persist post IDs, reconcile Buffer statuses with retries, and invoke delayed cleanup only after sent plus grace period. Keep Buffer as the single scheduler and DRY_RUN default.
+
+Acceptance:
+- Kestra invokes the existing Buffer adapter with account/channel routing; schedule and reconciliation state is persisted; cleanup is delayed and fail-closed; one-scheduler invariant and DRY_RUN are tested; no real post.
+
+Allowed paths:
+- `platforms_connectors`
+- `website/kestra`
+- `supabase`
+- `docs`
+- `scripts`
+- `EXTERNAL-BLOCKERS.md`
+
+### T-0019 — Configure OCI runtime through Infisical and verify health
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:11+00:00
+
+Configure only runtime dependencies for the existing Kestra→Supabase staging→Buffer flow on OCI through Infisical. Preserve secrets outside Git/logs, and run read-only health plus DRY_RUN checks. Do not deploy or activate Postiz, rotate credentials, or publish.
+
+Acceptance:
+- OCI service/container health, Supabase REST schema, Storage bucket, Infisical key references, and bridge DRY_RUN are recorded without secret values; any external gate is documented.
+
+Allowed paths:
+- `platforms_connectors`
+- `website/kestra`
+- `supabase`
+- `docs`
+- `scripts`
+- `EXTERNAL-BLOCKERS.md`
+
+### T-0020 — Execute complete TeraBox-to-Buffer dry-run E2E
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:04:34+00:00
+
+Run a reproducible dry-run through the existing Buffer-first path: TeraBox source reference or mocked adapter, Supabase staging, Kestra payload, Buffer account/channel mapping, status reconciliation, and cleanup decision. Never send a real post and do not add Postiz or another scheduler.
+
+Acceptance:
+- Fixture traverses TeraBox→Supabase→Kestra→existing Buffer adapter in DRY_RUN; routing and reconciliation evidence is recorded; cleanup remains pending until publication plus grace period; no live post.
+
+Allowed paths:
+- `platforms_connectors`
+- `website/kestra`
+- `supabase`
+- `docs`
+- `scripts`
+- `EXTERNAL-BLOCKERS.md`
+
+### T-0021 — Audit Buffer-first connected-channel readiness and optional platform blockers
+
+- Status: `backlog`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T14:47:38+00:00
+
+Buffer-first is implemented and remains the sole publisher and scheduler for the nine connected channels. Audit only Buffer account/channel metadata, Infisical runtime key presence without exposing secrets, Buffer route readiness, and the explicit inactive status of Postiz/direct modules. Do not introduce a competing publisher or scheduler; preserve DRY_RUN and fail-closed gates.
+
+Acceptance:
+- Document verified Buffer-first readiness and exact remaining blockers; confirm no competing scheduler is active; keep all live posting disabled; no CAPTCHA/2FA/agreement bypass and no credential rotation.
+
+Allowed paths:
+- `platforms_connectors`
+- `website/kestra`
+- `supabase`
+- `docs`
+- `scripts`
+- `EXTERNAL-BLOCKERS.md`
 
 ### T-0002 — Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM
 
@@ -167,16 +360,16 @@ Evidence: Closed local E2E dry-run succeeded: authenticated Kestra webhook retur
 
 Completion report: `.sin-gpt-web/reports/T-0004.md`
 
-### T-0006 — Implement official API connector wave: Instagram, X, Reddit, LinkedIn
+### T-0006 — Implement official adapters as noncanonical offline/fallback modules
 
 - Status: `done`
 - Owner: `local-agent`
 - Kind: `implement`
 - Priority: `high`
 - Dependencies: T-0005
-- Updated: 2026-08-12T14:20:57+00:00
+- Updated: 2026-08-13T14:47:36+00:00
 
-Implement fail-closed connectors and SIN skills/docs for Instagram Graph API, X API v2, Reddit OAuth API, and LinkedIn Posts API, with offline tests, dry-run, live gates, idempotency, and independent verification. Depends on architecture wave.
+Existing direct official API modules are retained only for isolated verification or future explicitly approved fallback work. They are not the SYSTEMFEHLER_nach_DIN publishing path; Buffer remains sole publisher/scheduler. Keep DRY_RUN and secret isolation.
 
 Allowed paths:
 - `platforms_connectors`
@@ -186,16 +379,16 @@ Evidence: platforms_connectors/Instagram/publish.py; X/publish.py; Reddit/publis
 
 Completion report: `.sin-gpt-web/reports/T-0006.md`
 
-### T-0007 — Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon
+### T-0007 — Implement open-protocol modules as noncanonical offline/fallback modules
 
 - Status: `done`
 - Owner: `local-agent`
 - Kind: `implement`
 - Priority: `high`
 - Dependencies: T-0005
-- Updated: 2026-08-12T14:20:57+00:00
+- Updated: 2026-08-13T14:47:37+00:00
 
-Implement official/API-first connectors and SIN skills/docs for Threads, Pinterest, Bluesky AT Protocol, and Mastodon. Add tests and bridge registration. Depends on architecture wave.
+Existing open-protocol modules are retained only for isolated verification or future explicitly approved fallback work. They are not the SYSTEMFEHLER_nach_DIN publishing path; Buffer remains sole publisher/scheduler. Keep DRY_RUN and secret isolation.
 
 Allowed paths:
 - `platforms_connectors`
@@ -205,16 +398,16 @@ Evidence: platforms_connectors/Threads/publish.py; Pinterest/publish.py; Bluesky
 
 Completion report: `.sin-gpt-web/reports/T-0007.md`
 
-### T-0008 — Implement robust channel connector wave: Telegram and Discord
+### T-0008 — Implement channel modules as noncanonical offline/fallback modules
 
 - Status: `done`
 - Owner: `local-agent`
 - Kind: `implement`
 - Priority: `high`
 - Dependencies: T-0005
-- Updated: 2026-08-12T14:20:57+00:00
+- Updated: 2026-08-13T14:47:37+00:00
 
-Implement Telegram Bot API and Discord Webhook/Bot connectors, SIN skills/docs, tests, dry-run/live gates and bridge registration. Depends on architecture wave.
+Existing Telegram/Discord modules are retained only for isolated verification or future explicitly approved fallback work. They are not the SYSTEMFEHLER_nach_DIN publishing path; Buffer remains sole publisher/scheduler. Keep DRY_RUN and secret isolation.
 
 Allowed paths:
 - `platforms_connectors`
@@ -224,16 +417,16 @@ Evidence: platforms_connectors/Telegram/publish.py; Discord/publish.py; Facebook
 
 Completion report: `.sin-gpt-web/reports/T-0008.md`
 
-### T-0009 — Integrate Postiz self-hosted scheduling/API adapter
+### T-0009 — Document optional Postiz adapter without activating a scheduler
 
 - Status: `done`
 - Owner: `local-agent`
 - Kind: `implement`
 - Priority: `high`
 - Dependencies: T-0005
-- Updated: 2026-08-12T14:20:58+00:00
+- Updated: 2026-08-13T14:47:37+00:00
 
-Evaluate and integrate Postiz as optional self-hosted scheduler/API layer without replacing canonical connectors or secret authority. Add Docker/OrbStack portability docs, adapter contract, health checks and dry-run tests. Depends on architecture wave.
+Retain a dry-run-compatible Postiz adapter and portability documentation as an explicitly inactive option. Do not run Postiz and do not allow it to publish or schedule; Buffer remains the sole publisher/scheduler.
 
 Allowed paths:
 - `platforms_connectors`
@@ -244,25 +437,61 @@ Evidence: platforms_connectors/Postiz/publish.py; Postiz/docker-compose.example.
 
 Completion report: `.sin-gpt-web/reports/T-0009.md`
 
+### T-0013 — Configure Facebook Pages API
+
+- Status: `cancelled`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:10+00:00
+
+Connect target Facebook Page, verify Page ID and publishing permissions, record non-secret metadata.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+Blocked: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+
+### T-0014 — Configure Threads API
+
+- Status: `cancelled`
+- Owner: `chatgpt-web`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: none
+- Updated: 2026-08-13T14:05:11+00:00
+
+Finish Threads product setup and connect account if available; verify permissions and IDs.
+
+Allowed paths:
+- `platforms_connectors`
+- `docs`
+- `.sin-goal`
+
+Blocked: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+
 ## Recent events
 
-- 2026-08-11T10:53:02+00:00 — `chatgpt-web` — `task_completed` `T-0004`: Closed local E2E dry-run succeeded: authenticated Kestra webhook returned HTTP 200; execution 5IEsY7lc1gQHX1Xzbxrz33 finished SUCCESS on flow revision 7; task states update_website_feed=SUCCESS, deploy_if_configured=SUCCESS, social_if_configured=SUCCESS, distribute_social=SUCCESS. website/content/posts.json contained exactly one __T0004_E2E_DRY_RUN__ record after the webhook. Kestra HTTP task output from http://host.docker.internal:18765/publish returned code 200, mode DRY_RUN, and 10 validated DRAFT results for tiktok, instagram, reddit, x, youtube, mastodon, bluesky, telegram, discord, forums. Test post was then removed from posts.json via filesystem edit. No real posts, deploy, push, or credential disclosure occurred. Attempt to stop the temporary bridge test process was frontend-policy-blocked before Mac execution and recorded categorically; the bridge remains a local DRY_RUN-only process.
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0005`: Social connector architecture and Postiz integration design
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0006`: Implement official API connector wave: Instagram, X, Reddit, LinkedIn
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0007`: Implement open/social connector wave: Threads, Pinterest, Bluesky, Mastodon
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0008`: Implement robust channel connector wave: Telegram and Discord
-- 2026-08-12T13:32:06+00:00 — `prime-agent` — `task_added` `T-0009`: Integrate Postiz self-hosted scheduling/API adapter
-- 2026-08-12T13:32:07+00:00 — `prime-agent` — `task_added` `T-0010`: Bridge and Kestra end-to-end connector verification
-- 2026-08-12T14:11:34+00:00 — `prime-agent` — `task_claimed` `T-0005`: claimed by local-agent
-- 2026-08-12T14:19:27+00:00 — `prime-agent` — `task_completed` `T-0005`: platforms_connectors/SOCIAL_CONNECTOR_ARCHITECTURE.md; platforms_connectors/base.py; platforms_connectors/bridge.py; website/kestra/publish_everywhere.yml; 27 pytest tests; ruff check passed; dry-run bridge returned 14 platform results
-- 2026-08-12T14:20:54+00:00 — `prime-agent` — `task_claimed` `T-0006`: claimed by local-agent
-- 2026-08-12T14:20:54+00:00 — `prime-agent` — `task_claimed` `T-0007`: claimed by local-agent
-- 2026-08-12T14:20:56+00:00 — `prime-agent` — `task_claimed` `T-0008`: claimed by local-agent
-- 2026-08-12T14:20:56+00:00 — `prime-agent` — `task_claimed` `T-0009`: claimed by local-agent
-- 2026-08-12T14:20:57+00:00 — `prime-agent` — `task_completed` `T-0006`: platforms_connectors/Instagram/publish.py; X/publish.py; Reddit/publish.py; LinkedIn/publish.py; mocked live tests; DRY_RUN tests; 29 pytest tests; ruff clean
-- 2026-08-12T14:20:57+00:00 — `prime-agent` — `task_completed` `T-0007`: platforms_connectors/Threads/publish.py; Pinterest/publish.py; Bluesky/publish.py; Mastodon/publish.py; mocked live tests; DRY_RUN tests; ruff clean
-- 2026-08-12T14:20:57+00:00 — `prime-agent` — `task_completed` `T-0008`: platforms_connectors/Telegram/publish.py; Discord/publish.py; Facebook/publish.py; mocked live tests; DRY_RUN tests; ruff clean
-- 2026-08-12T14:20:58+00:00 — `prime-agent` — `task_completed` `T-0009`: platforms_connectors/Postiz/publish.py; Postiz/docker-compose.example.yml; Postiz/README.md; optional official compose boundary; no-secret dry-run contract
-- 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_claimed` `T-0010`: claimed by local-agent
-- 2026-08-12T14:23:07+00:00 — `prime-agent` — `task_completed` `T-0010`: HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms
-- 2026-08-12T14:29:17+00:00 — `prime-agent` — `verification` `T-0010`: Post-completion hardening: live fan-out now preflights approvals, runtime config, and dry-run payload validation for every selected target before any network request; 29 connector tests pass; commit 85c702e.
+- 2026-08-13T12:29:18+00:00 — `prime-agent` — `delegation.blocked` `T-0020`: ChatGPT Web delegation not sent: fresh SIN-Chrome Chat page showed disabled Chat/Work controls and delegate preflight could not positively verify authenticated connector; fail-closed, no prompt sent. Plan remains ready.
+- 2026-08-13T12:29:18+00:00 — `prime-agent` — `delegation.blocked` `T-0021`: ChatGPT Web delegation not sent: fresh SIN-Chrome Chat page showed disabled Chat/Work controls and delegate preflight could not positively verify authenticated connector; fail-closed, no prompt sent. Plan remains ready.
+- 2026-08-13T14:04:33+00:00 — `prime-agent` — `task_updated` `T-0021`: task fields updated
+- 2026-08-13T14:04:34+00:00 — `prime-agent` — `task_updated` `T-0018`: task fields updated
+- 2026-08-13T14:04:34+00:00 — `prime-agent` — `task_updated` `T-0020`: task fields updated
+- 2026-08-13T14:05:10+00:00 — `prime-agent` — `task_cancelled` `T-0011`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+- 2026-08-13T14:05:10+00:00 — `prime-agent` — `task_cancelled` `T-0012`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+- 2026-08-13T14:05:10+00:00 — `prime-agent` — `task_cancelled` `T-0013`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_cancelled` `T-0014`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_cancelled` `T-0015`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_cancelled` `T-0016`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
+- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_updated` `T-0017`: task fields updated
+- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_updated` `T-0019`: task fields updated
+- 2026-08-13T14:47:36+00:00 — `prime-agent` — `task_updated` `T-0001`: task fields updated
+- 2026-08-13T14:47:36+00:00 — `prime-agent` — `task_updated` `T-0005`: task fields updated
+- 2026-08-13T14:47:36+00:00 — `prime-agent` — `task_updated` `T-0006`: task fields updated
+- 2026-08-13T14:47:37+00:00 — `prime-agent` — `task_updated` `T-0007`: task fields updated
+- 2026-08-13T14:47:37+00:00 — `prime-agent` — `task_updated` `T-0008`: task fields updated
+- 2026-08-13T14:47:37+00:00 — `prime-agent` — `task_updated` `T-0009`: task fields updated
+- 2026-08-13T14:47:38+00:00 — `prime-agent` — `task_updated` `T-0021`: task fields updated

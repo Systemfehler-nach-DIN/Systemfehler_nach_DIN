@@ -1,6 +1,6 @@
 # Social Publishing Decisions — T-0010 (supersedes earlier research)
 
-Stand: 2026-08-12. Die Implementierung verwendet für produktives Publishing ausschließlich offizielle APIs bzw. offizielle Webhooks/Bot APIs. `instagrapi`, Twikit, Playwright und private Cookie-/Passwort-Backends sind **keine** Bridge-Fallbacks. Alle neuen Connectoren bleiben DRY_RUN, bis je Plattform OAuth, Berechtigungen und Live-Gate explizit geprüft sind.
+Stand: 2026-08-12. Die Implementierung verwendet für produktives Publishing ausschließlich Buffer. Buffer ist für alle neun verbundenen SYSTEMFEHLER_nach_DIN-Kanäle der verbindliche und einzige Publishing-/Scheduling-Layer. Direkte APIs, Browser-Adapter und Postiz werden nicht parallel als Publisher oder Scheduler aktiviert. Alle Aktionen bleiben DRY_RUN, bis die jeweilige Buffer-Verbindung, Routing-Metadaten und Live-Gates separat geprüft sind.
 
 - Instagram: Instagram Graph API; `instagrapi` höchstens isolierter Research-Adapter, nicht Produktionspfad.
 - Facebook/Threads: Meta-/Threads-Graph APIs.
@@ -28,7 +28,7 @@ Chrome-Profil ist nur nach ausdrücklichem Benutzerbefehl zulässig.
 
 Die spaetere `social_bridge_url` wird als lokaler Python-HTTP-Service mit einheitlicher Payload (`title`, `excerpt`, `body`, `media_url`, `url`, `cta`) gebaut. Standard ist immer `DRY_RUN`/`DRAFT`. Secrets und Session-Dateien kommen ausschliesslich ueber Environment bzw. externe Secret-Injection; niemals in Git, YAML, Markdown oder Logs.
 
-Fuer geschlossene Plattformen gilt: **offizielle API zuerst; fuer Browser-Luecken SIN-Browser-Use (Browser Use CLI 3.0) im authentifizierten SIN-Chrome-Bot als schneller Session-Weg; Playwright nur als expliziter Legacy-Fallback.** Fuer offene Protokolle oder explizit fuer Automation gedachte Webhooks/Bot-Schnittstellen wird der native offene Weg bevorzugt, weil Browser-Imitation dort keinen Vorteil bringt.
+Für den verbundenen SYSTEMFEHLER_nach_DIN-Kanal gilt ausschließlich Buffer-first: Buffer übernimmt Publishing und Scheduling. Die folgenden direkten API-/Browser-Rechercheergebnisse sind historische Entscheidungsgrundlage bzw. separat abgegrenzte Fallback-Dokumentation und dürfen keinen parallelen Publishingpfad eröffnen.
 
 ## Entscheidungsmatrix
 
@@ -199,7 +199,7 @@ Beide nutzen die offene, vorgesehene Mastodon-API mit User-Token und Medienuploa
 5. Kein unbegrenztes Retry; pro Account sequentiell und rate-limit-konform.
 6. Draft-Validierung muss komplett offline testbar sein.
 7. Browser-Code bleibt Chromium/Playwright-portabel fuer macOS ARM64 und Linux/OCI.
-8. Offizielle APIs fuer TikTok/Instagram/Reddit/X/YouTube bleiben austauschbare Fallbacks.
+8. Direkte Plattform-APIs und Browserpfade sind für den verbundenen Kanal kein austauschbarer Publishingpfad; Buffer bleibt verbindlich.
 
 ## Gepruefte Quellen
 
@@ -222,7 +222,7 @@ Beide nutzen die offene, vorgesehene Mastodon-API mit User-Token und Medienuploa
 
 ## Endentscheidung
 
-T-0003 kann ohne weitere Architekturentscheidung beginnen: geschlossene Plattformen verwenden Session/private-client + Playwright-Fallback; offene Netze und Webhooks verwenden ihre nativen offenen Schnittstellen. Die Bridge bleibt standardmaessig Draft-only und benoetigt fuer diesen Research-Task keinerlei echte Plattform-Credentials.
+T-0003 ist abgeschlossen. Für den verbundenen Kanal bleibt die Bridge standardmäßig DRY_RUN/DRAFT und routet ausschließlich über Buffer; historische Research-Aussagen darunter sind nicht aktivierbare Publishinganweisungen.
 
 
 ## Aktuelle Routing-Entscheidung (2026-08-12)

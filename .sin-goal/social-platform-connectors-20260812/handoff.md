@@ -1,8 +1,8 @@
 # Orca SIN Goal handoff
 
 Goal: social-platform-connectors-20260812
-Outcome: Baue und verifiziere produktionsreife, fail-closed Social-Platform-Connectoren unter platforms_connectors/ für Instagram, X, Reddit, LinkedIn, Threads, Pinterest, Bluesky, Mastodon, Telegram und Discord; ergänze passende wow-my-zsh SIN-Skills unter connectors/social-platforms/, dokumentiere und integriere Postiz als optionalen self-hosted Scheduling-/API-Layer; verbinde die Bridge/Kestra-Pipeline ohne Geheimnisse und beweise alles mit Tests und Dry-Run-E2E.
-Status: active
+Outcome: Historische Connector-Welle durch Buffer-first abgelöst. Buffer ist der einzige Publisher/Scheduler für verbundene SYSTEMFEHLER_nach_DIN-Kanäle; direkte Adapter und Postiz bleiben inaktiv.
+Status: superseded
 Phase: bootstrap
 Cycle: 0
 Plan revision: 0

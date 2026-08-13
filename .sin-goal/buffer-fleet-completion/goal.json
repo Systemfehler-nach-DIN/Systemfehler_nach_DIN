@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "goal_id": "buffer-fleet-completion",
+  "status": "active",
+  "repository_root": "/Users/jeremy/Workspaces/Workspace-Jeremy/Mein Social Channel/Systemfehler_nach_DIN",
+  "user_outcome": "Buffer-first Social-Publishing vollständig verifizieren: Buffer als einziger Publisher und Scheduler für die neun verbundenen Kanäle, mit TeraBox-Dauerspeicher, Supabase-Staging und Kestra-Orchestrierung.",
+  "definition_of_done": [
+    "Buffer-Adapter nutzt drei account-scoped Infisical-Keys sicher und deckt die verifizierten neun Kanäle ab.",
+    "TeraBox-Dauerspeicher, Supabase-Staging und Kestra-Orchestrierung sind für den bestehenden Buffer-Pfad verifiziert.",
+    "Alle relevanten Social-Skills, Runbooks und Docs sind widerspruchsfrei aktualisiert.",
+    "Postiz und direkte Plattform-Adapter bleiben ausdrücklich inaktiv; kein paralleler Publisher oder Scheduler.",
+    "Tests, DRY_RUN-E2E, Security- und unabhängige Review-Prüfungen liefern Evidenz."
+  ],
+  "functional_requirements": [],
+  "non_functional_requirements": [],
+  "quality_thresholds": {},
+  "explicit_non_goals": [
+    "Kein paralleler Postiz-, direkter Plattform- oder Browser-Scheduler/Publisher für den verbundenen Kanal."
+  ],
+  "inferred_required_work": [],
+  "constraints": [
+    "Keine Tokens/Cookies/Passwörter in Chat, Git, Logs oder Dokumentation.",
+    "Keine Live-Posts, Credential-Rotation oder kostenpflichtige Aktivierung ohne ausdrückliche Freigabe."
+  ],
+  "hard_external_blockers": [],
+  "completion_gates": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7",
+    "G8",
+    "G9",
+    "G10"
+  ],
+  "created_at": "2026-08-12T22:21:23.600398+00:00",
+  "updated_at": "2026-08-12T22:21:23.600398+00:00"
+}

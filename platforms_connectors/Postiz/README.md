@@ -1,7 +1,6 @@
 # Postiz-Integration
 
-Postiz ist ein **optionaler** self-hosted Scheduling-/UI-Layer. Die kanonische Bridge
-behält Payload-Validierung, Live-Gates, Secret-Authority und externe Verifikation.
+Postiz ist **nicht aktiviert** und kein Scheduler des SYSTEMFEHLER_nach_DIN-Kanals. Buffer bleibt der verbindliche und einzige Publishing-/Scheduling-Layer. Die kanonische Bridge behält Payload-Validierung, Live-Gates, Secret-Authority und externe Verifikation.
 
 ## Betrieb
 
@@ -19,5 +18,5 @@ Postiz nicht allein. Secrets gehören in den bestehenden Secret-Workflow; niemal
 
 - Postiz darf keine Credentials parallel zur kanonischen Secret-Authority verwalten.
 - Es darf keine ungeprüften Live-Aktionen auslösen.
-- Bei Ausfall bleibt die direkte API-Bridge verfügbar.
-- Browser-Automation ist kein stiller Fallback.
+- Postiz darf Buffer nicht ersetzen, spiegeln oder parallel schedulen.
+- Direkte Plattform-APIs und Browser-Automation sind kein stiller Fallback.

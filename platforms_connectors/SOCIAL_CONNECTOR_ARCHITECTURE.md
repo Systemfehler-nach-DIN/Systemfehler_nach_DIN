@@ -2,25 +2,25 @@
 
 ## Ziel
 
-Alle Social-Connectoren verwenden einen gemeinsamen, fail-closed Vertrag. Buffer ist für verbundene Systemfehler-Kanäle der primäre Publishing-/Scheduling-Transport; direkte APIs bleiben offizielle Fallbacks.
-YouTube und TikTok bleiben kompatibel; neue Plattformen werden schrittweise aktiviert.
+Alle Social-Connectoren verwenden einen gemeinsamen, fail-closed Vertrag. Buffer ist für verbundene Systemfehler-Kanäle der verbindliche und einzige Publishing-/Scheduling-Transport. Direkte Plattform-APIs werden nicht als parallele Fallback-Publishingwege betrieben.
+YouTube ist über Buffer verbunden. TikTok bleibt bewusst ein separater Studio-Adapter; weitere Plattformen werden nicht automatisch aktiviert.
 
 ## Plattformen
 
-| Connector | Primärweg | UI-Fallback | Skill |
-| Buffer Fleet | Buffer GraphQL/MCP mit account-scoped Infisical-Key | direkte Plattform-API | sin-buffer / Plattformskill |
-|---|---|---|---|
-| Facebook | Buffer (Account 2) | Meta Graph API / Pages | SIN-Facebook |
-| Instagram | Buffer (Account 1) | Instagram Graph API | SIN-Instagram |
-| X | Buffer (Account 3) | X API v2 + Media Upload | SIN-X |
-| Reddit | OAuth API | keiner | SIN-Reddit |
-| LinkedIn | Posts API | keiner | SIN-LinkedIn |
-| Threads | Threads API | keiner | SIN-Threads |
-| Pinterest | API v5 | keiner | SIN-Pinterest |
-| Bluesky | AT Protocol | keiner | SIN-Bluesky |
-| Mastodon | REST API | keiner | SIN-Mastodon |
-| Telegram | Bot API | keiner | SIN-Telegram |
-| Discord | Webhook/Bot API | keiner | SIN-Discord |
+| Connector | Verbindlicher Weg | Status |
+|---|---|---|
+| Instagram | Buffer Account 1 | verbunden |
+| Threads | Buffer Account 1 | verbunden |
+| LinkedIn | Buffer Account 1 | verbunden |
+| Facebook | Buffer Account 2 | verbunden |
+| Bluesky | Buffer Account 2 | verbunden |
+| Mastodon | Buffer Account 2 | verbunden |
+| Pinterest | Buffer Account 3 | verbunden |
+| X | Buffer Account 3 | verbunden |
+| YouTube | Buffer Account 3 | verbunden |
+| TikTok | SIN-TikTok-Studio-Adapter außerhalb Buffer | separat, kein Buffer-Kanal |
+| Reddit/Telegram/Discord/Foren | kein aktiver Publishingpfad | nicht verbunden |
+
 
 ## Gemeinsame Gates
 
@@ -34,17 +34,16 @@ YouTube und TikTok bleiben kompatibel; neue Plattformen werden schrittweise akti
 
 ## Postiz
 
-Postiz wird optional als self-hosted Scheduling-/API-Layer betrieben (AGPL-3.0).
+Postiz wird nicht als Scheduler betrieben. Es bleibt ausschließlich als historische/optionale Integrationsnotiz dokumentiert und darf Buffer weder ersetzen noch parallel schedulen.
 Die kanonischen Connectoren bleiben maßgeblich für Payload-Validierung, Secret-Authority,
 Live-Gates und Verifikation. Postiz darf keine Credentials aus Infisical ersetzen oder
 ungeprüfte Live-Aktionen auslösen. Deployment-Ziel ist Docker/OrbStack-kompatibel und
 später OCI-portabel; Secrets werden ausschließlich über die bestehende Laufzeitumgebung
 injiziert.
 
-## Nächste Welle
+## Aktueller Stand
 
-Implementierung der offiziellen API-Adapter in Wellen: Instagram/X/Reddit/LinkedIn,
-dann Threads/Pinterest/Bluesky/Mastodon, dann Telegram/Discord.
+Die Buffer-Flotte ist implementiert. Offen sind ausschließlich Staging, Kestra-Lifecycle, OCI-Runtime, E2E-Dry-Run und Readiness-Audit; keine neue Plattform-Adapterwelle.
 
 ## Buffer registry
 
@@ -57,7 +56,4 @@ Buffer channel `6a7cf0c4b2d9d57743679762` for channel
 ## Scheduler contract
 
 Buffer ist der Scheduler für die neun verbundenen Kanäle. `dueAt` wird als
-ISO-8601-Wert in `buffer_targets[].due_at` weitergereicht. Postiz bleibt ein
-optionaler Planungs-UI-Layer; sein offizieller Multi-Container-Stack ist lokal
-nicht gestartet/verifiziert und darf Buffer nicht mit eigenen Credentials
-überschreiben.
+ISO-8601-Wert in `buffer_targets[].due_at` weitergereicht. Postiz ist nicht aktiviert und darf Buffer weder ersetzen noch parallel schedulen.

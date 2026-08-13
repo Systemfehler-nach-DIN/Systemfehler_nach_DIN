@@ -1,7 +1,7 @@
 # Buffer-Integration
 
-Stand: 2026-08-12. Buffer ist der bevorzugte Publishing-Layer für die acht
-verifizierten Buffer-Kanäle (9 Kanäle). API-Keys bleiben in Infisical; zur Laufzeit wird
+Stand: 2026-08-12. Buffer ist der bevorzugte Publishing-Layer für neun
+verifizierte Buffer-Kanäle. API-Keys bleiben in Infisical; zur Laufzeit wird
 der gewünschte Account-Key als `BUFFER_API_KEY` injiziert.
 
 ## Abdeckung

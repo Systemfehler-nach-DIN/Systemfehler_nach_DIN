@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "run_id": "aw-20260813T165736Z-de257f15",
+  "status": "done",
+  "repository": "/Users/jeremy/Workspaces/Workspace-Jeremy/Mein Social Channel/Systemfehler_nach_DIN",
+  "trigger": "idle-timeout",
+  "session_id": "019fee23-eabd-7140-ab25-11e9fdb17bd6",
+  "baseline_head": "264f3a2ac6413d21fca1642dfe6150580e88e596",
+  "head_after": "b99465880f25d8159b6a209c58c0280bf645cacd",
+  "head_before_closeout": "d7554a3d82c0987a88b89ca43f628cce2b47961d",
+  "closeout_commit": "b99465880f25d8159b6a209c58c0280bf645cacd",
+  "changed_paths": [
+    ".sin-goal/active.json",
+    ".sin-goal/buffer-fleet-completion/.events.lock",
+    ".sin-goal/buffer-fleet-completion/assumptions.jsonl",
+    ".sin-goal/buffer-fleet-completion/decisions.jsonl",
+    ".sin-goal/buffer-fleet-completion/events.jsonl",
+    ".sin-goal/buffer-fleet-completion/evidence-index.json",
+    ".sin-goal/buffer-fleet-completion/goal.json",
+    ".sin-goal/buffer-fleet-completion/handoff.md",
+    ".sin-goal/buffer-fleet-completion/ledger.json",
+    ".sin-goal/buffer-fleet-completion/observer.json",
+    ".sin-goal/buffer-fleet-completion/plan.json",
+    ".sin-goal/buffer-fleet-completion/risks.json",
+    ".sin-goal/buffer-fleet-completion/work-queue.json",
+    ".sin-goal/social-platform-connectors-20260812/goal.json",
+    ".sin-goal/social-platform-connectors-20260812/handoff.md",
+    ".sin-gpt-web/TASKPLAN.md",
+    ".sin-gpt-web/preflight-proofs/identity-preflight.jsonl",
+    "platforms_connectors/DECISIONS.md",
+    "platforms_connectors/Postiz/README.md",
+    "platforms_connectors/README.md",
+    "platforms_connectors/SOCIAL_CONNECTOR_ARCHITECTURE.md"
+  ],
+  "implementation_commits_baseline_to_pre_closeout": 17,
+  "verification": [
+    "pytest platforms_connectors: 40 passed (rc 0, 0.31s)",
+    "python -m compileall platforms_connectors: rc 0",
+    "ruff check platforms_connectors: All checks passed (rc 0)",
+    "yaml.safe_load website/kestra/publish_everywhere.yml: OK (3 tasks, incl. buffer targets + social_platforms=['buffer'])",
+    "docker compose -f website/kestra/docker-compose.yml config --quiet: rc 0",
+    "taskplan.sqlite3 <-> .sin-gpt-web/TASKPLAN.md consistency: verified (10 done, 6 cancelled, 5 backlog, 0 in-progress, 0 blocked = 21)",
+    "secrets scan on closeout commit: only env-var/key NAMES (BUFFER_API_KEY_ACCOUNT_1..3, infisical_key references) \u2014 no secret VALUES in committed content",
+    "sin-context queried for repository/context (Buffer-first state; no contradictions found)"
+  ],
+  "state_updates": [
+    "active goal switched .sin-goal/active.json: social-platform-connectors-20260812 -> buffer-fleet-completion",
+    "old goal .sin-goal/social-platform-connectors-20260812/{goal.json,handoff.md} marked status=superseded, user_outcome rewritten to Buffer-first supersession",
+    "new .sin-goal/buffer-fleet-completion/ goal tree committed (goal.json active, plan.json/work-queue empty, bootstrap phase)",
+    ".sin-gpt-web/TASKPLAN.md regenerated from live taskplan.sqlite3 (Buffer-first) and committed; matches DB exactly",
+    ".sin-gpt-web/preflight-proofs/identity-preflight.jsonl committed (T-0017 ChatGPT delegation preflight: blocked/fail-closed)",
+    "connector docs reconciled to Buffer-first boundaries and committed: DECISIONS.md, Postiz/README.md, README.md, SOCIAL_CONNECTOR_ARCHITECTURE.md",
+    "17 implementation commits (baseline..d7554a3, 32 files) already on main: Buffer adapter, account routing, Supabase staging lifecycle, docs"
+  ],
+  "memory_updates": [],
+  "housekeeping": [
+    "Committed single closeout commit b994658 reconciling the session's final uncommitted state (idle-timeout interrupted mid-closeout); no reset/clean/stash used",
+    ".sin-gpt-web/taskplan.sqlite3 + -wal/-shm correctly left gitignored/local (canonical DB, never committed); TASKPLAN.md is the shared snapshot",
+    "Left untouched (per safety gates): .sin-gpt-web/callbacks/ (contains live tokens, gitignored), .sin-gpt-web/{chat-capabilities.lock,delegate-callback.lock,friction.jsonl,handoff.md,round-*.md} gitignored",
+    "Stale local-only ignored artifacts left for next owner (not deleted): platforms_connectors/.bridge-test.log, .bridge-test.pid, .venv-upload/; __pycache__/, .pytest_cache/, .ruff_cache/, .DS_Store"
+  ],
+  "remaining_dirty_paths": [],
+  "ambiguities": [
+    "ChatGPT Web delegation gate fail-closed for T-0017/T-0020/T-0021: fresh SIN-Chrome Chat page showed disabled Chat/Work controls and preflight could not positively verify the authenticated connector (see preflight-proofs/identity-preflight.jsonl). Tasks remain in backlog until gate is reverified \u2014 requires Chat controls re-enabled on the bot profile before any ordinary-Chat delegation; old conversations must not be reused.",
+    "Whether the 17 prior implementation commits were already pushed to origin/main was not verified; caretaker performed no push. Confirm before considering the run pushed.",
+    ".sin-goal/buffer-fleet-completion/handoff.md is a bootstrap stub (Phase: bootstrap, 0 tasks) \u2014 real plan lives in .sin-gpt-web/TASKPLAN.md (T-0017..T-0021 backlog). No concurrent agent sessions observed (verified empty)."
+  ],
+  "next": "git -C /Users/jeremy/Workspaces/Workspace-Jeremy/Mein Social Channel/Systemfehler_nach_DIN push origin main   &&   orca-goal-state validate .sin-goal/buffer-fleet-completion   &&   resume T-0017..T-0021 only after re-verifying the sin-gpt-web Chat-control gate (fresh ordinary Chat branch, archive+close the prior canonical tab)."
+}

@@ -122,3 +122,193 @@ class BridgeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LifecycleContractTests(unittest.TestCase):
+    def setUp(self):
+        bridge._LIFECYCLE_STORE.clear()
+
+    def test_kestra_envelope_preserves_buffer_targets(self):
+        payload, platforms = bridge._request_envelope(
+            {
+                "payload": {**SAMPLE, "content_id": "fixture-envelope"},
+                "platforms": ["buffer"],
+                "buffer_targets": [
+                    {
+                        "account": 3,
+                        "platform": "youtube",
+                        "channel_id": "yt-envelope",
+                        "media_type": "video",
+                    }
+                ],
+            }
+        )
+        self.assertEqual(platforms, ["buffer"])
+        self.assertEqual(payload["buffer_targets"][0]["channel_id"], "yt-envelope")
+
+    def test_buffer_published_is_terminal_sent_state(self):
+        self.assertEqual(
+            bridge._buffer_job_status(["sent", "published"]), (True, "sent")
+        )
+        self.assertEqual(
+            bridge._buffer_job_status(["scheduled", "published"]),
+            (False, "scheduled"),
+        )
+        self.assertEqual(
+            bridge._buffer_job_status(["failed", "published"]), (False, "error")
+        )
+
+    def test_live_lifecycle_refuses_in_memory_durability(self):
+        with patch.dict(os.environ, {}, clear=True):
+            with patch(
+                "platforms_connectors.Buffer.publish.publish"
+            ) as provider, self.assertRaisesRegex(
+                PermissionError, "requires Supabase durability"
+            ):
+                bridge.lifecycle(
+                    {**SAMPLE, "content_id": "fixture-live-no-db"}, dry_run=False
+                )
+        provider.assert_not_called()
+
+    def test_lifecycle_dry_run_is_buffer_only_and_pending(self):
+        from bridge import lifecycle
+
+        payload = {
+            **SAMPLE,
+            "content_id": "fixture-1",
+            "buffer_targets": [
+                {
+                    "account": 3,
+                    "platform": "youtube",
+                    "channel_id": "yt",
+                    "media_type": "video",
+                }
+            ],
+        }
+        with patch.dict(os.environ, {}, clear=True):
+            result = lifecycle(payload)
+            self.assertEqual(result["status"], "scheduled")
+            self.assertFalse(result["reconciliation"]["all_sent"])
+            self.assertEqual(result["scheduled"]["durable"], False)
+            again = lifecycle(payload)
+        self.assertTrue(again["deduplicated"])
+        self.assertEqual(result["idempotency_key"], again["idempotency_key"])
+
+    def test_real_buffer_adapter_lifecycle_retry_never_creates_duplicate(self):
+        durable = {}
+        provider_calls = {"create": 0, "get": 0}
+
+        def find_scheduled(*, idempotency_key):
+            row = durable.get(idempotency_key)
+            return dict(row) if row else None
+
+        def record_scheduled(**kw):
+            key = kw["idempotency_key"]
+            current = durable.get(key)
+            if kw["status"] == "draft" and current:
+                return {**current, "existing": True}
+            row = {
+                "job_id": "job-r8",
+                "content_id": kw["content_id"],
+                "idempotency_key": key,
+                "status": kw["status"],
+                "targets": [dict(item) for item in kw.get("targets", [])],
+                "durable": True,
+            }
+            if kw.get("provider_result") is not None:
+                row["provider_result"] = kw["provider_result"]
+            durable[key] = row
+            return {**row, "existing": False}
+
+        def request_json(endpoint, **kw):
+            query = kw["data"]["query"]
+            if "createPost" in query:
+                provider_calls["create"] += 1
+                return {
+                    "data": {
+                        "createPost": {
+                            "__typename": "PostActionSuccess",
+                            "post": {"id": "buffer-post-r8", "status": "scheduled"},
+                        }
+                    }
+                }
+            if "post(input:" in query:
+                provider_calls["get"] += 1
+                status = "scheduled" if provider_calls["get"] == 1 else "sent"
+                return {
+                    "data": {
+                        "post": {
+                            "id": "buffer-post-r8",
+                            "status": status,
+                            "dueAt": None,
+                        }
+                    }
+                }
+            self.fail("unexpected Buffer GraphQL operation")
+
+        payload = {
+            **SAMPLE,
+            "content_id": "fixture-real-buffer-r8",
+            "media_url": "https://example.invalid/video.mp4",
+            "buffer_targets": [
+                {
+                    "account": 3,
+                    "platform": "youtube",
+                    "channel_id": "yt-r8",
+                    "media_type": "video",
+                }
+            ],
+        }
+        env = {
+            "SUPABASE_URL": "https://supabase.invalid",
+            "SUPABASE_SERVICE_ROLE_KEY": "fixture-service-key",
+            "BUFFER_API_KEY_ACCOUNT_3": "fixture-buffer-key",
+            "BUFFER_RECONCILE_MAX_ATTEMPTS": "1",
+            "BUFFER_RECONCILE_RETRY_SECONDS": "0",
+        }
+        with (
+            patch.dict(os.environ, env, clear=True),
+            patch(
+                "platforms_connectors.MediaStaging.staging.find_scheduled",
+                side_effect=find_scheduled,
+            ),
+            patch(
+                "platforms_connectors.MediaStaging.staging.record_scheduled",
+                side_effect=record_scheduled,
+            ),
+            patch(
+                "platforms_connectors.MediaStaging.staging.record_job_status"
+            ) as record_job_status,
+            patch(
+                "platforms_connectors.MediaStaging.staging.record_target_status"
+            ) as record_target_status,
+            patch(
+                "platforms_connectors.MediaStaging.staging.mark_published"
+            ) as mark_published,
+            patch(
+                "platforms_connectors.MediaStaging.staging.cleanup_due",
+                return_value={"deleted": 0, "skipped": 1},
+            ) as cleanup_due,
+            patch(
+                "platforms_connectors.Buffer.publish.request_json",
+                side_effect=request_json,
+            ),
+        ):
+            first = bridge.lifecycle(payload, dry_run=False)
+            second = bridge.lifecycle(payload, dry_run=False)
+            third = bridge.lifecycle(payload, dry_run=False)
+
+        self.assertEqual(first["status"], "scheduled")
+        self.assertEqual(
+            first["scheduled"]["targets"][0]["buffer_post_id"], "buffer-post-r8"
+        )
+        self.assertEqual(second["status"], "sent")
+        self.assertTrue(second["deduplicated"])
+        self.assertEqual(third["status"], "sent")
+        self.assertTrue(third["deduplicated"])
+        self.assertEqual(provider_calls["create"], 1)
+        self.assertEqual(provider_calls["get"], 2)
+        self.assertGreaterEqual(record_target_status.call_count, 2)
+        self.assertGreaterEqual(record_job_status.call_count, 2)
+        mark_published.assert_called_once()
+        self.assertEqual(cleanup_due.call_count, 2)

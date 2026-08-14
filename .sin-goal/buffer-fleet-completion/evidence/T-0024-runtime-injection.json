@@ -1,0 +1,23 @@
+{
+  "schema": "sin-runtime-injection-evidence/v1",
+  "generated_at": "2026-08-13T23:05:56Z",
+  "wrapper": "website/kestra/run-with-infisical.sh",
+  "wrapper_execution": "success; Kestra and social-bridge recreated",
+  "social_bridge_runtime": {
+    "BUFFER_API_KEY_ACCOUNT_1_present": true,
+    "BUFFER_API_KEY_ACCOUNT_2_present": true,
+    "BUFFER_API_KEY_ACCOUNT_3_present": true,
+    "SUPABASE_URL_present": true,
+    "SUPABASE_SERVICE_ROLE_KEY_present": true,
+    "SUPABASE_MEDIA_BUCKET_present": true,
+    "PUBLISH_MODE": "DRY_RUN",
+    "ALLOW_REAL_POSTS": "false"
+  },
+  "canonical_mapping": {
+    "NEXT_PUBLIC_SUPABASE_URL_to_SUPABASE_URL": true,
+    "SUPABASE_SERVICE_ROLE_KEY_runtime_only": true
+  },
+  "credential_values_recorded": false,
+  "credential_rotation": false,
+  "live_posts": false
+}

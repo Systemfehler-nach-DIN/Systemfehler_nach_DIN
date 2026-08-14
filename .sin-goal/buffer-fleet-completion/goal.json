@@ -3,7 +3,7 @@
   "goal_id": "buffer-fleet-completion",
   "status": "active",
   "repository_root": "/Users/jeremy/Workspaces/Workspace-Jeremy/Mein Social Channel/Systemfehler_nach_DIN",
-  "user_outcome": "Buffer-first Social-Publishing vollständig verifizieren: Buffer als einziger Publisher und Scheduler für die neun verbundenen Kanäle, mit TeraBox-Dauerspeicher, Supabase-Staging und Kestra-Orchestrierung.",
+  "user_outcome": "T-0022..T-0026: Buffer-first Social-Publishing real lifecycle fertigstellen: TeraBox→Supabase, Kestra→Buffer scheduling/reconciliation, Infisical runtime injection, reproducible E2E and nine-channel readiness.",
   "definition_of_done": [
     "Buffer-Adapter nutzt drei account-scoped Infisical-Keys sicher und deckt die verifizierten neun Kanäle ab.",
     "TeraBox-Dauerspeicher, Supabase-Staging und Kestra-Orchestrierung sind für den bestehenden Buffer-Pfad verifiziert.",

@@ -1,0 +1,53 @@
+{
+  "schema": "sin-buffer-fleet-readonly-evidence/v1",
+  "generated_at": "2026-08-13T23:05:56Z",
+  "method": "Buffer GraphQL read-only channel inventory with per-account credentials injected by Infisical",
+  "accounts": [
+    {
+      "account": 1,
+      "channel_count": 3,
+      "platforms": ["instagram", "threads", "linkedin"],
+      "all_connected": true
+    },
+    {
+      "account": 2,
+      "channel_count": 3,
+      "platforms": ["facebook", "bluesky", "mastodon"],
+      "all_connected": true
+    },
+    {
+      "account": 3,
+      "channel_count": 3,
+      "platforms": ["pinterest", "x", "youtube"],
+      "all_connected": true
+    }
+  ],
+  "channel_count": 9,
+  "all_isDisconnected_false": true,
+  "pinterest": {
+    "channel_id": "6a7ce9a2b2d9d577436725f1",
+    "connected": true,
+    "board_count": 0,
+    "board_service_id_verified": false,
+    "gate": "fail-closed; placeholder values are rejected"
+  },
+  "dry_run_routes": {
+    "validated_without_pinterest_board": 8,
+    "pinterest_explicitly_blocked": true,
+    "all_9_syntactic_fixture_with_board_metadata": true,
+    "x_twitter_alias_normalized": true
+  },
+  "buffer_only": {
+    "bridge_gate": true,
+    "kestra_gate": true,
+    "direct_or_postiz_selection_rejected_by_canonical_lifecycle_endpoint": true
+  },
+  "toolchain": {
+    "node": "v24.16.0",
+    "buffer_cli": "1.2.0",
+    "posts_get_is_direct_query": true,
+    "posts_get_status_selectable": true
+  },
+  "credential_values_recorded": false,
+  "live_posts": false
+}

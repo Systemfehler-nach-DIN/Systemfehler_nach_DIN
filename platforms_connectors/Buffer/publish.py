@@ -91,12 +91,15 @@ def _input(payload: dict[str, Any], target: dict[str, Any]) -> dict[str, Any]:
     elif service == "facebook":
         metadata["facebook"] = {"type": str(target.get("facebook_type") or "post")}
     elif service == "pinterest":
-        board = str(
-            target.get("board_service_id") or os.getenv("BUFFER_BOARD_SERVICE_ID", "")
-        ).strip()
+        configured_board = str(target.get("board_service_id") or "").strip()
+        if configured_board.upper().startswith(("PENDING_", "TODO_", "PLACEHOLDER_")):
+            configured_board = ""
+        board = configured_board or os.getenv("BUFFER_BOARD_SERVICE_ID", "").strip()
+        if board.upper().startswith(("PENDING_", "TODO_", "PLACEHOLDER_")):
+            board = ""
         if not board:
             raise ConnectorError(
-                "Buffer Pinterest requires buffer.board_service_id from channel metadata"
+                "Buffer Pinterest requires a verified buffer.board_service_id from channel metadata"
             )
         metadata["pinterest"] = {
             "boardServiceId": board,
@@ -152,16 +155,69 @@ def _create(value: dict[str, Any], key: str) -> dict[str, Any]:
     return result.get("post") or {}
 
 
-def publish(payload: dict[str, Any], *, dry_run: bool = True) -> dict[str, Any]:
+def get_post(post_id: str, *, account: str | int | None = None) -> dict[str, Any]:
+    """Fetch the current Buffer lifecycle state for one persisted post ID."""
+    identifier = str(post_id or "").strip()
+    if not identifier:
+        raise ConnectorError("Buffer post reconciliation requires post_id")
+    query = """
+    query GetPost($input: PostInput!) {
+      post(input: $input) { id status dueAt }
+    }
+    """
+    response = request_json(
+        ENDPOINT,
+        headers={"Authorization": f"Bearer {_key_for({'account': account})}"},
+        data={"query": query, "variables": {"input": {"id": identifier}}},
+    )
+    if response.get("errors"):
+        raise ConnectorError("Buffer GraphQL post lookup returned an error")
+    post = response.get("data", {}).get("post")
+    if not isinstance(post, dict) or str(post.get("id") or "") != identifier:
+        raise ConnectorError("Buffer GraphQL post lookup returned no matching post")
+    return post
+
+
+def _target_metadata(
+    target: dict[str, Any], post: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    value = {
+        "account": target.get("account"),
+        "platform": str(target.get("platform") or target.get("service") or "").lower(),
+        "channel_id": str(target.get("channel_id") or target.get("id") or ""),
+    }
+    if target.get("organization_id"):
+        value["organization_id"] = str(target["organization_id"])
+    if post is not None:
+        if post.get("id"):
+            value["buffer_post_id"] = str(post["id"])
+        if post.get("status"):
+            value["status"] = str(post["status"]).lower()
+    return value
+
+
+def publish(
+    payload: dict[str, Any],
+    *,
+    dry_run: bool = True,
+    idempotency_key: str | None = None,
+    provider: str = "buffer",
+) -> dict[str, Any]:
     targets = _targets(payload)
     values = [_input(payload, target) for target in targets]
     if dry_run:
         return {
             **dry_result("buffer", BACKEND, endpoint=ENDPOINT, payload=payload),
             "targets": values,
+            "target_metadata": [_target_metadata(target) for target in targets],
+            "provider": provider,
+            "idempotency_key": idempotency_key,
         }
     posts = [_create(value, _key_for(target)) for value, target in zip(values, targets)]
     external_ids = [str(post.get("id")) for post in posts if post.get("id")]
+    target_metadata = [
+        _target_metadata(target, post) for target, post in zip(targets, posts)
+    ]
     result = {
         "platform": "buffer",
         "backend": BACKEND,
@@ -170,6 +226,9 @@ def publish(payload: dict[str, Any], *, dry_run: bool = True) -> dict[str, Any]:
         "validated": True,
         "external_ids": external_ids,
         "posts": posts,
+        "target_metadata": target_metadata,
+        "provider": provider,
+        "idempotency_key": idempotency_key,
     }
     if len(external_ids) == 1:
         result["external_id"] = external_ids[0]

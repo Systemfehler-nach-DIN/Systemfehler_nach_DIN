@@ -1,0 +1,47 @@
+{
+  "schema": "sin-buffer-lifecycle-evidence/v1",
+  "generated_at": "2026-08-14T01:19:41.485064+00:00",
+  "mode": "DRY_RUN",
+  "external_mutations": false,
+  "live_posts": false,
+  "terabox": {
+    "mode": "mocked-read-only-contract",
+    "status_preflight_first": true,
+    "download_by_fs_id": true,
+    "source_delete_calls": 0
+  },
+  "supabase_staging": {
+    "mode": "mocked-http",
+    "sha256": "9df2d6a7e02fcd10e49b6e1534da5acf1fc0a409a11137840bcd4a497b5f2cc7",
+    "stable_public_url": true,
+    "provenance": {
+      "source_provider": "terabox",
+      "source_fs_id": 42
+    },
+    "request_count": 2
+  },
+  "kestra": {
+    "lifecycle_endpoint": true,
+    "buffer_only_gate": true,
+    "bounded_retry_max_attempts": 3
+  },
+  "buffer": {
+    "adapter": "production-Buffer-adapter",
+    "mode": "DRY_RUN",
+    "channel_id": "6a7cf0c4b2d9d57743679762",
+    "provider_create_calls": 1
+  },
+  "persistence_reconciliation": {
+    "idempotency_key": "a2b7bb768e3c1a72da91634d92ea1d4675027e8ceaf668bea7058947352fa067",
+    "first_status": "scheduled",
+    "second_status": "sent",
+    "second_deduplicated": true,
+    "persisted_buffer_post_id": "fixture-buffer-post-1"
+  },
+  "cleanup": {
+    "invocations": 1,
+    "deleted": 0,
+    "skipped": 1,
+    "grace_guarded": true
+  }
+}

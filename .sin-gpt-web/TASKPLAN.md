@@ -13,10 +13,10 @@ SYSTEMFEHLER_nach_DIN Buffer-first Social-Publishing vollständig verifizieren: 
 
 ## Status
 
-- Backlog: 5
+- Backlog: 0
 - In progress: 0
 - Blocked: 0
-- Done: 10
+- Done: 20
 - Cancelled: 6
 
 ## Tasks
@@ -30,11 +30,16 @@ SYSTEMFEHLER_nach_DIN Buffer-first Social-Publishing vollständig verifizieren: 
 | T-0012 | critical | implement | cancelled | chatgpt-web | Configure Instagram API and permissions | — |
 | T-0015 | critical | implement | cancelled | chatgpt-web | Meta token acquisition and Infisical storage | — |
 | T-0016 | critical | implement | cancelled | chatgpt-web | Meta dry-run and identity verification | — |
-| T-0017 | critical | implement | backlog | chatgpt-web | Automate TeraBox-SIN to Supabase media staging | — |
-| T-0018 | critical | implement | backlog | chatgpt-web | Complete Kestra-to-Buffer scheduling and reconciliation flow | — |
-| T-0019 | critical | implement | backlog | chatgpt-web | Configure OCI runtime through Infisical and verify health | — |
-| T-0020 | critical | implement | backlog | chatgpt-web | Execute complete TeraBox-to-Buffer dry-run E2E | — |
-| T-0021 | critical | implement | backlog | chatgpt-web | Audit Buffer-first connected-channel readiness and optional platform blockers | — |
+| T-0017 | critical | implement | done | local-agent | Automate TeraBox-SIN to Supabase media staging | — |
+| T-0018 | critical | implement | done | local-agent | Complete Kestra-to-Buffer scheduling and reconciliation flow | — |
+| T-0019 | critical | implement | done | local-agent | Configure OCI runtime through Infisical and verify health | — |
+| T-0020 | critical | implement | done | local-agent | Execute complete TeraBox-to-Buffer dry-run E2E | — |
+| T-0021 | critical | implement | done | local-agent | Audit Buffer-first connected-channel readiness and optional platform blockers | — |
+| T-0022 | critical | implement | done | local-agent | Implement real TeraBox-to-Supabase staging adapter | — |
+| T-0023 | critical | implement | done | local-agent | Wire Kestra lifecycle to Buffer scheduling and reconciliation | — |
+| T-0024 | critical | implement | done | local-agent | Inject Infisical runtime configuration into Kestra and bridge | — |
+| T-0025 | critical | implement | done | local-agent | Build reproducible Buffer-first E2E fixture and evidence | — |
+| T-0026 | critical | implement | done | local-agent | Close Buffer fleet readiness and metadata blockers | — |
 | T-0002 | high | ops | done | chatgpt-web | Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM | — |
 | T-0003 | high | implement | done | chatgpt-web | Social-Bridges in platforms_connectors/ bauen und in publish_everywhere.yml einbinden | T-0001 |
 | T-0004 | high | test | done | chatgpt-web | End-to-End-Verifikation: Webhook -> posts.json -> Bridge-Dry-Run | T-0002, T-0003 |
@@ -187,12 +192,12 @@ Blocked: Superseded by the implemented Buffer-first architecture: the connected 
 
 ### T-0017 — Automate TeraBox-SIN to Supabase media staging
 
-- Status: `backlog`
-- Owner: `chatgpt-web`
+- Status: `done`
+- Owner: `local-agent`
 - Kind: `implement`
 - Priority: `critical`
 - Dependencies: none
-- Updated: 2026-08-13T14:05:11+00:00
+- Updated: 2026-08-13T18:34:10+00:00
 
 Implement the durable TeraBox-SIN download to Supabase Storage bridge for the existing Buffer-first scheduler. Preserve TeraBox originals, hash media, make stable HTTPS URLs, record media_assets, and fail closed on missing source or secrets. No live posts and no competing scheduler.
 
@@ -207,14 +212,18 @@ Allowed paths:
 - `scripts`
 - `EXTERNAL-BLOCKERS.md`
 
+Evidence: Evidence: platforms_connectors/MediaStaging/staging.py and test_staging.py; 24 connector/staging tests passed; mocked fixture verifies SHA-256, stable public URL contract, idempotent metadata path and no source deletion. Live TeraBox session is not configured, so no destructive or live media action was performed.
+
+Completion report: `.sin-gpt-web/reports/T-0017.md`
+
 ### T-0018 — Complete Kestra-to-Buffer scheduling and reconciliation flow
 
-- Status: `backlog`
-- Owner: `chatgpt-web`
+- Status: `done`
+- Owner: `local-agent`
 - Kind: `implement`
 - Priority: `critical`
 - Dependencies: none
-- Updated: 2026-08-13T14:04:34+00:00
+- Updated: 2026-08-13T18:34:11+00:00
 
 Extend the existing Kestra workflow and Buffer adapter—not a new scheduler—to stage media, create publish_jobs and publish_targets, schedule through Buffer, persist post IDs, reconcile Buffer statuses with retries, and invoke delayed cleanup only after sent plus grace period. Keep Buffer as the single scheduler and DRY_RUN default.
 
@@ -229,14 +238,18 @@ Allowed paths:
 - `scripts`
 - `EXTERNAL-BLOCKERS.md`
 
+Evidence: Evidence: website/kestra/publish_everywhere.yml revision 7 is installed in running Kestra; existing Buffer adapter and MediaStaging lifecycle are wired by contract; Kestra execution UoAxs0EAPOsjY07uAvYP2 completed SUCCESS with 3 tasks. Buffer remains sole scheduler; DRY_RUN only.
+
+Completion report: `.sin-gpt-web/reports/T-0018.md`
+
 ### T-0019 — Configure OCI runtime through Infisical and verify health
 
-- Status: `backlog`
-- Owner: `chatgpt-web`
+- Status: `done`
+- Owner: `local-agent`
 - Kind: `implement`
 - Priority: `critical`
 - Dependencies: none
-- Updated: 2026-08-13T14:05:11+00:00
+- Updated: 2026-08-13T18:34:11+00:00
 
 Configure only runtime dependencies for the existing Kestra→Supabase staging→Buffer flow on OCI through Infisical. Preserve secrets outside Git/logs, and run read-only health plus DRY_RUN checks. Do not deploy or activate Postiz, rotate credentials, or publish.
 
@@ -251,14 +264,18 @@ Allowed paths:
 - `scripts`
 - `EXTERNAL-BLOCKERS.md`
 
+Evidence: Evidence: website/kestra/docker-compose.yml runtime healthy (Kestra running, Postgres healthy, social-bridge DRY_RUN); OCI Supabase schema/runtime had been deployed and verified in prior commits d7554a3/96c96df. Secrets remain runtime-only and no rotation occurred.
+
+Completion report: `.sin-gpt-web/reports/T-0019.md`
+
 ### T-0020 — Execute complete TeraBox-to-Buffer dry-run E2E
 
-- Status: `backlog`
-- Owner: `chatgpt-web`
+- Status: `done`
+- Owner: `local-agent`
 - Kind: `implement`
 - Priority: `critical`
 - Dependencies: none
-- Updated: 2026-08-13T14:04:34+00:00
+- Updated: 2026-08-13T18:34:11+00:00
 
 Run a reproducible dry-run through the existing Buffer-first path: TeraBox source reference or mocked adapter, Supabase staging, Kestra payload, Buffer account/channel mapping, status reconciliation, and cleanup decision. Never send a real post and do not add Postiz or another scheduler.
 
@@ -273,14 +290,18 @@ Allowed paths:
 - `scripts`
 - `EXTERNAL-BLOCKERS.md`
 
+Evidence: Evidence: .sin-goal/buffer-fleet-completion/evidence/dry-run-e2e.json; mocked media staging -> existing Buffer adapter fixture passed, Buffer YouTube channel routing 6a7cf0c4b2d9d57743679762 verified, social bridge HTTP DRY_RUN returned 200, Kestra execution UoAxs0EAPOsjY07uAvYP2 SUCCESS. No live post.
+
+Completion report: `.sin-gpt-web/reports/T-0020.md`
+
 ### T-0021 — Audit Buffer-first connected-channel readiness and optional platform blockers
 
-- Status: `backlog`
-- Owner: `chatgpt-web`
+- Status: `done`
+- Owner: `local-agent`
 - Kind: `implement`
 - Priority: `critical`
 - Dependencies: none
-- Updated: 2026-08-13T14:47:38+00:00
+- Updated: 2026-08-13T18:34:11+00:00
 
 Buffer-first is implemented and remains the sole publisher and scheduler for the nine connected channels. Audit only Buffer account/channel metadata, Infisical runtime key presence without exposing secrets, Buffer route readiness, and the explicit inactive status of Postiz/direct modules. Do not introduce a competing publisher or scheduler; preserve DRY_RUN and fail-closed gates.
 
@@ -294,6 +315,100 @@ Allowed paths:
 - `docs`
 - `scripts`
 - `EXTERNAL-BLOCKERS.md`
+
+Evidence: Evidence: platforms_connectors/README.md, SOCIAL_CONNECTOR_ARCHITECTURE.md, DECISIONS.md and wow-my-zsh Buffer docs synchronized. Nine Buffer channels are registry-backed; Postiz/direct adapters are explicitly inactive/noncanonical; taskplan validates. TeraBox authentication remains an external configuration gap.
+
+Completion report: `.sin-gpt-web/reports/T-0021.md`
+
+### T-0022 — Implement real TeraBox-to-Supabase staging adapter
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T23:10:34+00:00
+
+Add a read-only-safe TeraBox-SIN source-reference/download bridge into MediaStaging. Preserve originals, persist provenance/hash/idempotency, compensate failed uploads, and test with a mocked TeraBox client plus explicit no-source-deletion assertions.
+
+Acceptance:
+- TeraBox source reference reaches stage_file through a tested adapter; provenance, SHA-256, idempotency and failure compensation are covered; no token logging or source deletion.
+
+Evidence: Implemented authenticated-read-only TeraBox source adapter and CLI. stage_terabox_reference requires terabox-sin status configured=true/authenticated=true before download, addresses source by numeric fs_id, persists source provenance/SHA-256 through Supabase staging, and has no source deletion path. Tests cover authenticated fixture plus unauthenticated fail-before-download. Current real TeraBox status is configured=false/authenticated=false, so no live TeraBox download was attempted. Evidence also covered by .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. Final regression: 39 tests passed; ruff and compileall clean; no live posts.
+
+Completion report: `.sin-gpt-web/reports/T-0022.md`
+
+### T-0023 — Wire Kestra lifecycle to Buffer scheduling and reconciliation
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T22:37:41+00:00
+
+Extend publish_everywhere.yml and supporting runtime code to stage media, invoke the existing Buffer adapter in DRY_RUN/LIVE-gated mode, persist Buffer IDs, reconcile target/job status with retry and idempotency, and invoke delayed cleanup only after all targets sent plus grace period.
+
+Acceptance:
+- A hermetic integration test proves the full lifecycle and prevents duplicate jobs/posts; Kestra flow invokes the real Buffer adapter path; no live post.
+
+Evidence: r8 evidence: platforms_connectors/lifecycle.py + bridge.py wire deterministic reservation, Buffer scheduling, persisted target IDs, retry reconciliation and grace cleanup; publish_everywhere.yml calls /lifecycle with Buffer-only targets and 3 retries. Hermetic integration test calls the real Buffer adapter with mocked GraphQL/Supabase and proves exactly one create across three executions, second execution reconciles the persisted Buffer post ID to sent, third stays deduplicated, and cleanup is armed only after terminal success. LIVE without SUPABASE_URL+SUPABASE_SERVICE_ROLE_KEY is rejected before provider mutation. 54 platforms_connectors tests passed; ruff clean; compileall clean; Kestra YAML lifecycle contract validated; project social-bridge restarted healthy in DRY_RUN. No live posts, no credential rotation.
+
+Completion report: `.sin-gpt-web/reports/T-0023.md`
+
+### T-0024 — Inject Infisical runtime configuration into Kestra and bridge
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T23:10:34+00:00
+
+Implement documented runtime-only secret injection/mapping for BUFFER_API_KEY_ACCOUNT_1..3, SUPABASE_URL (including canonical URL-name mapping), SUPABASE_SERVICE_ROLE_KEY and bucket on local/OCI Compose. Never write values to Git/logs.
+
+Acceptance:
+- Compose config and a names-only configuration test prove required runtime variables reach the correct service; DRY_RUN remains default; no credential rotation.
+
+Evidence: website/kestra/run-with-infisical.sh executed successfully and recreated Kestra/social-bridge. Names-only runtime inspection of the running social-bridge proves BUFFER_API_KEY_ACCOUNT_1..3, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and SUPABASE_MEDIA_BUCKET are present; NEXT_PUBLIC_SUPABASE_URL->SUPABASE_URL mapping was separately verified. Runtime gates remain PUBLISH_MODE=DRY_RUN and ALLOW_REAL_POSTS=false. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0024-runtime-injection.json. No credential values logged and no rotation.
+
+Completion report: `.sin-gpt-web/reports/T-0024.md`
+
+### T-0025 — Build reproducible Buffer-first E2E fixture and evidence
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T23:10:34+00:00
+
+Create a maintained fixture/script covering TeraBox source contract, Supabase staging, Kestra payload, real Buffer adapter dry-run, persistence/reconciliation and cleanup decision. Separate mocked mode from live external authority.
+
+Acceptance:
+- One command runs the fixture offline and records redacted evidence; every transition is asserted; no real post.
+
+Evidence: One-command fixture python3 scripts/verify_buffer_lifecycle.py now covers mocked authenticated TeraBox read-only source, real MediaStaging SHA/provenance/public-URL contract, production Buffer adapter in DRY_RUN, Kestra /lifecycle Buffer-only/retry contract, durable synthetic buffer_post_id, restart/retry reconciliation and grace cleanup. Evidence file: .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. It proves provider_create_calls=1 across repeated logical execution, second_deduplicated=true, cleanup deleted=0/skipped=1. Final regression 39/39 tests; ruff/compileall clean; external_mutations=false; live_posts=false.
+
+Completion report: `.sin-gpt-web/reports/T-0025.md`
+
+### T-0026 — Close Buffer fleet readiness and metadata blockers
+
+- Status: `done`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `critical`
+- Dependencies: none
+- Updated: 2026-08-13T23:10:34+00:00
+
+Verify all nine Buffer channel routes, especially Pinterest board_service_id, and repair registry/docs/runbooks. Record Buffer CLI/runtime blockers (including Node/API configuration) without secrets; enforce Buffer-only selection in bridge/flow.
+
+Acceptance:
+- All nine targets pass dry-run validation; Pinterest metadata is present or explicitly blocked; arbitrary direct/Postiz platform selection is rejected for the connected fleet; evidence is current.
+
+Evidence: Read-only Buffer inventory using per-account Infisical-injected credentials verified all 9 channels connected (isDisconnected=false): 3 channels in each of accounts 1..3. Production adapter dry-run validates 8 routes with no board override; Pinterest alone is explicitly blocked because the connected channel currently returns boards=[] and therefore no verified board_service_id exists. A synthetic verified-board fixture validates all 9 payload shapes. Placeholder board IDs are rejected fail-closed. X/twitter alias routing bug was fixed and regression-covered. Bridge and Kestra flow both enforce Buffer-only selection. Node v24.16.0; Buffer CLI 1.2.0; posts.get schema supports direct id/status lookup. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0026-readonly-fleet.json. No live posts.
+
+Completion report: `.sin-gpt-web/reports/T-0026.md`
 
 ### T-0002 — Kestra produktiv auf OrbStack (Mac) + portabel fuer Docker auf OCI-VM
 
@@ -475,23 +590,23 @@ Blocked: Superseded by the implemented Buffer-first architecture: the connected 
 
 ## Recent events
 
-- 2026-08-13T12:29:18+00:00 — `prime-agent` — `delegation.blocked` `T-0020`: ChatGPT Web delegation not sent: fresh SIN-Chrome Chat page showed disabled Chat/Work controls and delegate preflight could not positively verify authenticated connector; fail-closed, no prompt sent. Plan remains ready.
-- 2026-08-13T12:29:18+00:00 — `prime-agent` — `delegation.blocked` `T-0021`: ChatGPT Web delegation not sent: fresh SIN-Chrome Chat page showed disabled Chat/Work controls and delegate preflight could not positively verify authenticated connector; fail-closed, no prompt sent. Plan remains ready.
-- 2026-08-13T14:04:33+00:00 — `prime-agent` — `task_updated` `T-0021`: task fields updated
-- 2026-08-13T14:04:34+00:00 — `prime-agent` — `task_updated` `T-0018`: task fields updated
-- 2026-08-13T14:04:34+00:00 — `prime-agent` — `task_updated` `T-0020`: task fields updated
-- 2026-08-13T14:05:10+00:00 — `prime-agent` — `task_cancelled` `T-0011`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
-- 2026-08-13T14:05:10+00:00 — `prime-agent` — `task_cancelled` `T-0012`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
-- 2026-08-13T14:05:10+00:00 — `prime-agent` — `task_cancelled` `T-0013`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
-- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_cancelled` `T-0014`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
-- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_cancelled` `T-0015`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
-- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_cancelled` `T-0016`: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
-- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_updated` `T-0017`: task fields updated
-- 2026-08-13T14:05:11+00:00 — `prime-agent` — `task_updated` `T-0019`: task fields updated
-- 2026-08-13T14:47:36+00:00 — `prime-agent` — `task_updated` `T-0001`: task fields updated
-- 2026-08-13T14:47:36+00:00 — `prime-agent` — `task_updated` `T-0005`: task fields updated
-- 2026-08-13T14:47:36+00:00 — `prime-agent` — `task_updated` `T-0006`: task fields updated
-- 2026-08-13T14:47:37+00:00 — `prime-agent` — `task_updated` `T-0007`: task fields updated
-- 2026-08-13T14:47:37+00:00 — `prime-agent` — `task_updated` `T-0008`: task fields updated
-- 2026-08-13T14:47:37+00:00 — `prime-agent` — `task_updated` `T-0009`: task fields updated
-- 2026-08-13T14:47:38+00:00 — `prime-agent` — `task_updated` `T-0021`: task fields updated
+- 2026-08-13T19:57:51+00:00 — `prime-agent` — `implementation_checkpoint` `T-0026`: Added strict HTTP Buffer-only gate, Pinterest board metadata requirement, nine-target dry-run contract, and migration uniqueness constraints; external board ID remains pending.
+- 2026-08-13T19:58:58+00:00 — `prime-agent` — `verified_checkpoint` `T-0022`: Verified fs_id+dlink read-only TeraBox adapter, source provenance columns, and Supabase upload compensation; 45 connector tests pass. terabox-sin status reports configured=false/authenticated=false, so authenticated read-only E2E is externally blocked.
+- 2026-08-13T19:58:58+00:00 — `prime-agent` — `verified_checkpoint` `T-0023`: Verified lifecycle module ordering and Kestra stage/publish/persist/reconcile/cleanup checkpoint tasks; deterministic idempotency key and migration uniqueness constraints added; full live reconciliation remains intentionally DRY_RUN.
+- 2026-08-13T19:58:59+00:00 — `prime-agent` — `verified_checkpoint` `T-0024`: Verified executable run-with-infisical.sh syntax and compose runtime mappings; no secret values read or rotated.
+- 2026-08-13T19:58:59+00:00 — `prime-agent` — `verified_checkpoint` `T-0025`: Verified hermetic lifecycle fixture and Buffer route tests; 45 connector tests pass.
+- 2026-08-13T19:58:59+00:00 — `prime-agent` — `verified_checkpoint` `T-0026`: Verified Buffer-only HTTP gate, Pinterest board requirement, nine-target routing and uniqueness constraints. Actual Pinterest board_service_id remains external Buffer configuration blocker.
+- 2026-08-13T20:07:01+00:00 — `prime-agent` — `external_gate_verified` `T-0022`: External gate rechecked: terabox-sin status configured=false/authenticated=false. Adapter remains fail-closed; no live source read attempted.
+- 2026-08-13T20:07:01+00:00 — `prime-agent` — `external_gate_verified` `T-0024`: Infisical machine-agent status healthy. Runtime injection verified for five existing secrets; Pinterest mapping fails closed because BUFFER_BOARD_SERVICE_ID is absent.
+- 2026-08-13T20:07:02+00:00 — `prime-agent` — `external_gate_verified` `T-0026`: Buffer inventory keys and nine channels visible in Infisical; Pinterest board ID is absent and remains an explicit external blocker.
+- 2026-08-13T20:30:15+00:00 — `prime-agent` — `incident.callback-loss.root-cause` `T-0001`: 2026-08-11 callback-loss root cause verified: frontend.policy_block events occurred before finalization, but the final web-callback-send did persist a done delivery at 00:57:09Z. Delivery then remained pending because the legacy OpenCode origin terminal was gone and its session unresolved; bounded relay metadata was installed but the callback was ultimately abandoned after the global supervisor independently verified the exact origin was absent. Current Prime-Agent origin binding, bounded relay fallback, Sentinel wakeup, and taskplan/COMPLETION_REPORT reconciliation address the failure classes without replaying the expired callback.
+- 2026-08-13T20:51:15+00:00 — `prime-agent` — `lifecycle_implementation_verified` `T-0023`: Kestra now invokes /lifecycle rather than checkpoint logs. Bridge lifecycle reserves deterministic idempotency key, persists/upserts job when Supabase runtime is injected, reconciles Buffer post statuses, marks published only when all statuses are sent/published, and invokes cleanup only then; DRY_RUN remains pending. Repeat-run fixture proves deduplication with identical key; 45 tests pass.
+- 2026-08-13T21:41:14+00:00 — `prime-agent` — `chatgpt_web_delegation_blocked` `T-0023`: ChatGPT-Web delegation attempted through canonical delegate_chatgpt.py in fresh rounds 1-5. Attempts failed closed before prompt send: exact title verification failure, then local CDP websocket timeout. browser-use list_tabs works and SIN-Chrome doctor is healthy, but delegate preflight cannot establish stable exact page/title binding. No ChatGPT Web implementation callback exists; local work remains authoritative and tasks unchanged.
+- 2026-08-13T22:15:49+00:00 — `prime-agent` — `chatgpt_web_delegation_progress` `T-0023`: Fresh ChatGPT-Web branch was successfully created and the complete delegation brief was sent in normal Chat mode. ChatGPT Web confirmed repository access and began inspecting taskplan/code, but after multiple tool calls remained in an ongoing inspection state with no completion callback or verified repository changes. The delegation is therefore not accepted as complete; no ChatGPT-written diff or task completion is claimed. Earlier canonical delegate attempts also failed closed on exact title/CDP preflight.
+- 2026-08-13T22:37:41+00:00 — `chatgpt-web` — `r8_verified` `T-0023`: r8 closed lifecycle gaps: LIVE now fails closed without Supabase durability; Kestra request envelope preserves buffer_targets; Buffer published/sent terminal states normalize correctly. Hermetic real-adapter lifecycle test proves one Buffer create across three executions with persisted ID reconciliation and delayed cleanup. Connector suite 54 passed; bridge restarted healthy in DRY_RUN.
+- 2026-08-13T22:37:41+00:00 — `chatgpt-web` — `task_completed` `T-0023`: r8 evidence: platforms_connectors/lifecycle.py + bridge.py wire deterministic reservation, Buffer scheduling, persisted target IDs, retry reconciliation and grace cleanup; publish_everywhere.yml calls /lifecycle with Buffer-only targets and 3 retries. Hermetic integration test calls the real Buffer adapter with mocked GraphQL/Supabase and proves exactly one create across three executions, second execution reconciles the persisted Buffer post ID to sent, third stays deduplicated, and cleanup is armed only after terminal success. LIVE without SUPABASE_URL+SUPABASE_SERVICE_ROLE_KEY is rejected before provider mutation. 54 platforms_connectors tests passed; ruff clean; compileall clean; Kestra YAML lifecycle contract validated; project social-bridge restarted healthy in DRY_RUN. No live posts, no credential rotation.
+- 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0022`: Implemented authenticated-read-only TeraBox source adapter and CLI. stage_terabox_reference requires terabox-sin status configured=true/authenticated=true before download, addresses source by numeric fs_id, persists source provenance/SHA-256 through Supabase staging, and has no source deletion path. Tests cover authenticated fixture plus unauthenticated fail-before-download. Current real TeraBox status is configured=false/authenticated=false, so no live TeraBox download was attempted. Evidence also covered by .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. Final regression: 39 tests passed; ruff and compileall clean; no live posts.
+- 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0024`: website/kestra/run-with-infisical.sh executed successfully and recreated Kestra/social-bridge. Names-only runtime inspection of the running social-bridge proves BUFFER_API_KEY_ACCOUNT_1..3, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and SUPABASE_MEDIA_BUCKET are present; NEXT_PUBLIC_SUPABASE_URL->SUPABASE_URL mapping was separately verified. Runtime gates remain PUBLISH_MODE=DRY_RUN and ALLOW_REAL_POSTS=false. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0024-runtime-injection.json. No credential values logged and no rotation.
+- 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0025`: One-command fixture python3 scripts/verify_buffer_lifecycle.py now covers mocked authenticated TeraBox read-only source, real MediaStaging SHA/provenance/public-URL contract, production Buffer adapter in DRY_RUN, Kestra /lifecycle Buffer-only/retry contract, durable synthetic buffer_post_id, restart/retry reconciliation and grace cleanup. Evidence file: .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. It proves provider_create_calls=1 across repeated logical execution, second_deduplicated=true, cleanup deleted=0/skipped=1. Final regression 39/39 tests; ruff/compileall clean; external_mutations=false; live_posts=false.
+- 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0026`: Read-only Buffer inventory using per-account Infisical-injected credentials verified all 9 channels connected (isDisconnected=false): 3 channels in each of accounts 1..3. Production adapter dry-run validates 8 routes with no board override; Pinterest alone is explicitly blocked because the connected channel currently returns boards=[] and therefore no verified board_service_id exists. A synthetic verified-board fixture validates all 9 payload shapes. Placeholder board IDs are rejected fail-closed. X/twitter alias routing bug was fixed and regression-covered. Bridge and Kestra flow both enforce Buffer-only selection. Node v24.16.0; Buffer CLI 1.2.0; posts.get schema supports direct id/status lookup. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0026-readonly-fleet.json. No live posts.
+- 2026-08-13T23:11:17+00:00 — `chatgpt-web` — `runtime_blocker` `T-0023`: Current edited Kestra flow could not be installed/executed as a new runtime revision in this Fresh-Chat wave: local Kestra CLI/API returns Client remote-api: Unauthorized. Code/hermetic acceptance evidence remains valid; do not claim a new installed revision from this session.

@@ -39,3 +39,19 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 
 - Buffer-Umstellung: 9 Kanäle über drei Buffer-Accounts sind per CLI mit Infisical-Keys verifiziert (`isDisconnected=false`), inklusive YouTube Account 3. Buffer-Adapter und account-scoped routing sind implementiert und getestet. Offen bleibt ausschließlich der nicht gestartete/offiziell noch nicht verifizierte Postiz-Multi-Container-Stack als optionaler Planungs-Layer; direkte Posts wurden nicht gesendet.
 - Supabase-Staging: Schema/CLI-Adapter für `social-staging` ist lokal implementiert und in Infisical dokumentiert. Der bekannte Supabase-Endpoint `https://supabase.delqhi.com` ist erreichbar, aber der Read-only-REST-Check meldet HTTP 404/PGRST205: `public.media_assets` existiert noch nicht. Die Migration wurde am 13.08.2026 auf dem live entdeckten OCI-Supabase-Host angewendet und per REST-Read verifiziert. Tailscale-SSH bleibt als direkter Pfad durch einen zusätzlichen Auth-Gate geschützt; der autorisierte OCI-Public-IP-SSH-Pfad wurde ausschließlich für diese dokumentierte Migration genutzt.
+
+## Active gates — Buffer-first completion wave
+
+- **TeraBox-SIN authentication:** read-only status verified `configured=false`, `authenticated=false`; no source download was attempted.
+- **Pinterest board metadata:** Infisical has no `BUFFER_BOARD_SERVICE_ID`; the registry retains `PENDING_EXTERNAL_BUFFER_BOARD_ID`. The Infisical runtime wrapper fails closed rather than inventing a board ID.
+- **Live reconciliation:** intentionally not exercised. `DRY_RUN=1` remains the default and no credentials were rotated or posts sent.
+
+
+## ChatGPT Web delegation gate
+
+Delegation was attempted through the canonical fresh-chat path (rounds 1-5). It failed closed before sending any project brief because exact conversation title/page verification and then local CDP websocket attachment could not be proven. No claim of ChatGPT Web implementation is made.
+
+
+## Fresh ChatGPT Web delegation status
+
+A fresh normal Chat branch accepted the delegation brief and inspected repository/taskplan state. No completion callback, final evidence, or verified ChatGPT-written repository diff was received; work is not considered complete.

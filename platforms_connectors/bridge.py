@@ -4,9 +4,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import threading
+import time
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
+
+_LIFECYCLE_STORE: dict[str, dict[str, Any]] = {}
+_LIFECYCLE_LOCK = threading.RLock()
 
 REQUIRED_FIELDS = ("title", "excerpt", "body", "media_url", "url", "cta")
 
@@ -328,12 +333,267 @@ def publish(payload: Any, platforms: list[str] | None = None) -> dict[str, Any]:
         raise PermissionError(
             "LIVE publishing denied: adapter-specific live approval is not installed"
         )
+    results = []
+    for name in selected:
+        if name == "buffer" and platforms is not None:
+            # Exercise the real account/channel routing and payload validation
+            # when Buffer is explicitly selected; this must never perform network I/O.
+            from platforms_connectors.Buffer.publish import publish as buffer_publish
+
+            results.append(buffer_publish(normalized, dry_run=True))
+        else:
+            results.append(ADAPTERS[name].draft(normalized))
     return {
         "ok": True,
         "mode": "DRY_RUN",
         "payload": normalized,
-        "results": [ADAPTERS[name].draft(normalized) for name in selected],
+        "results": results,
     }
+
+
+def _buffer_job_status(statuses: list[str]) -> tuple[bool, str]:
+    """Normalize Buffer terminal states into the durable job state machine."""
+    terminal_sent = {"sent", "published"}
+    terminal_error = {"error", "failed", "failure"}
+    all_sent = bool(statuses) and all(status in terminal_sent for status in statuses)
+    if all_sent:
+        return True, "sent"
+    if any(status in terminal_error for status in statuses):
+        return False, "error"
+    return False, "scheduled"
+
+
+def lifecycle(payload: dict[str, Any], *, dry_run: bool = True) -> dict[str, Any]:
+    """Execute the durable Buffer lifecycle; never schedules direct platforms."""
+    from platforms_connectors.lifecycle import idempotency_key, run_buffer_lifecycle
+    from platforms_connectors.Buffer.publish import get_post, publish as buffer_publish
+    from platforms_connectors.Buffer.router import all_channels
+
+    durable_enabled = all(
+        os.getenv(name, "").strip()
+        for name in ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY")
+    )
+    if not dry_run and not durable_enabled:
+        raise PermissionError(
+            "LIVE Buffer lifecycle requires Supabase durability; refusing in-memory scheduling"
+        )
+
+    def lookup(**kwargs: Any) -> dict[str, Any] | None:
+        key = kwargs["idempotency_key"]
+        if durable_enabled:
+            from platforms_connectors.MediaStaging.staging import find_scheduled
+
+            durable = find_scheduled(idempotency_key=key)
+            if durable:
+                with _LIFECYCLE_LOCK:
+                    _LIFECYCLE_STORE[key] = dict(durable)
+                return durable
+        with _LIFECYCLE_LOCK:
+            current = _LIFECYCLE_STORE.get(key)
+            return dict(current) if current else None
+
+    def persist(**kwargs: Any) -> dict[str, Any]:
+        key = kwargs["idempotency_key"]
+        row = {
+            "content_id": kwargs["content_id"],
+            "idempotency_key": key,
+            "status": str(kwargs["status"]).lower(),
+            "targets": kwargs.get("targets", []),
+            "durable": False,
+        }
+        if kwargs.get("provider_result") is not None:
+            row["provider_result"] = kwargs["provider_result"]
+
+        if durable_enabled:
+            from platforms_connectors.MediaStaging.staging import record_scheduled
+
+            durable = record_scheduled(
+                content_id=kwargs["content_id"],
+                scheduled_at=payload.get("scheduled_at"),
+                targets=kwargs.get("targets", []),
+                idempotency_key=key,
+                status=kwargs["status"],
+                provider_result=kwargs.get("provider_result"),
+            )
+            row.update(durable, durable=True)
+            with _LIFECYCLE_LOCK:
+                _LIFECYCLE_STORE[key] = dict(row)
+            return row
+
+        with _LIFECYCLE_LOCK:
+            current = _LIFECYCLE_STORE.get(key)
+            if row["status"] == "draft" and current:
+                existing = dict(current)
+                existing["existing"] = True
+                return existing
+            if current:
+                current.update(row)
+                current["existing"] = False
+                return dict(current)
+            row["existing"] = False
+            _LIFECYCLE_STORE[key] = dict(row)
+            return row
+
+    def provider(provider_payload: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
+        result = buffer_publish(provider_payload, **kwargs)
+        result.setdefault(
+            "target_metadata",
+            provider_payload.get("buffer_targets")
+            if isinstance(provider_payload.get("buffer_targets"), list)
+            else all_channels(),
+        )
+        return result
+
+    def reconcile(**kwargs: Any) -> dict[str, Any]:
+        targets = [
+            dict(target)
+            for target in kwargs.get("targets", [])
+            if isinstance(target, dict)
+        ]
+        if dry_run:
+            return {
+                "all_sent": False,
+                "checked": len(targets),
+                "status": "pending",
+                "job_status": "scheduled",
+                "targets": targets,
+            }
+
+        from platforms_connectors.MediaStaging.staging import (
+            record_job_status,
+            record_target_status,
+        )
+
+        attempts = max(1, int(os.getenv("BUFFER_RECONCILE_MAX_ATTEMPTS", "3")))
+        delay = max(0.0, float(os.getenv("BUFFER_RECONCILE_RETRY_SECONDS", "0.25")))
+        statuses: list[str] = []
+        for target in targets:
+            post_id = str(target.get("buffer_post_id") or "").strip()
+            if not post_id:
+                target["status"] = str(target.get("status") or "scheduled").lower()
+                target["last_error"] = "missing persisted Buffer post id"
+                statuses.append(target["status"])
+                continue
+            last_error: Exception | None = None
+            for attempt in range(attempts):
+                try:
+                    state = get_post(post_id, account=target.get("account"))
+                    target["status"] = str(state.get("status") or "scheduled").lower()
+                    target.pop("last_error", None)
+                    last_error = None
+                    break
+                except Exception as exc:  # provider failures are retried, then persisted
+                    last_error = exc
+                    if attempt + 1 < attempts and delay:
+                        time.sleep(delay)
+            if last_error is not None:
+                target["status"] = str(target.get("status") or "scheduled").lower()
+                target["last_error"] = type(last_error).__name__
+            statuses.append(target["status"])
+            if durable_enabled:
+                record_target_status(
+                    buffer_post_id=post_id,
+                    status=target["status"],
+                    error=target.get("last_error"),
+                )
+
+        all_sent, job_status = _buffer_job_status(statuses)
+        if durable_enabled:
+            record_job_status(
+                idempotency_key=kwargs["idempotency_key"], status=job_status
+            )
+        return {
+            "all_sent": all_sent,
+            "checked": len(targets),
+            "status": "complete" if all_sent else "pending",
+            "job_status": job_status,
+            "targets": targets,
+        }
+
+    def cleanup(**kwargs: Any) -> dict[str, int]:
+        if not durable_enabled:
+            return {"deleted": 0, "skipped": 1}
+        from platforms_connectors.MediaStaging.staging import cleanup_due, mark_published
+
+        if kwargs.get("first_sent"):
+            mark_published(
+                content_id=kwargs["content_id"],
+                idempotency_key=kwargs["idempotency_key"],
+                grace_hours=max(1, int(os.getenv("SOCIAL_STAGING_GRACE_HOURS", "48"))),
+            )
+        return cleanup_due(content_id=kwargs["content_id"])
+
+    working_payload = dict(payload)
+    staged_media: dict[str, Any] | None = None
+    source = (
+        working_payload.get("terabox_source")
+        if isinstance(working_payload.get("terabox_source"), dict)
+        else None
+    )
+    if source and not str(working_payload.get("media_url") or "").strip():
+        if not durable_enabled:
+            raise ValueError(
+                "TeraBox media staging requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
+            )
+        key = idempotency_key(working_payload)
+        if lookup(idempotency_key=key) is None:
+            remote_path = str(source.get("remote_path") or "").strip()
+            try:
+                fs_id = int(source.get("fs_id"))
+            except (TypeError, ValueError) as exc:
+                raise ValueError("terabox_source.fs_id must be a positive integer") from exc
+            from platforms_connectors.MediaStaging.staging import stage_terabox_reference
+
+            staged_media = stage_terabox_reference(
+                remote_path,
+                content_id=str(working_payload.get("content_id") or key),
+                fs_id=fs_id,
+            )
+            working_payload["media_url"] = staged_media["public_url"]
+
+    result = run_buffer_lifecycle(
+        working_payload,
+        publish=provider,
+        persist=persist,
+        reconcile=reconcile,
+        cleanup=cleanup,
+        lookup=lookup,
+        dry_run=dry_run,
+    )
+    if staged_media is not None:
+        result["staging"] = {
+            key: staged_media[key]
+            for key in (
+                "media_id",
+                "public_url",
+                "sha256",
+                "source_provider",
+                "source_reference",
+                "source_fs_id",
+            )
+            if key in staged_media
+        }
+    return result
+
+
+def _request_envelope(body: Any) -> tuple[dict[str, Any], list[str] | None]:
+    """Normalize the HTTP envelope without dropping Buffer routing metadata."""
+    if isinstance(body, dict) and "payload" in body:
+        raw_payload = body["payload"]
+        if not isinstance(raw_payload, dict):
+            raise ValueError("payload must be a JSON object")
+        payload = dict(raw_payload)
+        if "buffer_targets" in body:
+            if not isinstance(body["buffer_targets"], list):
+                raise ValueError("buffer_targets must be a JSON array")
+            payload["buffer_targets"] = body["buffer_targets"]
+        raw_platforms = body.get("platforms")
+        if raw_platforms is not None and not isinstance(raw_platforms, list):
+            raise ValueError("platforms must be a JSON array")
+        return payload, list(raw_platforms) if raw_platforms is not None else None
+    if not isinstance(body, dict):
+        raise ValueError("payload must be a JSON object")
+    return dict(body), None
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -361,24 +621,26 @@ class Handler(BaseHTTPRequestHandler):
             self._json(404, {"ok": False, "error": "not found"})
 
     def do_POST(self) -> None:
-        if self.path != "/publish":
+        if self.path not in {"/publish", "/lifecycle"}:
             self._json(404, {"ok": False, "error": "not found"})
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
             body = json.loads(self.rfile.read(length) or b"{}")
-            if isinstance(body, dict) and "payload" in body:
-                payload = body["payload"]
-                if isinstance(payload, dict) and isinstance(
-                    body.get("buffer_targets"), list
-                ):
-                    payload = {**payload, "buffer_targets": body["buffer_targets"]}
-                platforms = body.get("platforms")
+            payload, platforms = _request_envelope(body)
+            # This endpoint is the canonical Buffer-only scheduler boundary.
+            # Direct platform fan-out is intentionally rejected here.
+            if platforms is not None and any(
+                str(item).lower() != "buffer" for item in platforms
+            ):
+                raise PermissionError(
+                    "social bridge is Buffer-only; direct platform scheduling is disabled"
+                )
+            if self.path == "/lifecycle":
+                self._json(200, lifecycle(payload, dry_run=not live_allowed()))
             else:
-                payload = body
-                platforms = None
-            result = publish(payload, platforms)
-            self._json(200, result)
+                result = publish(payload, platforms)
+                self._json(200, result)
         except PermissionError as exc:
             self._json(403, {"ok": False, "error": str(exc)})
         except (ValueError, json.JSONDecodeError) as exc:

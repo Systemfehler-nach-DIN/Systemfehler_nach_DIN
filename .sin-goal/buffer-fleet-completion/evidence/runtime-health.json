@@ -1,0 +1,1 @@
+{"kestra_compose":"running; postgres healthy; kestra host 18081","kestra_flow":{"namespace":"systemfehler.content","id":"publish_everywhere","revision":7,"tasks":3,"triggers":1},"social_bridge":{"host":"127.0.0.1:18765","mode":"DRY_RUN"},"live_posts":false}

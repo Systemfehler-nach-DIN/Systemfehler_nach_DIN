@@ -11,14 +11,19 @@ _REGISTRY = json.loads(
 )
 
 
+def _canonical_platform(value: str) -> str:
+    normalized = value.strip().lower()
+    return "x" if normalized in {"x", "twitter"} else normalized
+
+
 def channel_for(platform: str, account: str | int | None = None) -> dict[str, Any]:
-    wanted = "twitter" if platform.lower() == "x" else platform.lower()
+    wanted = _canonical_platform(platform)
     account_value = str(account) if account is not None else None
     for owner in _REGISTRY["accounts"]:
         if account_value and owner["account"] != account_value:
             continue
         for channel in owner["channels"]:
-            if channel["platform"] == wanted:
+            if _canonical_platform(channel["platform"]) == wanted:
                 return {
                     **channel,
                     "account": owner["account"],

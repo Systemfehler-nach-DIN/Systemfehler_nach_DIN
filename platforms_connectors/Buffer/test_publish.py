@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from platforms_connectors.Buffer.publish import publish
+from platforms_connectors.Buffer.publish import ConnectorError, get_post, publish
 
 
 class BufferPublishTests(unittest.TestCase):
@@ -35,6 +35,8 @@ class BufferPublishTests(unittest.TestCase):
         with patch.dict("os.environ", {"BUFFER_API_KEY": "key"}):
             result = publish(self.payload, dry_run=False)
         self.assertEqual(result["external_id"], "post-1")
+        self.assertEqual(result["target_metadata"][0]["buffer_post_id"], "post-1")
+        self.assertEqual(result["target_metadata"][0]["platform"], "instagram")
         self.assertIn(
             "Bearer key", request.call_args.kwargs["headers"]["Authorization"]
         )
@@ -124,3 +126,61 @@ class BufferPublishTests(unittest.TestCase):
             request.call_args.kwargs["headers"]["Authorization"],
             "Bearer account-three-key",
         )
+
+    @patch("platforms_connectors.Buffer.publish.request_json")
+    def test_get_post_reconciles_persisted_id_with_account_key(self, request):
+        request.return_value = {
+            "data": {"post": {"id": "post-1", "status": "sent", "dueAt": None}}
+        }
+        with patch.dict(
+            "os.environ", {"BUFFER_API_KEY_ACCOUNT_3": "account-three-key"}, clear=False
+        ):
+            result = get_post("post-1", account=3)
+        self.assertEqual(result["status"], "sent")
+        variables = request.call_args.kwargs["data"]["variables"]
+        self.assertEqual(variables, {"input": {"id": "post-1"}})
+        self.assertEqual(
+            request.call_args.kwargs["headers"]["Authorization"],
+            "Bearer account-three-key",
+        )
+
+    def test_all_registered_targets_dry_run_requires_pinterest_metadata(self):
+        payload = {
+            "title": "Fleet",
+            "excerpt": "E",
+            "body": "B",
+            "media_url": "https://cdn.example/a.jpg",
+        }
+        with patch.dict("os.environ", {"BUFFER_BOARD_SERVICE_ID": "board-fixture"}):
+            result = publish(payload, dry_run=True)
+        self.assertEqual(len(result["targets"]), 9)
+
+    def test_eight_routes_validate_and_pinterest_fails_closed_without_board(self):
+        from platforms_connectors.Buffer.router import all_channels
+
+        payload = {
+            "title": "Fleet",
+            "excerpt": "E",
+            "body": "B",
+            "media_url": "https://cdn.example/a.jpg",
+        }
+        valid = []
+        pinterest = None
+        with patch.dict("os.environ", {"BUFFER_BOARD_SERVICE_ID": ""}, clear=False):
+            for target in all_channels():
+                route = dict(target)
+                route["media_type"] = (
+                    "video" if route.get("platform") == "youtube" else "image"
+                )
+                if route.get("platform") == "pinterest":
+                    pinterest = route
+                    continue
+                result = publish({**payload, "buffer_targets": [route]}, dry_run=True)
+                self.assertEqual(len(result["targets"]), 1)
+                valid.append(route["platform"])
+            self.assertIsNotNone(pinterest)
+            with self.assertRaisesRegex(
+                ConnectorError, "requires a verified buffer.board_service_id"
+            ):
+                publish({**payload, "buffer_targets": [pinterest]}, dry_run=True)
+        self.assertEqual(len(valid), 8)

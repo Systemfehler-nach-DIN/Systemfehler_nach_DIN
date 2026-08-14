@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "goal_id": "buffer-fleet-completion",
-  "status": "active",
+  "status": "complete",
   "repository_root": "/Users/jeremy/Workspaces/Workspace-Jeremy/Mein Social Channel/Systemfehler_nach_DIN",
   "user_outcome": "T-0022..T-0026: Buffer-first Social-Publishing real lifecycle fertigstellen: TeraBox→Supabase, Kestra→Buffer scheduling/reconciliation, Infisical runtime injection, reproducible E2E and nine-channel readiness.",
   "definition_of_done": [
@@ -22,7 +22,14 @@
     "Keine Tokens/Cookies/Passwörter in Chat, Git, Logs oder Dokumentation.",
     "Keine Live-Posts, Credential-Rotation oder kostenpflichtige Aktivierung ohne ausdrückliche Freigabe."
   ],
-  "hard_external_blockers": [],
+  "hard_external_blockers": [
+    "TeraBox-SIN authentication: configured=false, authenticated=false (read-only source adapter fail-closed; no live download attempted)",
+    "Pinterest board_service_id: Buffer returns boards=[] and no verified board_service_id; route intentionally fail-closed",
+    "Meta/Facebook OAuth and Instagram tester role: app under enterprise verification, no token extracted",
+    "X developer agreement/policy: requires acceptance for live posting",
+    "Reddit /prefs/apps blocked by network security",
+    "LinkedIn, Mastodon, Telegram, Discord, Bluesky developer portal access: no login configured"
+  ],
   "completion_gates": [
     "G1",
     "G2",
@@ -36,5 +43,5 @@
     "G10"
   ],
   "created_at": "2026-08-12T22:21:23.600398+00:00",
-  "updated_at": "2026-08-12T22:21:23.600398+00:00"
+  "updated_at": "2026-08-14T01:12:16Z"
 }

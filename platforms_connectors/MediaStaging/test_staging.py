@@ -2,9 +2,11 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from platforms_connectors.MediaStaging.staging import (
+    StagingError,
+    _request,
     cleanup_due,
     mark_published,
     record_scheduled,
@@ -15,6 +17,39 @@ from platforms_connectors.MediaStaging.staging import (
 
 
 class StagingTests(unittest.TestCase):
+
+    @patch("platforms_connectors.MediaStaging.staging.httpx.request")
+    def test_request_uses_httpx_and_returns_json(self, request):
+        response = Mock()
+        response.content = b'{"ok":true}'
+        response.json.return_value = {"ok": True}
+        response.raise_for_status.return_value = None
+        request.return_value = response
+        result = _request(
+            "https://supabase.example/rest/v1/publish_jobs",
+            key="service-key",
+            method="GET",
+        )
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(request.call_args.args[:2], ("GET", "https://supabase.example/rest/v1/publish_jobs"))
+        self.assertEqual(request.call_args.kwargs["headers"]["User-Agent"], "Systemfehler-nach-DIN-MediaStaging/1.0")
+        self.assertEqual(request.call_args.kwargs["timeout"], 60.0)
+
+    @patch("platforms_connectors.MediaStaging.staging.httpx.request")
+    def test_request_masks_http_status_details(self, request):
+        import httpx
+
+        req = httpx.Request("GET", "https://supabase.example/rest/v1/publish_jobs")
+        response = httpx.Response(403, request=req, text="sensitive upstream body")
+        request.side_effect = httpx.HTTPStatusError("forbidden", request=req, response=response)
+        with self.assertRaisesRegex(StagingError, r"Supabase request failed: 403") as raised:
+            _request(
+                "https://supabase.example/rest/v1/publish_jobs",
+                key="service-key",
+                method="GET",
+            )
+        self.assertNotIn("service-key", str(raised.exception))
+        self.assertNotIn("sensitive upstream body", str(raised.exception))
     @patch("platforms_connectors.MediaStaging.staging._request")
     @patch(
         "platforms_connectors.MediaStaging.staging._config",

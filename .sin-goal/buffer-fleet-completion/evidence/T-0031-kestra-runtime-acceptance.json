@@ -1,0 +1,71 @@
+{
+  "task": "T-0031",
+  "captured_at": "2026-08-15T18:46:05.908317+00:00",
+  "kestra": {
+    "flow": "systemfehler.content/publish_everywhere",
+    "revision": 8,
+    "authenticated_api": true,
+    "executions": [
+      {
+        "id": "26lAjKkjjacigbhBkFdjLc",
+        "state": "SUCCESS"
+      },
+      {
+        "id": "2wVJAsq4OBB79T984quh2e",
+        "state": "SUCCESS"
+      }
+    ],
+    "task_states": [
+      [
+        "validate_buffer_only",
+        "SUCCESS"
+      ],
+      [
+        "update_website_feed",
+        "SUCCESS"
+      ],
+      [
+        "deploy_if_configured",
+        "SUCCESS"
+      ],
+      [
+        "social_if_configured",
+        "SUCCESS"
+      ],
+      [
+        "distribute_social",
+        "SUCCESS"
+      ]
+    ]
+  },
+  "runtime": {
+    "publish_mode": "DRY_RUN",
+    "allow_real_posts": false,
+    "bridge_http_client": "httpx 0.28.1",
+    "supabase_host": "supabase.delqhi.com",
+    "repo_bound_infisical_project_id": "c5bc692a-11ee-4949-ae40-c01f5d80034b"
+  },
+  "idempotency": {
+    "kestra_execution_count": 2,
+    "durable_publish_job_count_before_cleanup": 1,
+    "job_id": "31f619c3-d62d-4559-97d8-1e2570f04136",
+    "idempotency_key": "40312fd9ac6553ac05335dcae957aa7ed8713de3577c4a8e814ad3a245d009e4",
+    "provider": "buffer",
+    "status": "scheduled",
+    "target_count": 1,
+    "target": {
+      "account": 3,
+      "platform": "x",
+      "channel_id": "6a7cec3cb2d9d57743672edc",
+      "buffer_post_id": null,
+      "status": "scheduled"
+    },
+    "external_provider_mutation": false
+  },
+  "repairs": [
+    "Dedicated Infisical project binding verified through runtime injection",
+    "SUPABASE_URL canonicalized from NEXT_PUBLIC_SUPABASE_URL inside dedicated Infisical project",
+    "Persistent Kestra database role password reconciled to canonical Infisical value without deleting volumes",
+    "social-bridge runs as module and uses reproducible httpx image"
+  ]
+}

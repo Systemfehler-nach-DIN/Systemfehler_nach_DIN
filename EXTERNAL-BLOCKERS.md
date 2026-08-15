@@ -1,4 +1,4 @@
-# Externe Blocker (Stand 2026-08-12)
+# Externe Blocker (Stand 2026-08-15)
 
 Die Code-, Dry-Run- und Browser-Vorbereitung ist abgeschlossen. Der Instagram-Account
 `systemfehler_nach_din` wurde im SIN-Chrome-`bot` erfolgreich in ein öffentliches
@@ -38,12 +38,16 @@ Siehe `ACCOUNT_SETUP_RUNBOOK.md` für die verifizierten URLs, Reihenfolge und Re
 - Buffer API deckt laut aktueller Doku YouTube, aber nicht TikTok ab; TikTok bleibt der separate SIN-Adapter. Ein Postiz→Buffer→YouTube/TikTok-Workflow ist noch nicht verifiziert.
 
 - Buffer-Umstellung: 9 Kanäle über drei Buffer-Accounts sind per CLI mit Infisical-Keys verifiziert (`isDisconnected=false`), inklusive YouTube Account 3. Buffer-Adapter und account-scoped routing sind implementiert und getestet. Offen bleibt ausschließlich der nicht gestartete/offiziell noch nicht verifizierte Postiz-Multi-Container-Stack als optionaler Planungs-Layer; direkte Posts wurden nicht gesendet.
-- Supabase-Staging: Schema/CLI-Adapter für `social-staging` ist lokal implementiert und in Infisical dokumentiert. Der bekannte Supabase-Endpoint `https://supabase.delqhi.com` ist erreichbar, aber der Read-only-REST-Check meldet HTTP 404/PGRST205: `public.media_assets` existiert noch nicht. Die Migration wurde am 13.08.2026 auf dem live entdeckten OCI-Supabase-Host angewendet und per REST-Read verifiziert. Tailscale-SSH bleibt als direkter Pfad durch einen zusätzlichen Auth-Gate geschützt; der autorisierte OCI-Public-IP-SSH-Pfad wurde ausschließlich für diese dokumentierte Migration genutzt.
+- Supabase-Staging: Die OCI-Migration ist angewendet, das Schema wurde am 15.08.2026 erneut gegen die Runtime abgeglichen und PostgREST neu geladen. Der kanonische Endpoint `https://supabase.delqhi.com` ist aus dem Social-Bridge-Container per `httpx` erreichbar. Zwei authentifizierte Kestra-DRY_RUN-Ausführungen erzeugten deterministisch genau einen `publish_jobs`-Datensatz; die T-0031-Testdaten wurden danach gezielt entfernt. Keine Live-Provider-Mutation.
+
+## Infisical-Projektbindung
+
+Das Repository ist fest an das dedizierte Infisical-Projekt `Systemfehler_nach_DIN` (`c5bc692a-11ee-4949-ae40-c01f5d80034b`) gebunden. Die Machine Identity kann nicht-interaktiv darauf zugreifen; die projektbezogene Runtime-Konfiguration liegt dort unter `dev`. `run-with-infisical.sh` injiziert die benötigten Buffer-, Supabase-, Kestra- und Webhook-Werte direkt zur Laufzeit. Es existiert keine erforderliche lokale `website/kestra/.env` mehr.
 
 ## Active gates — Buffer-first completion wave
 
-- **TeraBox-SIN authentication:** read-only status verified `configured=false`, `authenticated=false`; no source download was attempted.
-- **Pinterest board metadata:** Infisical has no `BUFFER_BOARD_SERVICE_ID`; the registry retains `PENDING_EXTERNAL_BUFFER_BOARD_ID`. The Infisical runtime wrapper fails closed rather than inventing a board ID.
+- **TeraBox-SIN authentication:** am 15.08.2026 erneut read-only verifiziert: `configured=false`, `authenticated=false`; weder im dedizierten Systemfehler-Projekt noch im globalen Infisical-Projekt existiert ein TeraBox-Secret. Kein Source-Download wurde versucht.
+- **Pinterest board metadata:** am 15.08.2026 erneut über Buffer Account 3 mit Infisical-Runtime geprüft: der verbundene Pinterest-Kanal `Systemfehler_nach_DIN` ist `isDisconnected=false`, liefert aber weiterhin `metadata.boards=[]`. Infisical enthält keinen verifizierten `BUFFER_BOARD_SERVICE_ID`; der Registry-Platzhalter bleibt fail-closed.
 - **Live reconciliation:** intentionally not exercised. `DRY_RUN=1` remains the default and no credentials were rotated or posts sent.
 
 
@@ -63,7 +67,7 @@ Der vollständige Prime-Agent-/OpenCode-Session-Audit wurde abgeschlossen. Der k
 - `T-0027` — TeraBox-SIN-Authentifizierung und authentifizierter Read-only-Staging-Nachweis (**blocked**).
 - `T-0028` — verifizierte Buffer-Pinterest-`board_service_id` (**blocked**).
 - `T-0029` — verbleibende Social-Developer-/OAuth-Gates (**blocked**).
-- `T-0030` — Migration des `buffer-fleet-completion`-Goal-Ledgers reparieren (**backlog**).
-- `T-0031` — frische Kestra-Runtime-Installation und Lifecycle-Abnahme nach `Unauthorized`-Fehler (**blocked**).
+- `T-0030` — Migration des `buffer-fleet-completion`-Goal-Ledgers repariert (**done**).
+- `T-0031` — Kestra Revision 8 authentifiziert installiert und zweimal erfolgreich im DRY_RUN ausgeführt; Supabase-Idempotenz 2→1 belegt (**done**).
 
-Damit bedeutet „Goal complete“ nur, dass die implementierte Buffer-first-Basis und ihre erlaubten Acceptance-Gates abgeschlossen sind; es bedeutet nicht, dass externe Account-/OAuth-Gates oder die Goal-State-Migration erledigt sind. Live-Posting bleibt fail-closed.
+Damit verbleiben nur `T-0027`, `T-0028` und `T-0029` als echte externe Account-/Provider-Gates. Die implementierte Buffer-first-Runtime, Goal-State-Migration und Kestra-Lifecycle-Abnahme sind abgeschlossen. Live-Posting bleibt fail-closed.

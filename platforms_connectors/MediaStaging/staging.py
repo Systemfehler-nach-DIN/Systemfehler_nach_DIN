@@ -15,9 +15,10 @@ import subprocess
 import time
 from pathlib import Path
 from typing import Any
-from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
-from urllib.request import Request, urlopen
+from urllib.request import urlopen
+
+import httpx
 
 
 class StagingError(RuntimeError):
@@ -49,29 +50,32 @@ def _request(
     content_type: str = "application/json",
     headers: dict[str, str] | None = None,
 ) -> Any:
-    req = Request(
-        url,
-        method=method,
-        data=body,
-        headers={
-            "Authorization": f"Bearer {key}",
-            "apikey": key,
-            "Content-Type": content_type,
-            "Accept": "application/json",
-            # Cloudflare fronts the self-hosted Supabase endpoint and rejects
-            # Python urllib's default client signature (Error 1010). Identify
-            # this runtime explicitly instead of spoofing a browser client.
-            "User-Agent": "Systemfehler-nach-DIN-MediaStaging/1.0",
-            **(headers or {}),
-        },
-    )
+    request_headers = {
+        "Authorization": f"Bearer {key}",
+        "apikey": key,
+        "Content-Type": content_type,
+        "Accept": "application/json",
+        "User-Agent": "Systemfehler-nach-DIN-MediaStaging/1.0",
+        **(headers or {}),
+    }
     try:
-        with urlopen(req, timeout=60) as response:
-            raw = response.read()
-            return json.loads(raw.decode()) if raw else {}
-    except (HTTPError, URLError, TimeoutError) as exc:
+        response = httpx.request(
+            method,
+            url,
+            headers=request_headers,
+            content=body,
+            timeout=60.0,
+            follow_redirects=True,
+        )
+        response.raise_for_status()
+        return response.json() if response.content else {}
+    except httpx.HTTPStatusError as exc:
         raise StagingError(
-            f"Supabase request failed: {getattr(exc, 'code', type(exc).__name__)}"
+            f"Supabase request failed: {exc.response.status_code}"
+        ) from exc
+    except httpx.RequestError as exc:
+        raise StagingError(
+            f"Supabase request failed: {type(exc).__name__}"
         ) from exc
 
 

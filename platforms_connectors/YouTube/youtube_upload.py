@@ -48,8 +48,10 @@ def resolve_cookie_path(path):
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, check=False, timeout=30,
     )
     if proc.returncode != 0:
-        try: os.unlink(tmp)
-        except FileNotFoundError: pass
+        try:
+            os.unlink(tmp)
+        except FileNotFoundError:
+            pass
         raise SystemExit("FEHLER: YouTube-Cookies konnten nicht aus SIN-Infisical materialisiert werden")
     atexit.register(lambda: os.path.exists(tmp) and os.unlink(tmp))
     return tmp

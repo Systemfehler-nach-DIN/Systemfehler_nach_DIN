@@ -15,6 +15,9 @@ import hashlib
 import json
 import os
 import time
+import atexit
+import subprocess
+import tempfile
 import urllib.request
 import urllib.error
 import uuid
@@ -27,6 +30,29 @@ USER_AGENT = (
 )
 FORM_CT = "application/x-www-form-urlencoded;charset=utf-8"
 
+
+
+def resolve_cookie_path(path):
+    """Return an existing cookie file, materializing the migrated legacy source from SIN-Infisical when needed."""
+    expanded = os.path.expanduser(path)
+    if os.path.isfile(expanded):
+        return expanded
+    cli = os.environ.get("SIN_INFISICAL_BIN", os.path.expanduser("~/.local/bin/sin-infisical"))
+    if not os.path.isfile(cli):
+        raise SystemExit(f"FEHLER: Cookie-Datei fehlt und sin-infisical ist nicht verfügbar: {expanded}")
+    fd, tmp = tempfile.mkstemp(prefix="sin-youtube-cookies-")
+    os.close(fd)
+    os.chmod(tmp, 0o600)
+    proc = subprocess.run(
+        [cli, "agent", "materialize", "--source", expanded, "--dest", tmp],
+        stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, check=False, timeout=30,
+    )
+    if proc.returncode != 0:
+        try: os.unlink(tmp)
+        except FileNotFoundError: pass
+        raise SystemExit("FEHLER: YouTube-Cookies konnten nicht aus SIN-Infisical materialisiert werden")
+    atexit.register(lambda: os.path.exists(tmp) and os.unlink(tmp))
+    return tmp
 
 def load_cookies(path):
     """Liest Cookies aus Netscape-cookies.txt ODER Chrome-JSON und liefert die Werte."""
@@ -500,6 +526,7 @@ def main():
         "oder urllib (reiner HTTP)",
     )
     args = ap.parse_args()
+    args.cookies = resolve_cookie_path(args.cookies)
 
     cookies = load_cookies(args.cookies)
     if args.transport == "playwright":

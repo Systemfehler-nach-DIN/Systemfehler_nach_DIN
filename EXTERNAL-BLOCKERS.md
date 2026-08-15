@@ -55,3 +55,15 @@ Delegation was attempted through the canonical fresh-chat path (rounds 1-5). It 
 ## Fresh ChatGPT Web delegation status
 
 A fresh normal Chat branch accepted the delegation brief and inspected repository/taskplan state. No completion callback, final evidence, or verified ChatGPT-written repository diff was received; work is not considered complete.
+
+## Aktuelle Taskplan-Reconciliation (2026-08-15)
+
+Der vollständige Prime-Agent-/OpenCode-Session-Audit wurde abgeschlossen. Der kanonische Taskplan führt die verbleibenden externen bzw. technischen Folgearbeiten jetzt explizit:
+
+- `T-0027` — TeraBox-SIN-Authentifizierung und authentifizierter Read-only-Staging-Nachweis (**blocked**).
+- `T-0028` — verifizierte Buffer-Pinterest-`board_service_id` (**blocked**).
+- `T-0029` — verbleibende Social-Developer-/OAuth-Gates (**blocked**).
+- `T-0030` — Migration des `buffer-fleet-completion`-Goal-Ledgers reparieren (**backlog**).
+- `T-0031` — frische Kestra-Runtime-Installation und Lifecycle-Abnahme nach `Unauthorized`-Fehler (**blocked**).
+
+Damit bedeutet „Goal complete“ nur, dass die implementierte Buffer-first-Basis und ihre erlaubten Acceptance-Gates abgeschlossen sind; es bedeutet nicht, dass externe Account-/OAuth-Gates oder die Goal-State-Migration erledigt sind. Live-Posting bleibt fail-closed.

@@ -13,9 +13,9 @@ SYSTEMFEHLER_nach_DIN Buffer-first Social-Publishing vollständig verifizieren: 
 
 ## Status
 
-- Backlog: 0
+- Backlog: 1
 - In progress: 0
-- Blocked: 0
+- Blocked: 4
 - Done: 20
 - Cancelled: 6
 
@@ -49,6 +49,11 @@ SYSTEMFEHLER_nach_DIN Buffer-first Social-Publishing vollständig verifizieren: 
 | T-0009 | high | implement | done | local-agent | Document optional Postiz adapter without activating a scheduler | T-0005 |
 | T-0013 | high | implement | cancelled | chatgpt-web | Configure Facebook Pages API | — |
 | T-0014 | high | implement | cancelled | chatgpt-web | Configure Threads API | — |
+| T-0027 | high | ops | blocked | local-agent | Resolve TeraBox-SIN authentication and prove live read-only staging | T-0022 |
+| T-0028 | high | ops | blocked | local-agent | Obtain verified Buffer Pinterest board_service_id | T-0026 |
+| T-0030 | high | implement | backlog | local-agent | Repair migrated buffer-fleet goal-state ledger consistency | — |
+| T-0029 | medium | ops | blocked | local-agent | Resolve remaining social developer/OAuth gates | T-0021 |
+| T-0031 | medium | test | blocked | local-agent | Re-run fresh Kestra runtime installation and lifecycle acceptance | T-0023 |
 
 ## Task details
 
@@ -588,18 +593,71 @@ Allowed paths:
 
 Blocked: Superseded by the implemented Buffer-first architecture: the connected channel is routed and scheduled through existing Buffer accounts; direct Meta/Threads API setup is only an optional fallback and is not required for the canonical publishing path. No live-post work was performed.
 
+### T-0027 — Resolve TeraBox-SIN authentication and prove live read-only staging
+
+- Status: `blocked`
+- Owner: `local-agent`
+- Kind: `ops`
+- Priority: `high`
+- Dependencies: T-0022
+- Updated: 2026-08-15T11:06:29+00:00
+
+External gate: terabox-sin currently reports configured=false/authenticated=false. Reconnect through the approved secret workflow, then run authenticated read-only TeraBox reference staging evidence. No source deletion and no credential rotation.
+
+Blocked: Blocked by external TeraBox-SIN authentication: current status configured=false/authenticated=false.
+
+### T-0028 — Obtain verified Buffer Pinterest board_service_id
+
+- Status: `blocked`
+- Owner: `local-agent`
+- Kind: `ops`
+- Priority: `high`
+- Dependencies: T-0026
+- Updated: 2026-08-15T11:06:29+00:00
+
+External Buffer gate: Pinterest channel returns boards=[] and no verified board service ID. Resolve through the connected Buffer account and verify the route; retain fail-closed behavior until then.
+
+Blocked: Blocked by external Buffer/Pinterest configuration: connected channel returns boards=[] and no verified board_service_id.
+
+### T-0030 — Repair migrated buffer-fleet goal-state ledger consistency
+
+- Status: `backlog`
+- Owner: `local-agent`
+- Kind: `implement`
+- Priority: `high`
+- Dependencies: none
+- Updated: 2026-08-15T11:06:07+00:00
+
+The goal ledger enums are normalized, but orca-goal-state validation still reports stale plan revision/task references because plan.json is empty while ledger references revision 7 and historical tasks. Reconcile the migration without discarding historical evidence, then validate.
+
+### T-0029 — Resolve remaining social developer/OAuth gates
+
+- Status: `blocked`
+- Owner: `local-agent`
+- Kind: `ops`
+- Priority: `medium`
+- Dependencies: T-0021
+- Updated: 2026-08-15T11:06:30+00:00
+
+External gates remain for Meta/Facebook/Instagram, X, Reddit, LinkedIn, Mastodon, Telegram, Discord, and Bluesky. Complete only approved onboarding/verification and record provider evidence; do not bypass MFA/CAPTCHA or rotate credentials.
+
+Blocked: Blocked by external provider onboarding/verification and missing approved access; no security-control bypass is permitted.
+
+### T-0031 — Re-run fresh Kestra runtime installation and lifecycle acceptance
+
+- Status: `blocked`
+- Owner: `local-agent`
+- Kind: `test`
+- Priority: `medium`
+- Dependencies: T-0023
+- Updated: 2026-08-15T11:06:30+00:00
+
+A later session recorded Kestra API Unauthorized while installing a new runtime revision. Re-run authenticated installation/execution and capture fresh runtime evidence; existing hermetic/code evidence remains valid.
+
+Blocked: Blocked by authenticated Kestra runtime/API access: fresh installation attempt returned Unauthorized.
+
 ## Recent events
 
-- 2026-08-13T19:58:59+00:00 — `prime-agent` — `verified_checkpoint` `T-0026`: Verified Buffer-only HTTP gate, Pinterest board requirement, nine-target routing and uniqueness constraints. Actual Pinterest board_service_id remains external Buffer configuration blocker.
-- 2026-08-13T20:07:01+00:00 — `prime-agent` — `external_gate_verified` `T-0022`: External gate rechecked: terabox-sin status configured=false/authenticated=false. Adapter remains fail-closed; no live source read attempted.
-- 2026-08-13T20:07:01+00:00 — `prime-agent` — `external_gate_verified` `T-0024`: Infisical machine-agent status healthy. Runtime injection verified for five existing secrets; Pinterest mapping fails closed because BUFFER_BOARD_SERVICE_ID is absent.
-- 2026-08-13T20:07:02+00:00 — `prime-agent` — `external_gate_verified` `T-0026`: Buffer inventory keys and nine channels visible in Infisical; Pinterest board ID is absent and remains an explicit external blocker.
-- 2026-08-13T20:30:15+00:00 — `prime-agent` — `incident.callback-loss.root-cause` `T-0001`: 2026-08-11 callback-loss root cause verified: frontend.policy_block events occurred before finalization, but the final web-callback-send did persist a done delivery at 00:57:09Z. Delivery then remained pending because the legacy OpenCode origin terminal was gone and its session unresolved; bounded relay metadata was installed but the callback was ultimately abandoned after the global supervisor independently verified the exact origin was absent. Current Prime-Agent origin binding, bounded relay fallback, Sentinel wakeup, and taskplan/COMPLETION_REPORT reconciliation address the failure classes without replaying the expired callback.
-- 2026-08-13T20:51:15+00:00 — `prime-agent` — `lifecycle_implementation_verified` `T-0023`: Kestra now invokes /lifecycle rather than checkpoint logs. Bridge lifecycle reserves deterministic idempotency key, persists/upserts job when Supabase runtime is injected, reconciles Buffer post statuses, marks published only when all statuses are sent/published, and invokes cleanup only then; DRY_RUN remains pending. Repeat-run fixture proves deduplication with identical key; 45 tests pass.
-- 2026-08-13T21:41:14+00:00 — `prime-agent` — `chatgpt_web_delegation_blocked` `T-0023`: ChatGPT-Web delegation attempted through canonical delegate_chatgpt.py in fresh rounds 1-5. Attempts failed closed before prompt send: exact title verification failure, then local CDP websocket timeout. browser-use list_tabs works and SIN-Chrome doctor is healthy, but delegate preflight cannot establish stable exact page/title binding. No ChatGPT Web implementation callback exists; local work remains authoritative and tasks unchanged.
-- 2026-08-13T22:15:49+00:00 — `prime-agent` — `chatgpt_web_delegation_progress` `T-0023`: Fresh ChatGPT-Web branch was successfully created and the complete delegation brief was sent in normal Chat mode. ChatGPT Web confirmed repository access and began inspecting taskplan/code, but after multiple tool calls remained in an ongoing inspection state with no completion callback or verified repository changes. The delegation is therefore not accepted as complete; no ChatGPT-written diff or task completion is claimed. Earlier canonical delegate attempts also failed closed on exact title/CDP preflight.
-- 2026-08-13T22:37:41+00:00 — `chatgpt-web` — `r8_verified` `T-0023`: r8 closed lifecycle gaps: LIVE now fails closed without Supabase durability; Kestra request envelope preserves buffer_targets; Buffer published/sent terminal states normalize correctly. Hermetic real-adapter lifecycle test proves one Buffer create across three executions with persisted ID reconciliation and delayed cleanup. Connector suite 54 passed; bridge restarted healthy in DRY_RUN.
-- 2026-08-13T22:37:41+00:00 — `chatgpt-web` — `task_completed` `T-0023`: r8 evidence: platforms_connectors/lifecycle.py + bridge.py wire deterministic reservation, Buffer scheduling, persisted target IDs, retry reconciliation and grace cleanup; publish_everywhere.yml calls /lifecycle with Buffer-only targets and 3 retries. Hermetic integration test calls the real Buffer adapter with mocked GraphQL/Supabase and proves exactly one create across three executions, second execution reconciles the persisted Buffer post ID to sent, third stays deduplicated, and cleanup is armed only after terminal success. LIVE without SUPABASE_URL+SUPABASE_SERVICE_ROLE_KEY is rejected before provider mutation. 54 platforms_connectors tests passed; ruff clean; compileall clean; Kestra YAML lifecycle contract validated; project social-bridge restarted healthy in DRY_RUN. No live posts, no credential rotation.
 - 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0022`: Implemented authenticated-read-only TeraBox source adapter and CLI. stage_terabox_reference requires terabox-sin status configured=true/authenticated=true before download, addresses source by numeric fs_id, persists source provenance/SHA-256 through Supabase staging, and has no source deletion path. Tests cover authenticated fixture plus unauthenticated fail-before-download. Current real TeraBox status is configured=false/authenticated=false, so no live TeraBox download was attempted. Evidence also covered by .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. Final regression: 39 tests passed; ruff and compileall clean; no live posts.
 - 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0024`: website/kestra/run-with-infisical.sh executed successfully and recreated Kestra/social-bridge. Names-only runtime inspection of the running social-bridge proves BUFFER_API_KEY_ACCOUNT_1..3, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and SUPABASE_MEDIA_BUCKET are present; NEXT_PUBLIC_SUPABASE_URL->SUPABASE_URL mapping was separately verified. Runtime gates remain PUBLISH_MODE=DRY_RUN and ALLOW_REAL_POSTS=false. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0024-runtime-injection.json. No credential values logged and no rotation.
 - 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0025`: One-command fixture python3 scripts/verify_buffer_lifecycle.py now covers mocked authenticated TeraBox read-only source, real MediaStaging SHA/provenance/public-URL contract, production Buffer adapter in DRY_RUN, Kestra /lifecycle Buffer-only/retry contract, durable synthetic buffer_post_id, restart/retry reconciliation and grace cleanup. Evidence file: .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. It proves provider_create_calls=1 across repeated logical execution, second_deduplicated=true, cleanup deleted=0/skipped=1. Final regression 39/39 tests; ruff/compileall clean; external_mutations=false; live_posts=false.
@@ -610,3 +668,13 @@ Blocked: Superseded by the implemented Buffer-first architecture: the connected 
 - 2026-08-15T10:59:33+00:00 — `prime-agent` — `verification`: Corrected the remaining goal-ledger schema enum: observer.verdict normalized from complete to allowed value accept after verification.status was normalized from verified to passed. orca-goal-state validate passes; taskplan validate passes; goal remains complete with 20 done and 6 cancelled tasks.
 - 2026-08-15T11:00:54+00:00 — `prime-agent` — `verification`: Follow-up correction: enum values in goal ledger are now schema-allowed (verification.status=passed, observer.verdict=accept), but full orca-goal-state validation still fails because the legacy goal ledger references plan revision 7/tasks absent from the empty migrated .sin-goal plan.json. This is a separate stale goal-state migration issue; sin-gpt-web taskplan remains valid with 20 done and 6 cancelled.
 - 2026-08-15T11:03:00+00:00 — `prime-agent` — `audit`: Session audit complete across Prime-Agent and OpenCode for Systemfehler_nach_DIN: all 7 remaining Prime-Agent session files and the sole matching OpenCode SQLite session were read. OpenCode session contained only provider/authentication diagnostics (401 invalid/expired API key and no credits), no tool edits, no commits, and no repository work. Prime sessions contained historical product/closeout evidence already reconciled: current canonical taskplan remains 20 done, 6 cancelled, 0 open; no new implementation or documentation change was found. No task was created because the OpenCode session was non-authoring and all Prime-Agent work is already represented in taskplan/evidence.
+- 2026-08-15T11:06:06+00:00 — `prime-agent` — `task_added` `T-0027`: Resolve TeraBox-SIN authentication and prove live read-only staging
+- 2026-08-15T11:06:06+00:00 — `prime-agent` — `task_added` `T-0028`: Obtain verified Buffer Pinterest board_service_id
+- 2026-08-15T11:06:06+00:00 — `prime-agent` — `task_added` `T-0029`: Resolve remaining social developer/OAuth gates
+- 2026-08-15T11:06:07+00:00 — `prime-agent` — `task_added` `T-0030`: Repair migrated buffer-fleet goal-state ledger consistency
+- 2026-08-15T11:06:07+00:00 — `prime-agent` — `task_added` `T-0031`: Re-run fresh Kestra runtime installation and lifecycle acceptance
+- 2026-08-15T11:06:29+00:00 — `prime-agent` — `task_blocked` `T-0027`: Blocked by external TeraBox-SIN authentication: current status configured=false/authenticated=false.
+- 2026-08-15T11:06:29+00:00 — `prime-agent` — `task_blocked` `T-0028`: Blocked by external Buffer/Pinterest configuration: connected channel returns boards=[] and no verified board_service_id.
+- 2026-08-15T11:06:30+00:00 — `prime-agent` — `task_blocked` `T-0029`: Blocked by external provider onboarding/verification and missing approved access; no security-control bypass is permitted.
+- 2026-08-15T11:06:30+00:00 — `prime-agent` — `task_blocked` `T-0031`: Blocked by authenticated Kestra runtime/API access: fresh installation attempt returned Unauthorized.
+- 2026-08-15T11:07:38+00:00 — `prime-agent` — `reconciliation`: Corrected taskplan interpretation: implementation goal remains complete, but explicit follow-up work is open. Added T-0027/T-0028/T-0029/T-0031 as blocked external/runtime gates and T-0030 as backlog for stale goal-state migration consistency. Updated EXTERNAL-BLOCKERS.md to distinguish completed implementation from unresolved external gates; live posting remains fail-closed.

@@ -58,6 +58,10 @@ def _request(
             "apikey": key,
             "Content-Type": content_type,
             "Accept": "application/json",
+            # Cloudflare fronts the self-hosted Supabase endpoint and rejects
+            # Python urllib's default client signature (Error 1010). Identify
+            # this runtime explicitly instead of spoofing a browser client.
+            "User-Agent": "Systemfehler-nach-DIN-MediaStaging/1.0",
             **(headers or {}),
         },
     )

@@ -42,10 +42,10 @@
   "observer": {
     "verdict": "accept",
     "diff_digest": "af59dbb3a06b7e7dc336006bc8f56381f70870d7",
-    "verification_digest": "55-tests-pass|fixture-exit-0|ruff-clean|compileall-clean|sin-verify-rc0"
+    "verification_digest": "T-0024+T-0025+T-0026+fixture+e2e+runtime-health"
   },
   "last_callback_sequence": {
     "goal.completed": 4
   },
-  "updated_at": "2026-08-14T01:22:34Z"
+  "updated_at": "2026-08-15T16:09:00.990781+00:00"
 }

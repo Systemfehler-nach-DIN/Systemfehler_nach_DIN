@@ -13,10 +13,10 @@ SYSTEMFEHLER_nach_DIN Buffer-first Social-Publishing vollständig verifizieren: 
 
 ## Status
 
-- Backlog: 1
+- Backlog: 0
 - In progress: 0
 - Blocked: 4
-- Done: 20
+- Done: 21
 - Cancelled: 6
 
 ## Tasks
@@ -51,7 +51,7 @@ SYSTEMFEHLER_nach_DIN Buffer-first Social-Publishing vollständig verifizieren: 
 | T-0014 | high | implement | cancelled | chatgpt-web | Configure Threads API | — |
 | T-0027 | high | ops | blocked | local-agent | Resolve TeraBox-SIN authentication and prove live read-only staging | T-0022 |
 | T-0028 | high | ops | blocked | local-agent | Obtain verified Buffer Pinterest board_service_id | T-0026 |
-| T-0030 | high | implement | backlog | local-agent | Repair migrated buffer-fleet goal-state ledger consistency | — |
+| T-0030 | high | implement | done | local-agent | Repair migrated buffer-fleet goal-state ledger consistency | — |
 | T-0029 | medium | ops | blocked | local-agent | Resolve remaining social developer/OAuth gates | T-0021 |
 | T-0031 | medium | test | blocked | local-agent | Re-run fresh Kestra runtime installation and lifecycle acceptance | T-0023 |
 
@@ -621,14 +621,18 @@ Blocked: Blocked by external Buffer/Pinterest configuration: connected channel r
 
 ### T-0030 — Repair migrated buffer-fleet goal-state ledger consistency
 
-- Status: `backlog`
+- Status: `done`
 - Owner: `local-agent`
 - Kind: `implement`
 - Priority: `high`
 - Dependencies: none
-- Updated: 2026-08-15T11:06:07+00:00
+- Updated: 2026-08-15T16:09:20+00:00
 
 The goal ledger enums are normalized, but orca-goal-state validation still reports stale plan revision/task references because plan.json is empty while ledger references revision 7 and historical tasks. Reconcile the migration without discarding historical evidence, then validate.
+
+Evidence: Reconstructed .sin-goal/buffer-fleet-completion/plan.json at historical revision 7 from the canonical completed-task database, preserving all 20 completed task records and evidence; synchronized ledger observer verification_digest with verification evidence_digest. orca-goal-state validate now returns ok=true with plan_revision=7/tasks=20; sin-gpt-web-state validate remains valid.
+
+Completion report: `.sin-gpt-web/reports/T-0030.md`
 
 ### T-0029 — Resolve remaining social developer/OAuth gates
 
@@ -658,7 +662,6 @@ Blocked: Blocked by authenticated Kestra runtime/API access: fresh installation 
 
 ## Recent events
 
-- 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0022`: Implemented authenticated-read-only TeraBox source adapter and CLI. stage_terabox_reference requires terabox-sin status configured=true/authenticated=true before download, addresses source by numeric fs_id, persists source provenance/SHA-256 through Supabase staging, and has no source deletion path. Tests cover authenticated fixture plus unauthenticated fail-before-download. Current real TeraBox status is configured=false/authenticated=false, so no live TeraBox download was attempted. Evidence also covered by .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. Final regression: 39 tests passed; ruff and compileall clean; no live posts.
 - 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0024`: website/kestra/run-with-infisical.sh executed successfully and recreated Kestra/social-bridge. Names-only runtime inspection of the running social-bridge proves BUFFER_API_KEY_ACCOUNT_1..3, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and SUPABASE_MEDIA_BUCKET are present; NEXT_PUBLIC_SUPABASE_URL->SUPABASE_URL mapping was separately verified. Runtime gates remain PUBLISH_MODE=DRY_RUN and ALLOW_REAL_POSTS=false. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0024-runtime-injection.json. No credential values logged and no rotation.
 - 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0025`: One-command fixture python3 scripts/verify_buffer_lifecycle.py now covers mocked authenticated TeraBox read-only source, real MediaStaging SHA/provenance/public-URL contract, production Buffer adapter in DRY_RUN, Kestra /lifecycle Buffer-only/retry contract, durable synthetic buffer_post_id, restart/retry reconciliation and grace cleanup. Evidence file: .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. It proves provider_create_calls=1 across repeated logical execution, second_deduplicated=true, cleanup deleted=0/skipped=1. Final regression 39/39 tests; ruff/compileall clean; external_mutations=false; live_posts=false.
 - 2026-08-13T23:10:34+00:00 — `chatgpt-web` — `task_completed` `T-0026`: Read-only Buffer inventory using per-account Infisical-injected credentials verified all 9 channels connected (isDisconnected=false): 3 channels in each of accounts 1..3. Production adapter dry-run validates 8 routes with no board override; Pinterest alone is explicitly blocked because the connected channel currently returns boards=[] and therefore no verified board_service_id exists. A synthetic verified-board fixture validates all 9 payload shapes. Placeholder board IDs are rejected fail-closed. X/twitter alias routing bug was fixed and regression-covered. Bridge and Kestra flow both enforce Buffer-only selection. Node v24.16.0; Buffer CLI 1.2.0; posts.get schema supports direct id/status lookup. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0026-readonly-fleet.json. No live posts.
@@ -678,3 +681,4 @@ Blocked: Blocked by authenticated Kestra runtime/API access: fresh installation 
 - 2026-08-15T11:06:30+00:00 — `prime-agent` — `task_blocked` `T-0029`: Blocked by external provider onboarding/verification and missing approved access; no security-control bypass is permitted.
 - 2026-08-15T11:06:30+00:00 — `prime-agent` — `task_blocked` `T-0031`: Blocked by authenticated Kestra runtime/API access: fresh installation attempt returned Unauthorized.
 - 2026-08-15T11:07:38+00:00 — `prime-agent` — `reconciliation`: Corrected taskplan interpretation: implementation goal remains complete, but explicit follow-up work is open. Added T-0027/T-0028/T-0029/T-0031 as blocked external/runtime gates and T-0030 as backlog for stale goal-state migration consistency. Updated EXTERNAL-BLOCKERS.md to distinguish completed implementation from unresolved external gates; live posting remains fail-closed.
+- 2026-08-15T16:09:20+00:00 — `chatgpt-web` — `task_completed` `T-0030`: Reconstructed .sin-goal/buffer-fleet-completion/plan.json at historical revision 7 from the canonical completed-task database, preserving all 20 completed task records and evidence; synchronized ledger observer verification_digest with verification evidence_digest. orca-goal-state validate now returns ok=true with plan_revision=7/tasks=20; sin-gpt-web-state validate remains valid.

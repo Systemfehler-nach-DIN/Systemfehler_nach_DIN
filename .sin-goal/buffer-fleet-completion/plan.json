@@ -1,7 +1,562 @@
 {
   "schema_version": 1,
   "goal_id": "buffer-fleet-completion",
-  "revision": 0,
-  "tasks": [],
-  "updated_at": "2026-08-12T22:21:23.600974+00:00"
+  "revision": 7,
+  "tasks": [
+    {
+      "task_id": "T-0001",
+      "parent_task_id": null,
+      "objective": "Historical research record only. Buffer is now the binding and sole publisher/scheduler for the nine connected SYSTEMFEHLER_nach_DIN channels. The research remains preserved for provenance; its direct API, cookie/session and browser alternatives are not active publishing instructions.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "chatgpt-web",
+      "file_ownership": [
+        "platforms_connectors"
+      ],
+      "allowed_paths": [
+        "platforms_connectors"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "platforms_connectors/DECISIONS.md existiert mit je Plattform: gewaehlter Ansatz/Repo, Begruendung, Lizenz, Alternativen + Risiken; Entscheidung ist implementierbar (Repo lauffaehig auf macOS/ARM und portabel auf Linux/OCI)."
+      ],
+      "verification": [
+        "DECISIONS.md written and re-read; all 10 platform headings verified by grep; no credential-like patterns matched by grep; GitHub/web research compared community/session/browser and fallback paths with licenses, maintenance, auth, media, risk and portability; no posts sent."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0002",
+      "parent_task_id": null,
+      "objective": "Kestra lokal produktiv betreiben: OrbStack (docker-kompatibel, bereits installiert und laufend) statt klassischem Docker Desktop; docker-compose.yml aus ~/.wow-my-zsh/integrations/kestra/ nutzen bzw. ins Projekt uebernehmen (website/kestra/), .env mit KESTRA_DB_PASSWORD/KESTRA_ADMIN_* anlegen (nicht committen), Flows importieren (publish_everywhere.yml + sin-health + sin-callback-received), Secret SYSTEMFEHLER_PUBLISH_WEBHOOK_KEY setzen, Website-Ordner als Volume einbinden, Webhook-URL verifizieren. Portabilitaet fuer spaeter 'normal Docker auf OCI VM': compose erweitern/kommentieren, Volumes/Env dokumentieren (README), keine macOS-Spezifika hart einbauen. Kein Start von Diensten ausserhalb des Projekts ohne Ruecksprache.",
+      "status": "complete",
+      "priority": 80,
+      "severity": "major",
+      "dependencies": [],
+      "owner_role": "chatgpt-web",
+      "file_ownership": [
+        "website/kestra",
+        "website"
+      ],
+      "allowed_paths": [
+        "website/kestra",
+        "website"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Kestra laeuft ueber OrbStack; publish_everywhere.yml ist importiert; Webhook-Test mit SYSTEMFEHLER_PUBLISH_WEBHOOK_KEY funktioniert und aktualisiert website/content/posts.json; dokumentiert (website/kestra/README.md) wie derselbe Stack auf der OCI-VM mit normalem Docker laeuft."
+      ],
+      "verification": [
+        "OrbStack compose stack started on 127.0.0.1:18081 with postgres healthy and Kestra v1.3.30 running; foreign native Kestra jar on 18080 observed and left untouched; publish_everywhere flow imported via authenticated API HTTP 200; webhook POST returned HTTP 200, wrote exactly one __T0002_KESTRA_WEBHOOK_TEST__ record to website/content/posts.json, verified match count=1, then removed it leaving 6 original posts; .env remained local/ignored with 0600; README documents OCI Docker portability, ports, volumes, secret encoding, and foreign jar process; no real social posts, deploy, push, or foreign-container changes."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0003",
+      "parent_task_id": null,
+      "objective": "Basierend auf DECISIONS.md (T-0001): Connectors/Bridge-Service in platforms_connectors/ implementieren (TikTok, Instagram, Reddit, X, YouTube, optional weitere entschiedene Plattformen). Aufrufbar als lokaler HTTP-Bridge (social_bridge_url) aus publish_everywhere.yml: gleiche Payload-Struktur (title, excerpt, body, media_url, url, cta). Credential-Verwaltung sicher: .env / macOS Keychain / env-Variablen - NIEMALS Tokens in YAML, Markdown oder Git. Standardmodus: DRY-RUN/DRAFT - echte Posts nur nach expliziter Freigabe. Tests und lokale Verifikation inkludieren. Vorhandenes Setup nutzen: YouTube-Cookies unter ~/.config/sin-youtube/cookies.json (YOUTUBE_COOKIE_PATH), google-api-python-client installiert.",
+      "status": "complete",
+      "priority": 80,
+      "severity": "major",
+      "dependencies": [
+        "T-0001"
+      ],
+      "owner_role": "chatgpt-web",
+      "file_ownership": [
+        "platforms_connectors"
+      ],
+      "allowed_paths": [
+        "platforms_connectors"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "platforms_connectors/ enthaelt lauffaehige, getestete Bridge-Implementierung mit CLI/HTTP-Interface; publish_everywhere.yml ruft sie via social_bridge_url auf; Dry-Run-Modus nachgewiesen; keine Secrets in Git/YAML; DECISIONS.md Entscheidungen umgesetzt."
+      ],
+      "verification": [
+        "Implemented stdlib-first platforms_connectors/bridge.py with unified title/excerpt/body/media_url/url/cta payload and adapters for TikTok=tiktok-uploader, Instagram=instagrapi, Reddit=Playwright, X=twikit, YouTube=youtube-studio, Mastodon=Mastodon.py/toot, Bluesky=atproto, Telegram=Telethon, Discord=stdlib webhook, forums=Discourse/Playwright. DRY_RUN is default and LIVE is fail-closed even when global live flags are set. Offline unittest suite passed 4/4. HTTP bridge health returned all 10 platforms and POST /publish returned DRY_RUN with 10 validated DRAFT results. publish_everywhere webhook input now maps social_bridge_url and was re-imported HTTP 200. No credentials logged or committed and no real posts sent."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0004",
+      "parent_task_id": null,
+      "objective": "Geschlossener Test ohne echte Posts: Kestra-Webhook (publish_everywhere.yml) mit Test-Payload aufrufen -> website/content/posts.json aktualisiert -> social_bridge_url im Dry-Run-Modus ausgefuehrt -> alle Plattform-Connectors melden validierte DRAFT-Payloads. Kompletter Testprotokoll in .sin-gpt-web/reports/ ablegen. Echte Posts sind NICHT Teil dieses Tasks.",
+      "status": "complete",
+      "priority": 80,
+      "severity": "major",
+      "dependencies": [
+        "T-0002",
+        "T-0003"
+      ],
+      "owner_role": "chatgpt-web",
+      "file_ownership": [
+        "website",
+        "platforms_connectors"
+      ],
+      "allowed_paths": [
+        "website",
+        "platforms_connectors"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Ein Testlauf dokumentiert: Webhook 2xx, posts.json zeigt neuen Eintrag, jeder Connector im Dry-Run meldet korrekt formatierten Payload; Protokoll in .sin-gpt-web/reports/T-0004.md; keine echten Posts gesendet."
+      ],
+      "verification": [
+        "Closed local E2E dry-run succeeded: authenticated Kestra webhook returned HTTP 200; execution 5IEsY7lc1gQHX1Xzbxrz33 finished SUCCESS on flow revision 7; task states update_website_feed=SUCCESS, deploy_if_configured=SUCCESS, social_if_configured=SUCCESS, distribute_social=SUCCESS. website/content/posts.json contained exactly one __T0004_E2E_DRY_RUN__ record after the webhook. Kestra HTTP task output from http://host.docker.internal:18765/publish returned code 200, mode DRY_RUN, and 10 validated DRAFT results for tiktok, instagram, reddit, x, youtube, mastodon, bluesky, telegram, discord, forums. Test post was then removed from posts.json via filesystem edit. No real posts, deploy, push, or credential disclosure occurred. Attempt to stop the temporary bridge test process was frontend-policy-blocked before Mac execution and recorded categorically; the bridge remains a local DRY_RUN-only process."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0005",
+      "parent_task_id": null,
+      "objective": "Define and verify the Buffer-first contract, account routing, Infisical boundaries, Kestra integration, Supabase staging, and explicit non-goals. Buffer is the only publisher/scheduler for connected channels; Postiz and direct platform adapters are not parallel schedulers or publishers.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "docs",
+        "website",
+        ".sin-goal"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "docs",
+        "website",
+        ".sin-goal"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Architecture document names every requested platform, official API/browser fallback, dry-run/live gates, verification/idempotency, Postiz boundary, and exact next implementation tasks."
+      ],
+      "verification": [
+        "platforms_connectors/SOCIAL_CONNECTOR_ARCHITECTURE.md; platforms_connectors/base.py; platforms_connectors/bridge.py; website/kestra/publish_everywhere.yml; 27 pytest tests; ruff check passed; dry-run bridge returned 14 platform results"
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0006",
+      "parent_task_id": null,
+      "objective": "Existing direct official API modules are retained only for isolated verification or future explicitly approved fallback work. They are not the SYSTEMFEHLER_nach_DIN publishing path; Buffer remains sole publisher/scheduler. Keep DRY_RUN and secret isolation.",
+      "status": "complete",
+      "priority": 80,
+      "severity": "major",
+      "dependencies": [
+        "T-0005"
+      ],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "docs"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "docs"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Completion preserved from canonical SIN GPT Web taskplan evidence."
+      ],
+      "verification": [
+        "platforms_connectors/Instagram/publish.py; X/publish.py; Reddit/publish.py; LinkedIn/publish.py; mocked live tests; DRY_RUN tests; 29 pytest tests; ruff clean"
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0007",
+      "parent_task_id": null,
+      "objective": "Existing open-protocol modules are retained only for isolated verification or future explicitly approved fallback work. They are not the SYSTEMFEHLER_nach_DIN publishing path; Buffer remains sole publisher/scheduler. Keep DRY_RUN and secret isolation.",
+      "status": "complete",
+      "priority": 80,
+      "severity": "major",
+      "dependencies": [
+        "T-0005"
+      ],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "docs"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "docs"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Completion preserved from canonical SIN GPT Web taskplan evidence."
+      ],
+      "verification": [
+        "platforms_connectors/Threads/publish.py; Pinterest/publish.py; Bluesky/publish.py; Mastodon/publish.py; mocked live tests; DRY_RUN tests; ruff clean"
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0008",
+      "parent_task_id": null,
+      "objective": "Existing Telegram/Discord modules are retained only for isolated verification or future explicitly approved fallback work. They are not the SYSTEMFEHLER_nach_DIN publishing path; Buffer remains sole publisher/scheduler. Keep DRY_RUN and secret isolation.",
+      "status": "complete",
+      "priority": 80,
+      "severity": "major",
+      "dependencies": [
+        "T-0005"
+      ],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "docs"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "docs"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Completion preserved from canonical SIN GPT Web taskplan evidence."
+      ],
+      "verification": [
+        "platforms_connectors/Telegram/publish.py; Discord/publish.py; Facebook/publish.py; mocked live tests; DRY_RUN tests; ruff clean"
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0009",
+      "parent_task_id": null,
+      "objective": "Retain a dry-run-compatible Postiz adapter and portability documentation as an explicitly inactive option. Do not run Postiz and do not allow it to publish or schedule; Buffer remains the sole publisher/scheduler.",
+      "status": "complete",
+      "priority": 80,
+      "severity": "major",
+      "dependencies": [
+        "T-0005"
+      ],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "docker-compose.yml",
+        "docs"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "docker-compose.yml",
+        "docs"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Completion preserved from canonical SIN GPT Web taskplan evidence."
+      ],
+      "verification": [
+        "platforms_connectors/Postiz/publish.py; Postiz/docker-compose.example.yml; Postiz/README.md; optional official compose boundary; no-secret dry-run contract"
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0010",
+      "parent_task_id": null,
+      "objective": "Register all connectors in bridge and publish_everywhere workflow, add deterministic payload mapping, per-platform results, retries/idempotency, offline tests and safe dry-run E2E. Depends on connector waves and Postiz integration.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [
+        "T-0006",
+        "T-0007",
+        "T-0008",
+        "T-0009"
+      ],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        ".github",
+        "website",
+        "docs"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        ".github",
+        "website",
+        "docs"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Completion preserved from canonical SIN GPT Web taskplan evidence."
+      ],
+      "verification": [
+        "HTTP bridge E2E: /health DRY_RUN and /publish 11 official targets; 29 pytest tests; ruff clean for changed connector files; Python compile; Kestra YAML parse; docker compose config --quiet; website/kestra/publish_everywhere.yml defaults to social-bridge and explicit social_platforms"
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0017",
+      "parent_task_id": null,
+      "objective": "Implement the durable TeraBox-SIN download to Supabase Storage bridge for the existing Buffer-first scheduler. Preserve TeraBox originals, hash media, make stable HTTPS URLs, record media_assets, and fail closed on missing source or secrets. No live posts and no competing scheduler.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "A mocked/integration-safe test proves TeraBox download to Supabase staging, SHA-256 metadata, idempotency, no source deletion, and no secret logging."
+      ],
+      "verification": [
+        "Evidence: platforms_connectors/MediaStaging/staging.py and test_staging.py; 24 connector/staging tests passed; mocked fixture verifies SHA-256, stable public URL contract, idempotent metadata path and no source deletion. Live TeraBox session is not configured, so no destructive or live media action was performed."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0018",
+      "parent_task_id": null,
+      "objective": "Extend the existing Kestra workflow and Buffer adapter—not a new scheduler—to stage media, create publish_jobs and publish_targets, schedule through Buffer, persist post IDs, reconcile Buffer statuses with retries, and invoke delayed cleanup only after sent plus grace period. Keep Buffer as the single scheduler and DRY_RUN default.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Kestra invokes the existing Buffer adapter with account/channel routing; schedule and reconciliation state is persisted; cleanup is delayed and fail-closed; one-scheduler invariant and DRY_RUN are tested; no real post."
+      ],
+      "verification": [
+        "Evidence: website/kestra/publish_everywhere.yml revision 7 is installed in running Kestra; existing Buffer adapter and MediaStaging lifecycle are wired by contract; Kestra execution UoAxs0EAPOsjY07uAvYP2 completed SUCCESS with 3 tasks. Buffer remains sole scheduler; DRY_RUN only."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0019",
+      "parent_task_id": null,
+      "objective": "Configure only runtime dependencies for the existing Kestra→Supabase staging→Buffer flow on OCI through Infisical. Preserve secrets outside Git/logs, and run read-only health plus DRY_RUN checks. Do not deploy or activate Postiz, rotate credentials, or publish.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "OCI service/container health, Supabase REST schema, Storage bucket, Infisical key references, and bridge DRY_RUN are recorded without secret values; any external gate is documented."
+      ],
+      "verification": [
+        "Evidence: website/kestra/docker-compose.yml runtime healthy (Kestra running, Postgres healthy, social-bridge DRY_RUN); OCI Supabase schema/runtime had been deployed and verified in prior commits d7554a3/96c96df. Secrets remain runtime-only and no rotation occurred."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0020",
+      "parent_task_id": null,
+      "objective": "Run a reproducible dry-run through the existing Buffer-first path: TeraBox source reference or mocked adapter, Supabase staging, Kestra payload, Buffer account/channel mapping, status reconciliation, and cleanup decision. Never send a real post and do not add Postiz or another scheduler.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Fixture traverses TeraBox→Supabase→Kestra→existing Buffer adapter in DRY_RUN; routing and reconciliation evidence is recorded; cleanup remains pending until publication plus grace period; no live post."
+      ],
+      "verification": [
+        "Evidence: .sin-goal/buffer-fleet-completion/evidence/dry-run-e2e.json; mocked media staging -> existing Buffer adapter fixture passed, Buffer YouTube channel routing 6a7cf0c4b2d9d57743679762 verified, social bridge HTTP DRY_RUN returned 200, Kestra execution UoAxs0EAPOsjY07uAvYP2 SUCCESS. No live post."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0021",
+      "parent_task_id": null,
+      "objective": "Buffer-first is implemented and remains the sole publisher and scheduler for the nine connected channels. Audit only Buffer account/channel metadata, Infisical runtime key presence without exposing secrets, Buffer route readiness, and the explicit inactive status of Postiz/direct modules. Do not introduce a competing publisher or scheduler; preserve DRY_RUN and fail-closed gates.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "allowed_paths": [
+        "platforms_connectors",
+        "website/kestra",
+        "supabase",
+        "docs",
+        "scripts",
+        "EXTERNAL-BLOCKERS.md"
+      ],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Document verified Buffer-first readiness and exact remaining blockers; confirm no competing scheduler is active; keep all live posting disabled; no CAPTCHA/2FA/agreement bypass and no credential rotation."
+      ],
+      "verification": [
+        "Evidence: platforms_connectors/README.md, SOCIAL_CONNECTOR_ARCHITECTURE.md, DECISIONS.md and wow-my-zsh Buffer docs synchronized. Nine Buffer channels are registry-backed; Postiz/direct adapters are explicitly inactive/noncanonical; taskplan validates. TeraBox authentication remains an external configuration gap."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0022",
+      "parent_task_id": null,
+      "objective": "Add a read-only-safe TeraBox-SIN source-reference/download bridge into MediaStaging. Preserve originals, persist provenance/hash/idempotency, compensate failed uploads, and test with a mocked TeraBox client plus explicit no-source-deletion assertions.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [],
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "TeraBox source reference reaches stage_file through a tested adapter; provenance, SHA-256, idempotency and failure compensation are covered; no token logging or source deletion."
+      ],
+      "verification": [
+        "Implemented authenticated-read-only TeraBox source adapter and CLI. stage_terabox_reference requires terabox-sin status configured=true/authenticated=true before download, addresses source by numeric fs_id, persists source provenance/SHA-256 through Supabase staging, and has no source deletion path. Tests cover authenticated fixture plus unauthenticated fail-before-download. Current real TeraBox status is configured=false/authenticated=false, so no live TeraBox download was attempted. Evidence also covered by .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. Final regression: 39 tests passed; ruff and compileall clean; no live posts."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0023",
+      "parent_task_id": null,
+      "objective": "Extend publish_everywhere.yml and supporting runtime code to stage media, invoke the existing Buffer adapter in DRY_RUN/LIVE-gated mode, persist Buffer IDs, reconcile target/job status with retry and idempotency, and invoke delayed cleanup only after all targets sent plus grace period.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [],
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "A hermetic integration test proves the full lifecycle and prevents duplicate jobs/posts; Kestra flow invokes the real Buffer adapter path; no live post."
+      ],
+      "verification": [
+        "r8 evidence: platforms_connectors/lifecycle.py + bridge.py wire deterministic reservation, Buffer scheduling, persisted target IDs, retry reconciliation and grace cleanup; publish_everywhere.yml calls /lifecycle with Buffer-only targets and 3 retries. Hermetic integration test calls the real Buffer adapter with mocked GraphQL/Supabase and proves exactly one create across three executions, second execution reconciles the persisted Buffer post ID to sent, third stays deduplicated, and cleanup is armed only after terminal success. LIVE without SUPABASE_URL+SUPABASE_SERVICE_ROLE_KEY is rejected before provider mutation. 54 platforms_connectors tests passed; ruff clean; compileall clean; Kestra YAML lifecycle contract validated; project social-bridge restarted healthy in DRY_RUN. No live posts, no credential rotation."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0024",
+      "parent_task_id": null,
+      "objective": "Implement documented runtime-only secret injection/mapping for BUFFER_API_KEY_ACCOUNT_1..3, SUPABASE_URL (including canonical URL-name mapping), SUPABASE_SERVICE_ROLE_KEY and bucket on local/OCI Compose. Never write values to Git/logs.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [],
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "Compose config and a names-only configuration test prove required runtime variables reach the correct service; DRY_RUN remains default; no credential rotation."
+      ],
+      "verification": [
+        "website/kestra/run-with-infisical.sh executed successfully and recreated Kestra/social-bridge. Names-only runtime inspection of the running social-bridge proves BUFFER_API_KEY_ACCOUNT_1..3, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and SUPABASE_MEDIA_BUCKET are present; NEXT_PUBLIC_SUPABASE_URL->SUPABASE_URL mapping was separately verified. Runtime gates remain PUBLISH_MODE=DRY_RUN and ALLOW_REAL_POSTS=false. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0024-runtime-injection.json. No credential values logged and no rotation."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0025",
+      "parent_task_id": null,
+      "objective": "Create a maintained fixture/script covering TeraBox source contract, Supabase staging, Kestra payload, real Buffer adapter dry-run, persistence/reconciliation and cleanup decision. Separate mocked mode from live external authority.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [],
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "One command runs the fixture offline and records redacted evidence; every transition is asserted; no real post."
+      ],
+      "verification": [
+        "One-command fixture python3 scripts/verify_buffer_lifecycle.py now covers mocked authenticated TeraBox read-only source, real MediaStaging SHA/provenance/public-URL contract, production Buffer adapter in DRY_RUN, Kestra /lifecycle Buffer-only/retry contract, durable synthetic buffer_post_id, restart/retry reconciliation and grace cleanup. Evidence file: .sin-goal/buffer-fleet-completion/evidence/T-0025-buffer-lifecycle-fixture.json. It proves provider_create_calls=1 across repeated logical execution, second_deduplicated=true, cleanup deleted=0/skipped=1. Final regression 39/39 tests; ruff/compileall clean; external_mutations=false; live_posts=false."
+      ],
+      "child_delegation_allowed": false
+    },
+    {
+      "task_id": "T-0026",
+      "parent_task_id": null,
+      "objective": "Verify all nine Buffer channel routes, especially Pinterest board_service_id, and repair registry/docs/runbooks. Record Buffer CLI/runtime blockers (including Node/API configuration) without secrets; enforce Buffer-only selection in bridge/flow.",
+      "status": "complete",
+      "priority": 100,
+      "severity": "critical",
+      "dependencies": [],
+      "owner_role": "local-agent",
+      "file_ownership": [],
+      "allowed_paths": [],
+      "forbidden_paths": [],
+      "acceptance_criteria": [
+        "All nine targets pass dry-run validation; Pinterest metadata is present or explicitly blocked; arbitrary direct/Postiz platform selection is rejected for the connected fleet; evidence is current."
+      ],
+      "verification": [
+        "Read-only Buffer inventory using per-account Infisical-injected credentials verified all 9 channels connected (isDisconnected=false): 3 channels in each of accounts 1..3. Production adapter dry-run validates 8 routes with no board override; Pinterest alone is explicitly blocked because the connected channel currently returns boards=[] and therefore no verified board_service_id exists. A synthetic verified-board fixture validates all 9 payload shapes. Placeholder board IDs are rejected fail-closed. X/twitter alias routing bug was fixed and regression-covered. Bridge and Kestra flow both enforce Buffer-only selection. Node v24.16.0; Buffer CLI 1.2.0; posts.get schema supports direct id/status lookup. Evidence: .sin-goal/buffer-fleet-completion/evidence/T-0026-readonly-fleet.json. No live posts."
+      ],
+      "child_delegation_allowed": false
+    }
+  ],
+  "updated_at": "2026-08-15T16:09:00.939858+00:00"
 }
